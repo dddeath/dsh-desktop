@@ -13,40 +13,62 @@ window.__ModuleLoader__.load({
     Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 
     const CSS = `
-/* 1) Left sidebar + top bar follow the light theme instead of staying navy */
+/* ===== maid-atelier light-mode fixes ===== */
+
+/* darker secondary/caption text tokens (win any cascade) */
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) {
-  --dsw-specific-sidebar-fill: #e7ecf7;          /* light periwinkle, was #0b1942e0 */
-  --dsw-alias-label-tertiary: #46567c;           /* darker secondary text */
-  --dsw-alias-label-caption: #566384;            /* darker caption text */
+  --dsw-alias-label-tertiary: #46567c !important;
+  --dsw-alias-label-caption: #566384 !important;
 }
+
+/* 1) Left sidebar follows the light theme instead of staying navy */
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sidebarCol'],
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-slot='sidebar'] > div,
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-pane='sidebar'] {
   background-color: #e7ecf7 !important;
 }
 
-/* Top menu bar: explicit light surface so the dark palace art doesn't show through */
+/* 1 + 4) Hide the skin's navy/gold top chrome in light mode so the native
+   light top bar (标准模式 / 对话标题) shows through, and the right-sidebar
+   top buttons (close, subagent controls) are no longer covered by it. */
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-skin-chrome='top-trim'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-skin-chrome='bottom-trim'] {
+  display: none !important;
+}
+
+/* 4) Top bar (标准模式 / 对话标题) and tab strip get a light surface */
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='header'],
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [role='tablist'] {
   background: #edf1fa;
+}
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='header'] {
   border-bottom: 1px solid var(--dsw-alias-border-l2);
 }
 
-/* 3) View tabs (对话 / 轨迹 / 上下文) get clear, theme-matching borders */
+/* 3) View tabs (对话 / 轨迹 / 上下文): clear borders + readable text */
 body[data-dsh-maid-atelier] [role='tab'] {
   border: 1px solid var(--dsw-alias-border-l2);
   border-radius: 9px;
+  color: var(--dsw-alias-label-primary) !important;
 }
 body[data-dsh-maid-atelier] [role='tab'][aria-selected='true'] {
   border-color: var(--dsw-alias-border-l3);      /* gold accent */
   background: var(--dsw-alias-interactive-bg-active);
 }
 
-/* 2) Empty-state text (subagent / details panels) readable on light surfaces */
-body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='empty'] {
-  color: var(--dsw-alias-label-secondary);
+/* 2) Empty-state / read-only text (subagent, details) readable in light mode.
+   The i flag matches both empty and camelCase Empty class names
+   (e.g. better-sidebar's subagentEmpty / subagentEmptyHint). */
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='empty' i],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [role='status'] {
+  color: #46567c !important;
+}
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='empty' i] strong,
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [role='status'] strong {
+  color: #243866 !important;
 }
 
-/* 4) Right sidebar: themed periwinkle porcelain tint + gold accent edge */
+/* 4) Right sidebar: themed periwinkle porcelain tint */
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='detailsCol'] {
   background: #e8edf8;
 }
