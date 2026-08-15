@@ -20,6 +20,7 @@ const { app, BrowserWindow, Menu, shell, dialog } = require("electron");
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
+const os = require("os");
 const net = require("net");
 const http = require("http");
 
@@ -169,6 +170,74 @@ function waitPortFree(port, tries = 30) {
   });
 }
 
+// ------------------------------------------------------- safe-shutdown helpers
+// dsh session logs are multi-frame zstd JSONL; force-killing the server while
+// it is appending can tear a frame. Wait for the newest log to stop growing
+// and back it up before any kill.
+
+function dshSessionsDir() {
+  const home = process.env.DSH_HOME || path.join(os.homedir(), ".dsh");
+  return path.join(home, "sessions");
+}
+
+function newestLogTick(dir) {
+  let newest = null;
+  const walk = (d) => {
+    let entries;
+    try { entries = fs.readdirSync(d, { withFileTypes: true }); } catch { return; }
+    for (const e of entries) {
+      const p = path.join(d, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (e.name === "session.jsonl.zstd") {
+        try {
+          const st = fs.statSync(p);
+          if (newest === null || st.mtimeMs > newest.m) newest = { p, m: st.mtimeMs, size: st.size };
+        } catch { /* gone */ }
+      }
+    }
+  };
+  walk(dir);
+  return newest === null ? null : `${newest.p}|${newest.m}|${newest.size}`;
+}
+
+function sleepSync(ms) {
+  try { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms); }
+  catch { /* Atomics.wait unavailable — degrade to busy wait */ }
+}
+
+/** Block until the newest session log stops changing, or the timeout hits. */
+function waitSessionQuiescence(maxMs, quietMs) {
+  const dir = dshSessionsDir();
+  const started = Date.now();
+  let quietSince = Date.now();
+  let prev = newestLogTick(dir);
+  while (Date.now() - started < maxMs) {
+    sleepSync(500);
+    const cur = newestLogTick(dir);
+    if (cur === prev) {
+      if (Date.now() - quietSince >= quietMs) return true;
+    } else {
+      quietSince = Date.now();
+      prev = cur;
+    }
+  }
+  return false;
+}
+
+function backupSessions() {
+  const dir = dshSessionsDir();
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const dest = path.join(path.dirname(dir), `sessions-backup-${stamp}`);
+  try {
+    fs.cpSync(dir, dest, { recursive: true });
+    log(`session logs backed up to ${dest}`);
+    return dest;
+  } catch (err) {
+    log("session backup failed:", err.message);
+    return null;
+  }
+}
+
 /**
  * Restart the Harness: stop whichever `dsh web` is running (an external one
  * we attached to, or the child we spawned), then start a fresh server and
@@ -176,6 +245,9 @@ function waitPortFree(port, tries = 30) {
  */
 async function restartHarness() {
   log("restart requested");
+  const quiet = waitSessionQuiescence(20000, 1200);
+  if (!quiet) log("WARNING: session log still growing — an agent turn may be mid-write");
+  backupSessions();
   killChild();
   if (attached) {
     const pids = await findDshWebPids();
@@ -340,6 +412,11 @@ if (!gotLock) {
   app.on("before-quit", () => {
     quitting = true;
     const keep = process.env.DSH_DESKTOP_KEEP_RUNNING === "1" || attached;
-    if (!keep) killChild();
+    if (!keep) {
+      // Best effort: give the session log up to 3s to settle before the kill
+      // (dsh session logs are zstd frames; a mid-write kill can tear one).
+      waitSessionQuiescence(3000, 800);
+      killChild();
+    }
   });
 }
