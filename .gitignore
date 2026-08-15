@@ -1,0 +1,19 @@
+# dependencies / build output
+desktop/node_modules/
+desktop/dist/
+
+# research artifacts (cloned third-party repos + raw data)
+research/awesome-dsh-plugin/
+research/awesome-deepseek-harness/
+research/dsh-hub/
+research/dom-probe/node_modules/
+research/dom-probe/package-lock.json
+research/plugins.json
+research/skin-css-extracted.txt
+research/skin-tokens.tsv
+research/dsh-hub/
+
+# OS / editor
+Thumbs.db
+Desktop.ini
+*.log

@@ -1,0 +1,53 @@
+{
+  "name": "dsh-desktop",
+  "productName": "DeepSeek Harness Desktop",
+  "version": "0.1.0",
+  "description": "Desktop shell for DeepSeek Harness (wraps `dsh web` in a native window)",
+  "main": "main.js",
+  "author": "DeepSeek Harness Community",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --win",
+    "pack:portable": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "^37.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "allowScripts": {
+    "electron@37.10.3": true
+  },
+  "build": {
+    "appId": "io.dsh.desktop",
+    "productName": "DeepSeek Harness Desktop",
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "assets/**"
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        { "target": "portable", "arch": ["x64"] },
+        { "target": "nsis", "arch": ["x64"] }
+      ]
+    },
+    "portable": {
+      "artifactName": "DeepSeek-Harness-Desktop-${version}-portable.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "DeepSeek Harness Desktop",
+      "artifactName": "DeepSeek-Harness-Desktop-Setup-${version}.exe"
+    }
+  }
+}

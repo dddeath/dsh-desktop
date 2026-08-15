@@ -1,0 +1,22 @@
+{
+  "name": "dsh-maid-atelier-fix",
+  "description": "Light-mode and chrome fixes for the maid-atelier (深海女仆工坊) skin: light sidebar/top bar, readable empty-state text, bordered view tabs, themed right sidebar.",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [],
+      "platform": "web"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "dsh-dom-probe",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dump": "node domdump.mjs"
+  },
+  "dependencies": {
+    "playwright-core": "^1.49.0"
+  }
+}
