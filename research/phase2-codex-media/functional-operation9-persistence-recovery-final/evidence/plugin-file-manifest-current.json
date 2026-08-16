@@ -1,0 +1,57 @@
+﻿[
+    {
+        "path":  "cordis.patch.yml",
+        "bytes":  65,
+        "sha256":  "360cd92e92af3e788ac4f05c5ac5d0b5c4ec210c1bdc6945c82d7542c959836f"
+    },
+    {
+        "path":  "index.js",
+        "bytes":  1032,
+        "sha256":  "764005c8a4939cce215846950479709eab486c17fce3c1f2050111acb0c97084"
+    },
+    {
+        "path":  "LICENSE",
+        "bytes":  1082,
+        "sha256":  "2dd649dbe94e8bff43896f4b607f5b640011475405103d37e5c92a19e1334687"
+    },
+    {
+        "path":  "package.json",
+        "bytes":  1251,
+        "sha256":  "20b7b6e051ef41d16c177f0230ce5744fbacfefd2e04da93f20011bd52be70e5"
+    },
+    {
+        "path":  "README.md",
+        "bytes":  7206,
+        "sha256":  "012317f1b52eae37ec52621d909f7c403803023e5b01bc2e944b4854c001e928"
+    },
+    {
+        "path":  "README.zh-CN.md",
+        "bytes":  6617,
+        "sha256":  "31c8e564e5c5738addfcdfba61981845046a46504531a984a3c19d0d780bb7ce"
+    },
+    {
+        "path":  "tools.js",
+        "bytes":  16706,
+        "sha256":  "bf968292e54312d7e0f78aa71b06dcf179d06dd674034f592c636877c5a101cd"
+    },
+    {
+        "path":  "scripts/codex-common.mjs",
+        "bytes":  13185,
+        "sha256":  "4870ccd23b3d3e0c0c065251ec8e99f270319b38b152cc19e82b2ef5b01231eb"
+    },
+    {
+        "path":  "scripts/codex-imagegen.mjs",
+        "bytes":  8461,
+        "sha256":  "4eb23025f32da2ce95aab51d2458b4329f500ec7cd0eb61e25b1055660ebc2b0"
+    },
+    {
+        "path":  "scripts/codex-search.mjs",
+        "bytes":  8406,
+        "sha256":  "5ed942093445efd6135a6085394dae62bf79f30f6fef307d72610dcd05ed15f6"
+    },
+    {
+        "path":  "scripts/codex-vision.mjs",
+        "bytes":  7183,
+        "sha256":  "d53a918be81f909867d834b6c37899195d9b361cb21d3ee496b0b05460bf0ee7"
+    }
+]

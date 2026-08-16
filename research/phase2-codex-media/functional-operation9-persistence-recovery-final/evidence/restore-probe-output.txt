@@ -1,0 +1,6 @@
+﻿PACKAGE_MANAGER_EXECUTED=False
+RESTORED_PLUGIN_FILES=11
+RESTART_REQUIRED=true
+RESTORE_OK=true
+RESTORE_PROBE_EXIT=0
+RESTORE_PROBE_PROFILE=E:\deepseek_harness\research\phase2-codex-media\functional-operation9-persistence-recovery-final\evidence\restore-probe-20260817010204\profile

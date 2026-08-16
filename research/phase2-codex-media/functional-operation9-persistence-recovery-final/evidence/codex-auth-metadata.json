@@ -1,0 +1,16 @@
+﻿{
+    "path":  "C:\\Users\\19739\\.codex\\auth.json",
+    "exists":  true,
+    "bytes":  3870,
+    "last_write_time":  "2026-08-09T10:38:12.6905741+08:00",
+    "top_level_keys":  [
+                           "auth_mode",
+                           "last_refresh",
+                           "OPENAI_API_KEY",
+                           "tokens"
+                       ],
+    "tokens_object_present":  true,
+    "access_token_present":  true,
+    "refresh_token_present":  true,
+    "api_key_present":  false
+}

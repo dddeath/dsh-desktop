@@ -1,0 +1,117 @@
+diff --git a/.agent/STATE.json b/.agent/STATE.json
+index 75eae12..167b459 100644
+--- a/.agent/STATE.json
++++ b/.agent/STATE.json
+@@ -1,15 +1,12 @@
+ {
+   "schema_version": 1,
+-  "updated_at": "2026-08-17T00:47:32+08:00",
++  "updated_at": "2026-08-17T01:03:16+08:00",
+   "status": "in_progress",
+   "current_phase": "phase2",
+-  "latest_result": "The user-selected generated image is now the DSH desktop runtime and package icon; portable, NSIS, and dist-status builds succeeded, and the rebuilt desktop window is running.",
+-  "next_action": "User visually confirms the new icon in the DSH title bar/taskbar; then continue the next phase 2 item.",
++  "latest_result": "Phase 2 persistence checks passed after desktop restart: dsh-codex-tools 1.0.1, OAuth metadata, image_gen/image_vision source registrations, generated output, desktop process, and HTTP 200 persist.",
++  "next_action": "Manual gate F: user chooses retain-current (recommended) or execute uninstall then exact restore.",
+   "blockers": [
+-    "manual_gate_e_internal_image_gen_fix_pending",
+-    "manual_gate_composer_permission_sync_pending",
+-    "manual_gate_image_workspace_output_fix_pending",
+-    "manual_gate_internal_image_publication_pending"
++    "manual_gate_f_persistence_recovery_decision_pending"
+   ],
+   "state_dir": "E:\\deepseek_harness\\.agent",
+   "last_verification": {
+@@ -260,7 +257,7 @@
+     },
+     "machine_gate_passed": true,
+     "manual_gate": "E-internal",
+-    "manual_gate_status": "pending",
++    "manual_gate_status": "superseded_by_operation7",
+     "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix\\verification.md",
+     "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix\\rollback.ps1"
+   },
+@@ -334,9 +331,10 @@
+     },
+     "machine_gate_passed": true,
+     "manual_gate": "image-workspace-output",
+-    "manual_gate_status": "pending",
++    "manual_gate_status": "accepted_by_followup_use",
+     "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-workspace-output-fix\\verification.md",
+-    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-workspace-output-fix\\rollback.ps1"
++    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-workspace-output-fix\\rollback.ps1",
++    "acceptance_evidence": "User selected E:\\deepseek_workspace\\pro1\\output\\imagegen\\1786892171127.png as the desktop icon."
+   },
+   "phase2_image_backend_recovery": {
+     "phase": "P2-operation6-backend-recovery",
+@@ -361,8 +359,9 @@
+     "installed_code_changed": false,
+     "machine_gate_passed": true,
+     "manual_gate": "image-backend-recovery",
+-    "manual_gate_status": "pending",
+-    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation6-backend-recovery\\verification.md"
++    "manual_gate_status": "accepted_by_followup_use",
++    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation6-backend-recovery\\verification.md",
++    "acceptance_evidence": "User selected E:\\deepseek_workspace\\pro1\\output\\imagegen\\1786892171127.png as the desktop icon."
+   },
+   "phase2_internal_image_publication_fix": {
+     "phase": "P2-operation7-internal-publication",
+@@ -401,9 +400,10 @@
+     "http_status": 200,
+     "machine_gate_passed": true,
+     "manual_gate": "internal-image-publication",
+-    "manual_gate_status": "pending",
++    "manual_gate_status": "accepted_by_followup_use",
+     "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation7-auth-precedence-fix\\verification.md",
+-    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation7-auth-precedence-fix\\rollback.ps1"
++    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation7-auth-precedence-fix\\rollback.ps1",
++    "acceptance_evidence": "User selected E:\\deepseek_workspace\\pro1\\output\\imagegen\\1786892171127.png as the desktop icon."
+   },
+   "phase2_desktop_icon_update": {
+     "phase": "P2-operation8-desktop-icon",
+@@ -434,8 +434,43 @@
+     "runtime_http_status": 200,
+     "machine_gate_passed": true,
+     "manual_gate": "desktop-icon-visual",
+-    "manual_gate_status": "pending",
++    "manual_gate_status": "accepted",
+     "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation8-desktop-icon-update\\verification.md",
+-    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation8-desktop-icon-update\\rollback.ps1"
++    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation8-desktop-icon-update\\rollback.ps1",
++    "accepted_at": "2026-08-17T01:03:16+08:00"
++  },
++  "phase2_operation6_final": {
++    "phase": "P2-operation6-persistence-recovery",
++    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final",
++    "plugin": "dsh-codex-tools",
++    "version": "1.0.1",
++    "persistence_checks": {
++      "profile_manifest_match": true,
++      "plugin_snapshot_files": 11,
++      "tool_sources": [
++        "image_gen",
++        "image_vision",
++        "web_search"
++      ],
++      "profile_api_key_reference_count": 0,
++      "codex_auth_fields_present": true,
++      "auth_values_recorded": false,
++      "generated_output_persisted": true,
++      "desktop_process_running": true,
++      "http_status": 200
++    },
++    "snapshot_zip": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\artifacts\\current-profile-plugin-snapshot.zip",
++    "snapshot_sha256": "b32dc06d8d64aebe6bcf02e7899215b51c5e4112034f289a1051c79fb15583d7",
++    "uninstall": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\uninstall-current.ps1",
++    "restore": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\restore-current.ps1",
++    "recommended_decision": "retain-current",
++    "machine_gate_passed": true,
++    "manual_gate": "F",
++    "manual_gate_status": "pending",
++    "decision_options": [
++      "retain-current",
++      "execute-uninstall-and-restore"
++    ],
++    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\verification.md"
+   }
+ }

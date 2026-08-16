@@ -1,0 +1,4 @@
+﻿UNINSTALL_COMMAND=dsh.cmd plugin --profile web remove dsh-codex-tools
+UNINSTALL_EXECUTED=false
+UNINSTALL_DRY_RUN_OK=true
+UNINSTALL_DRY_RUN_EXIT=0

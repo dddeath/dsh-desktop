@@ -1,0 +1,10 @@
+﻿{
+    "package.json":  {
+                         "sha256":  "d80c87fb1ab16f477fa884a8ec90a81654ccf75570fca3be97f80f60b1abdf43",
+                         "bytes":  1292
+                     },
+    "pnpm-lock.yaml":  {
+                           "sha256":  "c19a73c0d031d750d115f4cdd91d94678325eddb42cfa9e43b15969c4fde63b9",
+                           "bytes":  28731
+                       }
+}

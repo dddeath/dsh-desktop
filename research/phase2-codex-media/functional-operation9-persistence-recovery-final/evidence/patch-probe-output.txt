@@ -1,0 +1,5 @@
+﻿PATCH_CHECK_EXIT=0
+PATCH_APPLY_EXIT=0
+PATCH_STATE_MATCH=True SHA256=ab2b791ed4a41321c0f7ea245e0a0abd863c68b01dc5f0626a24d72af0e87d69
+PATCH_PROBE_OK=True
+PATCH_PROBE_DIR=research/phase2-codex-media/functional-operation9-persistence-recovery-final/evidence/patch-probe-20260817010326

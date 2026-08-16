@@ -1,0 +1,4 @@
+﻿SNAPSHOT_ZIP=E:\deepseek_harness\research\phase2-codex-media\functional-operation9-persistence-recovery-final\artifacts\current-profile-plugin-snapshot.zip
+SNAPSHOT_BYTES=35977
+SNAPSHOT_SHA256=b32dc06d8d64aebe6bcf02e7899215b51c5e4112034f289a1051c79fb15583d7
+SNAPSHOT_BUILD_OK=true

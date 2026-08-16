@@ -1,0 +1,4 @@
+﻿STATE_ROLLBACK_SHA256=d8aa9c31193f3e574fac239f73761f08487a7b5b7c054cd8235d8453955cfe4a
+STATE_ROLLBACK_OK=true
+STATE_ROLLBACK_EXIT=0
+STATE_ROLLBACK_PROBE=E:\deepseek_harness\research\phase2-codex-media\functional-operation9-persistence-recovery-final\evidence\state-rollback-probe-20260817010333\.agent\STATE.json

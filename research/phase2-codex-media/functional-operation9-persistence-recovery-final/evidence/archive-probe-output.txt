@@ -1,0 +1,4 @@
+﻿ARCHIVE_SHA256=b32dc06d8d64aebe6bcf02e7899215b51c5e4112034f289a1051c79fb15583d7
+ARCHIVE_PLUGIN_FILES=11
+ARCHIVE_REOPEN_OK=True
+ARCHIVE_PROBE_DIR=E:\deepseek_harness\research\phase2-codex-media\functional-operation9-persistence-recovery-final\evidence\archive-probe-20260817010221
