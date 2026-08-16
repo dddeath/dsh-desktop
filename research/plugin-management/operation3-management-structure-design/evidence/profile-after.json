@@ -1,0 +1,30 @@
+﻿{
+    "capturedAt":  "2026-08-17T02:14:35.5929664+08:00",
+    "profile":  "web",
+    "files":  [
+                  {
+                      "file":  "C:\\Users\\19739\\.dsh\\profiles\\web\\package.json",
+                      "bytes":  1516,
+                      "lastWrite":  "2026-08-17T01:45:45.3789271+08:00",
+                      "sha256":  "35f6c56ed0f296f4d74d2d6392342cb005eb17f0dd13998cbd732f49623d663c"
+                  },
+                  {
+                      "file":  "C:\\Users\\19739\\.dsh\\profiles\\web\\pnpm-lock.yaml",
+                      "bytes":  29727,
+                      "lastWrite":  "2026-08-17T01:45:45.1487048+08:00",
+                      "sha256":  "ed0ec1581354108ea8313fc9e3a9c5902294c2bf1c0d37c7f2ff5e553ab61bdf"
+                  },
+                  {
+                      "file":  "C:\\Users\\19739\\.dsh\\profiles\\web\\cordis.yml",
+                      "bytes":  223,
+                      "lastWrite":  "2026-08-17T01:33:56.3446199+08:00",
+                      "sha256":  "c300dcf2ebc5f02062d6591268d29d3db6fe45e0cb138f5467276fe2ba06076e"
+                  },
+                  {
+                      "file":  "C:\\Users\\19739\\.dsh\\profiles\\web\\cordis.patch.yml",
+                      "bytes":  255,
+                      "lastWrite":  "2026-08-16T05:45:51.8459792+08:00",
+                      "sha256":  "9374d4607541e9fddfccc1b0b2e841ba10ca2d595d9b0c7aa3b53844fe23a5c8"
+                  }
+              ]
+}

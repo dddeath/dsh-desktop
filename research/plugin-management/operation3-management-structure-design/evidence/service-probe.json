@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-08-16T18:13:29.255Z",
+  "rows": [
+    {
+      "path": "/",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "keys": []
+    },
+    {
+      "path": "/dsh-market/installed",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "keys": [
+        "profile",
+        "installed",
+        "live"
+      ],
+      "installedCount": 15
+    },
+    {
+      "path": "/dsh-market/status",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "keys": [
+        "active",
+        "target",
+        "seconds",
+        "lastLine",
+        "pnpm",
+        "boot",
+        "installed"
+      ],
+      "installedCount": 15,
+      "boot": "46316-1786901638013"
+    },
+    {
+      "path": "/dsh-market/updates",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "keys": [
+        "updates"
+      ],
+      "updateCount": 4
+    },
+    {
+      "path": "/__dsh-desktop-ui-compat/agent-tools",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "keys": [
+        "revision",
+        "tools"
+      ],
+      "toolCount": 5
+    }
+  ]
+}

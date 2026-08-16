@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "decision": "dedicated-local-plugin-reusing-existing-services",
+  "proposedPackage": {
+    "name": "dsh-plugin-control-center",
+    "location": "E:/deepseek_harness/plugins/plugin-control-center",
+    "profileSpec": "link:E:/deepseek_harness/plugins/plugin-control-center",
+    "bundlePosition": "immediately-after-dshmarket"
+  },
+  "placement": {
+    "settingsSection": "plugins",
+    "slot": "settings.plugins.tab",
+    "id": "manage",
+    "order": 20,
+    "labelZh": "管理中心",
+    "existingTabsPreserved": ["configurable", "all"],
+    "marketSectionPreserved": true
+  },
+  "dataSources": [
+    {
+      "source": "remote.pluginInventory.list",
+      "purpose": "Loader entry id, module name, effective enabled state and fiber phase",
+      "write": false
+    },
+    {
+      "source": "/dsh-market/installed",
+      "purpose": "Profile dependency specs and hot-mounted entries",
+      "write": false
+    },
+    {
+      "source": "/dsh-market/status",
+      "purpose": "Package operation progress, pnpm readiness and boot identity",
+      "write": false
+    },
+    {
+      "source": "/dsh-market/updates",
+      "purpose": "Installed/current/latest versions, source kind and update availability",
+      "write": false
+    },
+    {
+      "source": "dsh-plugin-control-center policy catalog",
+      "purpose": "Responsibility group, sensitivity, recommendation and protected status",
+      "write": false
+    },
+    {
+      "source": "profile package/lock/overlay hashes",
+      "purpose": "Pending-restart drift, recovery snapshot and last validation",
+      "write": false
+    }
+  ],
+  "statusVocabulary": [
+    "running",
+    "installed-disabled",
+    "dependency-only",
+    "local-link",
+    "failed",
+    "pending-restart",
+    "unknown"
+  ],
+  "groups": [
+    "UI/core",
+    "UI/skin",
+    "model/vision",
+    "tools",
+    "workspace",
+    "conversation/observability",
+    "market/discovery",
+    "desktop-pet",
+    "system-support",
+    "dependency/meta"
+  ],
+  "sensitivityLevels": ["low", "medium", "high"],
+  "cardFields": [
+    "name",
+    "version",
+    "source",
+    "runtimeStatus",
+    "group",
+    "sensitiveCapabilities",
+    "restartRequirement",
+    "versionLock",
+    "availableUpdate",
+    "health",
+    "lastVerifiedAt",
+    "recommendation"
+  ],
+  "actionPolicy": {
+    "readOnly": ["refresh", "health-check", "check-updates", "export-log"],
+    "confirmOnce": ["switch-skin", "stage-enable", "stage-disable"],
+    "typedConfirmation": ["update", "remove", "restore"],
+    "singleActionOnly": true,
+    "updateAll": false,
+    "backupBeforeWrite": true,
+    "postActionHealthCheck": true,
+    "profileRestartNeverAutomatic": true
+  },
+  "protectedPackages": [
+    {
+      "name": "dsh-plugin-control-center",
+      "reason": "owns the management and recovery surface"
+    },
+    {
+      "name": "dshmarket",
+      "reason": "owns package actions reused by the management surface"
+    },
+    {
+      "name": "dsh-desktop-ui-compat",
+      "reason": "accepted cross-theme UI core"
+    },
+    {
+      "name": "dsh-codex-tools",
+      "reason": "accepted Phase 2 tool chain; remains commit-pinned"
+    }
+  ],
+  "restartPolicy": {
+    "liveSkinSwitch": "no restart when dshmarket reports activation success",
+    "hotInstallOrRemove": "follow dshmarket hot result",
+    "update": "restart required",
+    "genericEnableDisable": "restart required",
+    "profileRestore": "restart required",
+    "restartAction": "shown as a manual instruction in Operation 3"
+  },
+  "responsive": {
+    "wide": "two-column cards",
+    "narrow": "single-column cards",
+    "details": "inline expansion; no fixed-height nested scroller",
+    "theme": "semantic tokens only; no skin selectors or text effects"
+  },
+  "operation3Scope": {
+    "implement": [
+      "management tab",
+      "aggregated read-only snapshot",
+      "filters and expandable cards",
+      "health and update checks",
+      "guarded action dialogs",
+      "backup and restore entry points"
+    ],
+    "deferToOperation4": [
+      "real profile enable/disable drill",
+      "real plugin update drill",
+      "real restore drill"
+    ],
+    "excluded": [
+      "dshmarket upgrade",
+      "bulk update",
+      "automatic Harness restart",
+      "editing external node_modules packages"
+    ]
+  }
+}

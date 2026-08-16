@@ -1,0 +1,7 @@
+﻿PROBE=C:\Users\19739\AppData\Local\Temp\dsh-phase3-op2-final-20260817021546307
+OUTPUT=RESTORED_STATE=C:\Users\19739\AppData\Local\Temp\dsh-phase3-op2-final-20260817021546307\.agent\STATE.json
+OUTPUT=REMOVED_OPERATION=C:\Users\19739\AppData\Local\Temp\dsh-phase3-op2-final-20260817021546307\research\plugin-management\operation3-management-structure-design
+OUTPUT=ROLLBACK_OK=true
+ROLLBACK_EXIT=0
+ROLLBACK_STATE_MATCH_EXIT=0
+OPERATION_REMOVED=True
