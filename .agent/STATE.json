@@ -1,21 +1,21 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-16T13:17:00+00:00",
+  "updated_at": "2026-08-16T13:36:33.429524+00:00",
   "status": "in_progress",
   "current_phase": "P2",
-  "latest_result": "dsh-codex-tools 1.0.1 installed from pinned commit; machine gates passed; runtime restart/manual gate B pending",
-  "next_action": "User restarts Harness and confirms plugin/tool visibility, then run one real image_vision test",
+  "latest_result": "dsh-codex-tools is loaded in new Harness PID 43744; EADDRINUSE recovered; desktop restart now awaits taskkill and enforces port release",
+  "next_action": "User fully closes and reopens the desktop app, then confirms dsh-codex-tools 1.0.1 and image_vision/image_gen visibility",
   "blockers": [
     "manual_gate_b_pending"
   ],
   "state_dir": "E:\\deepseek_harness\\.agent",
   "last_verification": {
-    "kind": "plugin_install_machine_gate",
+    "kind": "harness_restart_recovery",
     "phase": "P2-operation2",
     "passed": true,
-    "runtime_reload_confirmed": false,
-    "completed_at": "2026-08-16T13:17:00+00:00",
-    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\evidence\\verification-result.json"
+    "runtime_reload_confirmed": true,
+    "completed_at": "2026-08-16T21:36:33.422554+08:00",
+    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\evidence\\result.json"
   },
   "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
   "phase2_baseline_verification": {
@@ -114,10 +114,22 @@
     ],
     "http_status": 200,
     "machine_gate_passed": true,
-    "runtime_reload_confirmed": false,
+    "runtime_reload_confirmed": true,
     "manual_gate": "B",
     "manual_gate_status": "pending",
     "verification_record": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\verification-install.md",
-    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\rollback.ps1"
+    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\rollback.ps1",
+    "live_pid": 43744,
+    "restart_recovery": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\verification-restart.md"
+  },
+  "phase2_restart_recovery": {
+    "reported_error": "EADDRINUSE 127.0.0.1:3080",
+    "old_pid": 19300,
+    "new_pid": 43744,
+    "http_status": 200,
+    "source_file": "E:\\deepseek_harness\\desktop\\main.js",
+    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\verification-restart.md",
+    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\rollback.ps1",
+    "passed": true
   }
 }

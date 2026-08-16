@@ -175,6 +175,10 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "E:\deepseek_harness\res
 
 ## 5. 人工验收 B
 
+补充状态：首次人工重启暴露旧实例未及时退出导致的 `EADDRINUSE`。已定向停止旧 PID `19300`，新 Harness PID `43744` 已在安装后配置上启动，HTTP 返回 `200`，因此运行时重载现已确认。桌面端重启控制流修复记录见：
+
+`E:\deepseek_harness\research\phase2-codex-media\operation2-restart-recovery\verification-restart.md`
+
 1. 在“桌面运行状态”中点击“重启 Harness”。
 2. 等状态恢复为“运行正常”。
 3. 打开“设置 → 插件”，确认出现 `dsh-codex-tools` / `1.0.1`。

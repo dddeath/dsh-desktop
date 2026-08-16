@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "harness_restart_eaddrinuse_recovery",
+  "completed_at": "2026-08-16T21:36:33.422554+08:00",
+  "reported_error": "EADDRINUSE 127.0.0.1:3080",
+  "old_pid": 19300,
+  "termination_exit": 0,
+  "new_pid": 43744,
+  "new_command": "dsh web --port 3080",
+  "http_status": 200,
+  "plugin_config": "tool-codex-tools / dsh-codex-tools",
+  "runtime_reload_confirmed": true,
+  "source_fix": {
+    "file": "E:\\deepseek_harness\\desktop\\main.js",
+    "branch": "restartHarness process termination and port-free guard",
+    "syntax_exit": 0,
+    "control_flow_probe_exit": 0
+  },
+  "roles": {
+    "modified_artifact": {
+      "path": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\modified\\desktop-main.js",
+      "sha256": "761EEA114638EDDCFBF311EA220DE1121355D3BDD8D302F41390F70A43288FA2"
+    },
+    "patch": {
+      "path": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\desktop-main.patch",
+      "sha256": "6869390C1DDB865002F5C390C007D6347888CC4AC6240437382F340CD66A272E"
+    },
+    "verification_record": {
+      "path": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\verification-restart.md",
+      "sha256": "EDFBFC306C0DAB9A2DA13D569D5CC881D0EFE7AB85BEBB33253B14DF50329501"
+    },
+    "rollback": {
+      "path": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\rollback.ps1",
+      "sha256": "0B9DDF5222361FF7031B043D6832CF827CB4EC03D254331C7BC82515438463C3",
+      "isolation_exit": 0
+    }
+  },
+  "manual_gate": "B",
+  "manual_gate_status": "pending"
+}

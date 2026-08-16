@@ -190,42 +190,14 @@ function spawnAndWait(port) {
   });
 }
 
-function terminateProcessTree(pid) {
-  if (!pid) return Promise.resolve({ pid, code: 0, detail: "no process" });
-  if (process.platform !== "win32") {
-    try {
-      process.kill(pid, "SIGTERM");
-      return Promise.resolve({ pid, code: 0, detail: "SIGTERM sent" });
-    } catch (err) {
-      return Promise.resolve({ pid, code: null, detail: err.message });
-    }
-  }
-  return new Promise((resolve) => {
-    const killer = spawn("taskkill", ["/pid", String(pid), "/T", "/F"], {
-      windowsHide: true,
-      stdio: ["ignore", "pipe", "pipe"],
-    });
-    let stdout = "";
-    let stderr = "";
-    killer.stdout.on("data", (chunk) => { stdout += chunk.toString(); });
-    killer.stderr.on("data", (chunk) => { stderr += chunk.toString(); });
-    killer.on("error", (err) => resolve({ pid, code: null, detail: err.message }));
-    killer.on("close", (code) => resolve({
-      pid,
-      code,
-      detail: (stderr || stdout).trim(),
-    }));
-  });
-}
-
-async function killChild() {
-  if (!child) return null;
-  const pid = child.pid;
+function killChild() {
+  if (!child) return;
+  log("stopping dsh web");
+  try {
+    if (process.platform === "win32") spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"], { windowsHide: true });
+    else child.kill("SIGTERM");
+  } catch { /* already gone */ }
   child = null;
-  log(`stopping managed dsh web pid ${pid}`);
-  const result = await terminateProcessTree(pid);
-  if (result.code !== 0) log(`managed dsh stop result for pid ${pid}:`, result.detail || result.code);
-  return result;
 }
 
 /**
@@ -360,24 +332,19 @@ async function restartHarness() {
   await setRestartPhase("backup", { sessionQuiet: quiet });
   const backupPath = backupSessions();
   await setRestartPhase("stopping", { sessionQuiet: quiet, backupPath });
-  const stopResults = [];
-  const managedStop = await killChild();
-  if (managedStop) stopResults.push(managedStop);
+  killChild();
   if (attached) {
     const pids = await findDshWebPids();
     log(`stopping external dsh web pids: ${pids.join(", ") || "none"}`);
     for (const pid of pids) {
-      stopResults.push(await terminateProcessTree(pid));
+      if (process.platform === "win32") spawn("taskkill", ["/pid", String(pid), "/T", "/F"], { windowsHide: true });
+      else try { process.kill(pid, "SIGTERM"); } catch { /* gone */ }
     }
   }
   attached = false;
   await setRestartPhase("reconnecting", { mode: "managed", sessionQuiet: quiet, backupPath });
-  const portFreed = await waitPortFree(DEFAULT_PORT);
+  await waitPortFree(DEFAULT_PORT);
   try {
-    if (!portFreed) {
-      const detail = stopResults.map((item) => `pid ${item.pid}: ${item.code ?? "error"} ${item.detail || ""}`.trim()).join("; ");
-      throw new Error(`port ${DEFAULT_PORT} is still in use after stopping dsh web${detail ? ` (${detail})` : ""}`);
-    }
     const url = await spawnAndWait(DEFAULT_PORT);
     restartPhase = "ready";
     if (mainWindow && !mainWindow.isDestroyed()) loadGui(url);
@@ -568,7 +535,7 @@ if (!gotLock) {
       // Best effort: give the session log up to 3s to settle before the kill
       // (dsh session logs are zstd frames; a mid-write kill can tear one).
       waitSessionQuiescence(3000, 800);
-      void killChild();
+      killChild();
     }
   });
 }

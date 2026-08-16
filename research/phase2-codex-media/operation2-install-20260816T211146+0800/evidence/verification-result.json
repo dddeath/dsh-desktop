@@ -18,7 +18,7 @@
   "http_status": 200,
   "http_exit": 0,
   "machine_gate_passed": true,
-  "runtime_reload_confirmed": false,
+  "runtime_reload_confirmed": true,
   "manual_gate": "B",
   "manual_gate_status": "pending",
   "roles": {
@@ -44,12 +44,15 @@
     },
     "verification_record": {
       "path": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\verification-install.md",
-      "sha256": "F8CC4BBEE5BAA3B3A364FD1145BF635C6E241535A544DA20568412AB3347C5EB"
+      "sha256": "0428EEA4B04FD21DC078B3133169828A329615D7A263A0E762659F9FF1ED815B"
     },
     "rollback": {
       "path": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\rollback.ps1",
       "sha256": "A6506F1F0B772A6B6BA53D0ED7691F2079A33593068DDCA72E9D2CB3FB7BBC97",
       "isolation_exit": 0
     }
-  }
+  },
+  "runtime_reload_confirmed_at": "2026-08-16T21:36:33.422554+08:00",
+  "live_pid": 43744,
+  "restart_recovery": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\verification-restart.md"
 }

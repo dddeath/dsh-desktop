@@ -1,0 +1,8 @@
+START_COMMAND=C:\Users\19739\AppData\Roaming\npm\dsh.cmd web --port 3080
+START_OUTPUT=dsh web: http://127.0.0.1:3080
+START_SESSION=95956
+NEW_PID=43744
+NEW_COMMAND="node" "C:\Users\19739\AppData\Roaming\npm\node_modules\@deepseek-ai\dsh\lib\bin.js" web --port 3080
+HTTP_STATUS=200
+PLUGIN_CONFIG=tool-codex-tools / dsh-codex-tools
+START_EXIT=running

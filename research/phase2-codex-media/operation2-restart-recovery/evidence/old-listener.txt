@@ -1,0 +1,7 @@
+REPORTED_ERROR=EADDRINUSE
+ADDRESS=127.0.0.1:3080
+OLD_PID=19300
+OLD_COMMAND="node" "C:\Users\19739\AppData\Roaming\npm\node_modules\@deepseek-ai\dsh\lib\bin.js" web --port 3080
+TERMINATION_COMMAND=taskkill.exe /PID 19300 /T /F
+TERMINATION_OUTPUT=SUCCESS: The process with PID 19300 (child process of PID 47340) has been terminated.
+TERMINATION_EXIT=0

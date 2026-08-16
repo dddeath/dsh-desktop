@@ -1,0 +1,5 @@
+{
+    "ok":  true,
+    "target":  "C:\\Users\\19739\\AppData\\Local\\Temp\\dsh-desktop-restart-rollback-b49cde42b37442aaad58501dc62ad52c.js",
+    "restored_sha256":  "EF24E438D24A14978D77767957A69018C605944CD20D004511C706FE48FE7373"
+}
