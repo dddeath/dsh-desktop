@@ -1,0 +1,10 @@
+﻿SOURCE=E:\deepseek_harness\research\phase2-codex-media\functional-operation8-desktop-icon-update\source\1786892171127.png
+SOURCE_SIZE=1254x1254
+PNG_OUT=E:\deepseek_harness\desktop\assets\icon.png
+PNG_SIZE=256x256
+PNG_SHA256=408b1d493f8faad7651b784340c11c85a3d703c006efadfec7bee433ce5227db
+ICO_OUT=E:\deepseek_harness\desktop\assets\icon.ico
+ICO_SIZES=16x16,24x24,32x32,48x48,64x64,128x128,256x256
+ICO_SHA256=c8373cffbc401eb3853414afba3e0baa8dd699301bb5ab53540ea2231f5334ac
+ICON_BUILD_OK=true
+ICON_BUILD_EXIT=0

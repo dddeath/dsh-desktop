@@ -1,0 +1,8 @@
+﻿ROLLBACK_ROLE=icon-png PATH=E:\deepseek_harness\research\phase2-codex-media\functional-operation8-desktop-icon-update\evidence\rollback-probe-20260817004936\desktop\assets\icon.png SHA256=4410c056f635b5f640cf74ce57c94b993516a34da2eced9938192acd4c473035
+ROLLBACK_ROLE=icon-ico PATH=E:\deepseek_harness\research\phase2-codex-media\functional-operation8-desktop-icon-update\evidence\rollback-probe-20260817004936\desktop\assets\icon.ico SHA256=ece5e0f0af2c5d6544e9745a1dc985e6cebf0ef2b30b9b99af0060e0c040e825
+ROLLBACK_ROLE=state PATH=E:\deepseek_harness\research\phase2-codex-media\functional-operation8-desktop-icon-update\evidence\rollback-probe-20260817004936\.agent\STATE.json SHA256=a4a4b1662fcae9aa30080a4c984538076279e37c908c66875ed5a9e70f736101
+REBUILD_PERFORMED=False
+RESTART_REQUIRED=true
+ROLLBACK_OK=true
+ROLLBACK_SCRIPT_EXIT=0
+ROLLBACK_PROBE_DIR=E:\deepseek_harness\research\phase2-codex-media\functional-operation8-desktop-icon-update\evidence\rollback-probe-20260817004936

@@ -1,0 +1,7 @@
+﻿PATCH_CHECK_EXIT=0
+PATCH_APPLY_EXIT=0
+PATCH_MATCH_icon-png=True SHA256=408b1d493f8faad7651b784340c11c85a3d703c006efadfec7bee433ce5227db
+PATCH_MATCH_icon-ico=True SHA256=c8373cffbc401eb3853414afba3e0baa8dd699301bb5ab53540ea2231f5334ac
+PATCH_MATCH_state=True SHA256=d8aa9c31193f3e574fac239f73761f08487a7b5b7c054cd8235d8453955cfe4a
+PATCH_PROBE_OK=True
+PATCH_PROBE_DIR=research/phase2-codex-media/functional-operation8-desktop-icon-update/evidence/patch-probe-20260817004919

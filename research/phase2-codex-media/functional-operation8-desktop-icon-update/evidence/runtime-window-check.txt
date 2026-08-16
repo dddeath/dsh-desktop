@@ -1,0 +1,6 @@
+﻿WINDOW_TITLE=深海女仆工坊 · DeepSeek Harness
+WINDOW_APP=process:E:\deepseek_harness\desktop\dist-status\win-unpacked\DeepSeek Harness Desktop.exe
+WINDOW_ID=116460522
+COMPUTER_USE_WINDOW_CHECK=true
+RUNNING_PROCESS_COUNT=4
+HTTP_STATUS=200
