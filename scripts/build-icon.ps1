@@ -1,6 +1,6 @@
 # Build the app icon: crop the whale-girl (DeepSeek mascot) idle sprite frame,
-# trim transparent margins, composite over a DeepSeek-blue rounded tile,
-# then emit icon.png (256) + a multi-size icon.ico (256/128/64/48/32/16).
+# trim transparent margins, then emit the character on a TRANSPARENT background
+# as icon.png (256) + a multi-size icon.ico (256/128/64/48/32/16).
 Add-Type -AssemblyName System.Drawing
 
 $ErrorActionPreference = 'Stop'
@@ -44,34 +44,9 @@ function New-IconBase([int]$size) {
   $g.SmoothingMode = 'AntiAlias'
   $g.InterpolationMode = 'HighQualityBicubic'
   $g.PixelOffsetMode = 'HighQuality'
-  # rounded-rect clip
-  $r = [Math]::Max(4, [int]($size * 0.20))
-  $path = New-Object System.Drawing.Drawing2D.GraphicsPath
-  $d = 2 * $r
-  $path.AddArc(0, 0, $d, $d, 180, 90)
-  $path.AddArc($size - $d, 0, $d, $d, 270, 90)
-  $path.AddArc($size - $d, $size - $d, $d, $d, 0, 90)
-  $path.AddArc(0, $size - $d, $d, $d, 90, 90)
-  $path.CloseFigure()
-  $g.SetClip($path)
-  # DeepSeek-blue gradient
-  $full = [System.Drawing.Rectangle]::new(0, 0, $size, $size)
-  $c0 = [System.Drawing.Color]::FromArgb(78, 114, 250)   # #4E72FA
-  $c1 = [System.Drawing.Color]::FromArgb(24, 42, 120)    # #182A78
-  $br = New-Object System.Drawing.Drawing2D.LinearGradientBrush($full, $c0, $c1, 70.0)
-  $g.FillRectangle($br, $full)
-  $br.Dispose()
-  # soft radial glow behind the character
-  $glow = New-Object System.Drawing.Drawing2D.GraphicsPath
-  $gr = $size * 0.42
-  $glow.AddEllipse($size/2 - $gr, $size/2 - $gr, 2*$gr, 2*$gr)
-  $pbg = New-Object System.Drawing.Drawing2D.PathGradientBrush($glow)
-  $pbg.CenterColor = [System.Drawing.Color]::FromArgb(90, 255, 255, 255)
-  $pbg.SurroundColors = @([System.Drawing.Color]::FromArgb(0, 255, 255, 255))
-  $g.FillPath($pbg, $glow)
-  $pbg.Dispose(); $glow.Dispose()
-  # draw character centered, fit within ~80% of the tile
-  $target = $size * 0.80
+  $g.Clear([System.Drawing.Color]::Transparent)
+  # draw the character centered on a transparent canvas, fit within ~92%
+  $target = $size * 0.92
   $scale = [Math]::Min($target / $char.Width, $target / $char.Height)
   $w = [int]($char.Width * $scale); $h = [int]($char.Height * $scale)
   $x = [int](($size - $w) / 2); $y = [int](($size - $h) / 2)
