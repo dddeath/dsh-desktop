@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "current_phase": "P1",
+  "current_phase": "P2",
   "phases": [
     {
       "id": "P1",
       "name": "阶段 1：桌面 UI 优化与验收",
-      "status": "in_progress",
+      "status": "completed",
       "inputs": [
         "research/ui-audit/phase1-completion/verification-phase1-ui.txt",
         "user acceptance feedback"
@@ -15,8 +15,8 @@
         "完成 Composer、设置中心、响应式三栏和右侧栏拖拽同步",
         "完成桌面运行状态与安全重启入口，并移除运行状态文字特效",
         "保存补丁、验证记录、验收图和可执行回滚",
-        "?? whale-girl ????? opacity:0.25 ????",
-        "?? Composer ?????? ::before ?????????????"
+        "修复 whale-girl 桌宠被内联 opacity:0.25 半透明化",
+        "禁用 Composer 运行态对上游 ::before 装饰层的复用，消除白色遮挡"
       ],
       "acceptance": [
         "生产脚本通过 node --check",
@@ -25,19 +25,19 @@
         "HTTP 入口返回 200",
         "补丁重放、压缩包重开与隔离回滚均通过",
         "用户已验收阶段 1 UI",
-        "???? opacity ? --pet-opacity ????? 1?",
-        "running ??? Composer ::before ? content:none?display:none ??????"
+        "桌宠计算 opacity 与 --pet-opacity 一致（当前 1）",
+        "running 状态下 Composer ::before 为 content:none、display:none 且无表面尺寸"
       ],
       "rollback_point": "e9ce9e447ea20f6a9c981191da6fe3ee438baa34",
       "requires_verification": true,
       "completion_evidence": "research/ui-audit/phase1-completion/verification-phase1-ui.txt",
-      "requires_user_acceptance": true,
+      "requires_user_acceptance": false,
       "regression_evidence": "research/ui-audit/phase1-regression-pet-composer/verification-pet-composer-regression.txt"
     },
     {
       "id": "P2",
       "name": "阶段 2：Codex 额度视觉识别与图片生成插件入口",
-      "status": "pending",
+      "status": "in_progress",
       "inputs": [
         "research/plugins.json",
         "当前 web profile 插件清单",
@@ -60,7 +60,21 @@
         "卸载/回滚脚本通过隔离验证"
       ],
       "rollback_point": "bff5c9a99901e5d9c01f53ec4893542258f1ba56",
-      "requires_verification": true
+      "requires_verification": true,
+      "minimal_self_validation": [
+        "安装或修改命令退出状态为 0",
+        "DSH 可启动且 HTTP 返回 200",
+        "目标插件和 image_vision/image_gen 等价工具已注册",
+        "安装前快照与可执行恢复命令存在"
+      ],
+      "manual_validation": [
+        "人工确认候选插件与授权路径后才安装",
+        "人工确认设置页中的插件状态和工具入口",
+        "由用户本人完成 ChatGPT/Codex OAuth 授权页面确认",
+        "人工提供图片并判断视觉识别是否准确",
+        "人工给出生图提示词并验收真实图片产物",
+        "人工决定是否在当前 web profile 上执行一次真实卸载和恢复"
+      ]
     },
     {
       "id": "P3",
