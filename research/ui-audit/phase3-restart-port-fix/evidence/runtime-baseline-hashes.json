@@ -1,0 +1,14 @@
+[
+    {
+        "Path":  "E:\\deepseek_harness\\desktop\\dist-status\\restart-fix-backup\\DeepSeek Harness Desktop.exe",
+        "Hash":  "7357148432B61CDE8F2EF0E5DA674789EA353E3AF3AFD724E3E80FB75AACA408"
+    },
+    {
+        "Path":  "E:\\deepseek_harness\\desktop\\dist-status\\restart-fix-backup\\resources\\app.asar",
+        "Hash":  "0B7CCED1271DBA9960BA54740EDD4C2758A9E3926F83A61FA77883859180BD4D"
+    },
+    {
+        "Path":  "E:\\deepseek_harness\\desktop\\dist-status\\restart-fix-backup\\DeepSeek-Harness-Desktop-0.1.0-portable.exe",
+        "Hash":  "61AE345F64B484CCCFEE828DBDFD7B0B7184F4BC6FF364109003287D91148EA1"
+    }
+]

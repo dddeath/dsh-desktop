@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-08-16T18:33:35.863Z",
+  "executablePath": "E:\\deepseek_harness\\desktop\\dist-status\\win-unpacked\\DeepSeek Harness Desktop.exe",
+  "windowTitle": "DeepSeek Harness",
+  "beforePid": 43708,
+  "afterPid": 45720,
+  "afterHttpStatus": 200,
+  "success": true,
+  "events": [
+    {
+      "at": "2026-08-16T18:33:29.983Z",
+      "listenerPid": 43708,
+      "httpStatus": 200
+    },
+    {
+      "at": "2026-08-16T18:33:31.733Z",
+      "listenerPid": 0,
+      "httpStatus": 0
+    },
+    {
+      "at": "2026-08-16T18:33:35.863Z",
+      "listenerPid": 45720,
+      "httpStatus": 200
+    }
+  ],
+  "stdout": "[dsh-desktop] attaching to existing DSH Web server on port 3080\n[dsh-desktop] restart requested\n[dsh-desktop] session logs backed up to C:\\Users\\19739\\.dsh\\sessions-backup-2026-08-16T18-33-29-970Z\n[dsh-desktop] stopping external dsh web pids: 43708\n[dsh-desktop] starting: C:\\Program Files\\nodejs\\node.exe C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\lib\\bin.js web --port 3080\n[dsh-desktop] restarted: http://127.0.0.1:3080\n",
+  "stderr": "[30896:0817/023327.923:INFO:CONSOLE:936] \"[dsh-notification] bundle loaded (edge trigger, settings v2)\", source: http://127.0.0.1:3080/plugins/dsh-notification/client.js?rev=db1e9ee79535 (936)\r\n[30896:0817/023328.269:INFO:CONSOLE:514] \"[whale-girl] 状态 idle 缺少可用 sheet（manifest 应含全部 15 状态；若已声明则素材加载失败）\", source: http://127.0.0.1:3080/plugins/whale-girl/client.js?rev=bd4daebd0793 (514)\r\n[30896:0817/023331.142:INFO:CONSOLE:116] \"[web-runtime] connection lost, retry #1\", source: http://127.0.0.1:3080/plugins/@deepseek-ai/dsh-client-connection/client.js?rev=bc3c3fa9d26b (116)\r\n[30896:0817/023333.461:INFO:CONSOLE:116] \"[web-runtime] connection lost, retry #2\", source: http://127.0.0.1:3080/plugins/@deepseek-ai/dsh-client-connection/client.js?rev=bc3c3fa9d26b (116)\r\n[30896:0817/023334.509:INFO:CONSOLE:0] \"EventSource's response has a MIME type (\"text/html\") that is not \"text/event-stream\". Aborting the connection.\", source: http://127.0.0.1:3080/ (0)\r\n[30896:0817/023334.958:INFO:CONSOLE:936] \"[dsh-notification] bundle loaded (edge trigger, settings v2)\", source: http://127.0.0.1:3080/plugins/dsh-notification/client.js?rev=db1e9ee79535 (936)\r\n[30896:0817/023335.192:INFO:CONSOLE:514] \"[whale-girl] 状态 idle 缺少可用 sheet（manifest 应含全部 15 状态；若已声明则素材加载失败）\", source: http://127.0.0.1:3080/plugins/whale-girl/client.js?rev=bd4daebd0793 (514)\r\n"
+}

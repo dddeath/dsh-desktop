@@ -1,0 +1,14 @@
+[
+    {
+        "Path":  "E:\\deepseek_harness\\desktop\\main.js",
+        "Hash":  "9D2DEEAE18702DDCE1569FC680FB602EF343BA51A196D79AFF6FF13E99B9E56B"
+    },
+    {
+        "Path":  "E:\\deepseek_harness\\desktop\\package.json",
+        "Hash":  "D0777FE360A9A1C68E4B71C2B2DEE5434F07B3EFFF982034958CAE23740FA4DE"
+    },
+    {
+        "Path":  "E:\\deepseek_harness\\desktop\\dsh-process.js",
+        "Hash":  "C8EE5D44F3CE57EBCB13C5E2FB380BB6503C34BDAE53B4EBE047D6DFC02C64AB"
+    }
+]

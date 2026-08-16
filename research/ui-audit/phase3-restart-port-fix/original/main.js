@@ -23,7 +23,6 @@ const fs = require("fs");
 const os = require("os");
 const net = require("net");
 const http = require("http");
-const { parseDshWebPids } = require("./dsh-process");
 
 const DEFAULT_PORT = 3080;
 const STARTUP_TIMEOUT_MS = 60000;
@@ -262,29 +261,12 @@ function findDshWebPids() {
     const ps = spawn(
       "powershell",
       ["-NoProfile", "-Command",
-        "Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Select-Object ProcessId,CommandLine | ConvertTo-Json -Compress"],
+        "Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Where-Object { $_.CommandLine -match 'dsh[\\\\/]lib[\\\\/]bin\\.js\"?\\s+web' } | Select-Object -ExpandProperty ProcessId"],
       { windowsHide: true },
     );
     let out = "";
-    let err = "";
     ps.stdout.on("data", (c) => { out += c.toString(); });
-    ps.stderr.on("data", (c) => { err += c.toString(); });
-    ps.on("error", (error) => {
-      log("failed to inspect DSH Web processes:", error.message);
-      resolve([]);
-    });
-    ps.on("close", (code) => {
-      if (code !== 0) {
-        log("failed to inspect DSH Web processes:", err.trim() || `PowerShell exited ${code}`);
-        return resolve([]);
-      }
-      try {
-        resolve(parseDshWebPids(out, process.pid));
-      } catch (error) {
-        log("failed to parse DSH Web process list:", error.message);
-        resolve([]);
-      }
-    });
+    ps.on("close", () => resolve(out.split(/\r?\n/).map((s) => s.trim()).filter((s) => /^\d+$/.test(s)).map(Number).filter((n) => n !== process.pid)));
   });
 }
 

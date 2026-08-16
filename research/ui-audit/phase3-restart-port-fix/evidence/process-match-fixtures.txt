@@ -1,0 +1,6 @@
+FIXTURE=profile-web MATCH=true
+FIXTURE=legacy-web MATCH=true
+FIXTURE=profile-plugin-command MATCH=false
+FIXTURE=unrelated-node MATCH=false
+PARSED_PIDS=4100,4101
+PROCESS_MATCH_OK=true

@@ -1,0 +1,20 @@
+[
+    {
+        "Target":  "E:\\deepseek_harness\\desktop\\dist-status\\win-unpacked\\DeepSeek Harness Desktop.exe",
+        "SourceHash":  "23A8B92DE2093C40EC9EF81223077C805FD28996932EF9FD78362DF153DC277D",
+        "TargetHash":  "23A8B92DE2093C40EC9EF81223077C805FD28996932EF9FD78362DF153DC277D",
+        "Match":  true
+    },
+    {
+        "Target":  "E:\\deepseek_harness\\desktop\\dist-status\\win-unpacked\\resources\\app.asar",
+        "SourceHash":  "C7F32CA8210AAB7B222E3D0468E6316A23496A405336AECF291CBF0CC9BCB035",
+        "TargetHash":  "C7F32CA8210AAB7B222E3D0468E6316A23496A405336AECF291CBF0CC9BCB035",
+        "Match":  true
+    },
+    {
+        "Target":  "E:\\deepseek_harness\\desktop\\dist-status\\DeepSeek-Harness-Desktop-0.1.0-portable.exe",
+        "SourceHash":  "F7880508D3390EDBA7B601AF0DC5CAD50C56E31E9AD2F785943FCA6417F565C6",
+        "TargetHash":  "F7880508D3390EDBA7B601AF0DC5CAD50C56E31E9AD2F785943FCA6417F565C6",
+        "Match":  true
+    }
+]

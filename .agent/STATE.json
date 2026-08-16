@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-17T02:15:12+08:00",
+  "updated_at": "2026-08-17T02:34:03+08:00",
   "status": "awaiting_user_validation",
   "current_phase": "phase3",
-  "latest_result": "Phase 3 operation 2 completed: designed a dedicated local plugin control center that reuses official pluginInventory and dshmarket services; produced a verified 1600x1000 management UI mockup; no live profile action was applied.",
-  "next_action": "Manual gate H: user confirms the management-center placement, service reuse, action protections and proposed modification areas before Phase 3 operation 3 implementation.",
+  "latest_result": "Phase 3 operation 2 remains at Gate H; the desktop restart regression was fixed and verified end-to-end (old DSH PID stopped, port released, fresh PID returned HTTP 200).",
+  "next_action": "User confirms the Restart Harness error no longer appears, then continue Phase 3 Gate H validation without repeating operation 2 analysis.",
   "blockers": [],
   "state_dir": "E:\\deepseek_harness\\.agent",
   "last_verification": {
@@ -548,6 +548,26 @@
       "package_changes_applied": false,
       "verified_at": "2026-08-17T02:15:12+08:00",
       "verification_passed": true
+    },
+    "restart_port_fix": {
+      "status": "verified",
+      "completed_at": "2026-08-17T02:34:03+08:00",
+      "root_cause": "findDshWebPids matched bin.js web but not the active bin.js --profile web launch form",
+      "changed_fields": [
+        "desktop/main.js reads node process metadata as JSON and delegates command classification",
+        "desktop/dsh-process.js recognizes legacy web and terminal --profile web forms while excluding plugin subcommands",
+        "desktop/package.json includes dsh-process.js in the packaged ASAR"
+      ],
+      "end_to_end": {
+        "old_pid": 43708,
+        "port_free_observed": true,
+        "new_pid": 45720,
+        "http_status": 200
+      },
+      "runtime_package_sha256": "F7880508D3390EDBA7B601AF0DC5CAD50C56E31E9AD2F785943FCA6417F565C6",
+      "verification": "E:\\deepseek_harness\\research\\ui-audit\\phase3-restart-port-fix\\verification.md",
+      "patch": "E:\\deepseek_harness\\research\\ui-audit\\phase3-restart-port-fix\\change.patch",
+      "rollback": "E:\\deepseek_harness\\research\\ui-audit\\phase3-restart-port-fix\\rollback.ps1"
     }
   }
 }
