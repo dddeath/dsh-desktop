@@ -75,7 +75,7 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='projectRow'] {
   color: #142044 !important;
 }
 
-/* top bar: ONE consistent SEMI-TRANSPARENT light surface + dark text */
+/* top bar: transparent background (palace art shows through), dark text */
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) .wSkVaW_header,
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='titleRow'],
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='titleCluster'],
@@ -83,7 +83,7 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='crumbs'],
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='headerActions'],
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='headerUtilities'],
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [role='tablist'] {
-  background-color: rgba(238, 242, 250, 0.72) !important;
+  background-color: transparent !important;
   color: #142044 !important;
 }
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='crumb'],
@@ -113,17 +113,18 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sessionLogButton'
   border: 1px solid var(--dsw-alias-border-l2);
 }
 
-/* settings + brand: button frame matching the new-session button (rounded,
-   subtle border + porcelain fill; brand keeps its wordmark but gets a frame) */
-body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='trigger'],
-body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='brand'] {
+/* settings + brand (SIDEBAR ONLY): button frame matching the new-session
+   button. Scoped to the sidebar so the composer's model/reasoning selector
+   triggers (also classed *trigger*) are NOT affected. */
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) :is([data-pane='sidebar'], [class*='sidebarCol']) [class*='trigger'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) :is([data-pane='sidebar'], [class*='sidebarCol']) [class*='brand'] {
   color: #1e2a52 !important;
   border: 1px solid rgba(71, 91, 145, 0.35) !important;
   border-radius: 10px !important;
   background-color: rgba(255, 253, 248, 0.55) !important;
 }
-body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='trigger']:hover,
-body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='brand']:hover {
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) :is([data-pane='sidebar'], [class*='sidebarCol']) [class*='trigger']:hover,
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) :is([data-pane='sidebar'], [class*='sidebarCol']) [class*='brand']:hover {
   background-color: rgba(255, 253, 248, 0.85) !important;
 }
 
