@@ -92,6 +92,12 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='header'] [class*=
   color: #142044 !important;
 }
 
+/* remove the 1px separator line DSH draws under the conversation header
+   (.wSkVaW_header::after) so the top bar and the history read as one surface */
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) .wSkVaW_header::after {
+  display: none !important;
+}
+
 /* tabs: light-blue fill for all, balanced padding, active = deeper + gold border */
 body[data-dsh-maid-atelier] [role='tab'] {
   background-color: #e2e9f7 !important;

@@ -1,0 +1,3 @@
+name: Standard + Bash (Windows)
+description: 官方 Standard 全量配置,并在 Windows 上额外提供 Git Bash 工具(bash -c),与 pwsh 并存。模型可用 bash 语法,无需沙箱(landlock 仅 Linux)。
+order: 6
