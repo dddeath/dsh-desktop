@@ -1,0 +1,34 @@
+﻿{
+    "schema_version":  1,
+    "kind":  "dsh_plugin_install_baseline",
+    "captured_at":  "2026-08-16T21:12:16.0340491+08:00",
+    "profile":  "web",
+    "dsh_version":  "0.1.0-rc.6",
+    "plugin_count":  13,
+    "source":  "github:SPYQWER1/dsh-codex-tools#9519949dd340ff07a7ef8182692704d2487ce690",
+    "http_status":  200,
+    "http_exit":  0,
+    "codex_auth_metadata":  {
+                                "exists":  true,
+                                "path":  "C:\\Users\\19739\\.codex\\auth.json",
+                                "length":  3870,
+                                "last_write_time":  "2026-08-09T10:38:12.6905741+08:00"
+                            },
+    "auth_contents_accessed":  false,
+    "files":  [
+                  {
+                      "name":  "package.json",
+                      "path":  "C:\\Users\\19739\\.dsh\\profiles\\web\\package.json",
+                      "length":  1244,
+                      "sha256":  "661DBCA2ADBC5DCE7ACD32A11EB26FE8307643557392B63182B20A5A6BF02B81"
+                  },
+                  {
+                      "name":  "pnpm-lock.yaml",
+                      "path":  "C:\\Users\\19739\\.dsh\\profiles\\web\\pnpm-lock.yaml",
+                      "length":  28129,
+                      "sha256":  "7A6AF21F6F569E03ED954061EA2BDA1EA7FEE3EBB46326D880E200521BF6CEC1"
+                  }
+              ],
+    "backup_zip":  "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\artifacts\\web-profile-manifests-before.zip",
+    "backup_zip_sha256":  "F75C4D8BE78F0C76EEF1B045EE69CAA33ED974BFAFCC5A21E89CA3D7AFEBB2B5"
+}

@@ -20,7 +20,11 @@
       "tags": 1,
       "license": "MIT",
       "latest_commit": "2026-08-15T21:01:43+08:00|fix: harden image transport paths",
-      "tools": ["image_gen", "image_vision", "web_search"],
+      "tools": [
+        "image_gen",
+        "image_vision",
+        "web_search"
+      ],
       "recommendation": "selected_for_manual_gate_a"
     },
     {
@@ -55,7 +59,9 @@
       "license": "Apache-2.0",
       "latest_commit": "2026-08-16T18:49:47+08:00|docs: add localized README walkthroughs",
       "provider": "openai-codex",
-      "optional_tools": ["view_image"],
+      "optional_tools": [
+        "view_image"
+      ],
       "recommendation": "not_selected_missing_image_generation_tool"
     }
   ],
@@ -83,5 +89,6 @@
   },
   "proposed_install": "$env:PATH = 'C:\\Program Files\\nodejs;' + $env:PATH; & \"$env:APPDATA\\npm\\dsh.cmd\" plugin --profile web add 'github:SPYQWER1/dsh-codex-tools#9519949dd340ff07a7ef8182692704d2487ce690'",
   "manual_gate": "A",
-  "manual_gate_status": "pending"
+  "manual_gate_status": "accepted",
+  "manual_gate_accepted_at": "2026-08-16T21:10:00+08:00"
 }

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "dsh_plugin_install_modified_snapshot",
+  "captured_at": "2026-08-16T21:14:03.8127445+08:00",
+  "profile": "web",
+  "installed_package": "dsh-codex-tools",
+  "installed_version": "1.0.1",
+  "source_head": "9519949dd340ff07a7ef8182692704d2487ce690",
+  "plugin_count": 14,
+  "registered_tools": [
+    "image_gen",
+    "image_vision",
+    "web_search"
+  ],
+  "http_status": 200,
+  "files": [
+    {
+      "name": "package.json",
+      "path": "C:\\Users\\19739\\.dsh\\profiles\\web\\package.json",
+      "length": 1370,
+      "sha256": "765BB02389D2A7DE57C7C6E6CF63AE83049CE85B8F961D4413D3E963FF36A5B6"
+    },
+    {
+      "name": "pnpm-lock.yaml",
+      "path": "C:\\Users\\19739\\.dsh\\profiles\\web\\pnpm-lock.yaml",
+      "length": 29142,
+      "sha256": "886218B682F5EC17FEBCDA476E11DD1686C151745D0CD7BB991CBFAC53C35FC8"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\artifacts\\web-profile-manifests-after.zip",
+      "sha256": "746F62BFE31C0044C80D05D662F2ADEC8B892D40277EC69766A1610ACF319C17"
+    },
+    {
+      "path": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\artifacts\\web-profile-manifests-before.zip",
+      "sha256": "F75C4D8BE78F0C76EEF1B045EE69CAA33ED974BFAFCC5A21E89CA3D7AFEBB2B5"
+    },
+    {
+      "path": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\artifacts\\web-profile-manifests.patch",
+      "sha256": "A5B351033F48991F93AD4C8F7A620B47ABDAB6ACEC38533B306EB47AAE836C50"
+    }
+  ]
+}

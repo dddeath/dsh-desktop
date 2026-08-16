@@ -1,0 +1,9 @@
+{
+    "ok":  true,
+    "profile":  "C:\\Users\\19739\\AppData\\Local\\Temp\\dsh-codex-tools-rollback-probe-230f07207af046ccb3f1b3d23cfaaabc",
+    "package_manager_executed":  false,
+    "restored_hashes":  {
+                            "pnpm-lock.yaml":  "7A6AF21F6F569E03ED954061EA2BDA1EA7FEE3EBB46326D880E200521BF6CEC1",
+                            "package.json":  "661DBCA2ADBC5DCE7ACD32A11EB26FE8307643557392B63182B20A5A6BF02B81"
+                        }
+}

@@ -1,0 +1,41 @@
+{
+  "name": "dsh-profile-web",
+  "private": true,
+  "dependencies": {
+    "@dsh-external/dsh-client-ui-skin-maid-atelier": "github:Small-tailqwq/dsh-deep-whale#path:/maid-atelier",
+    "@liustack/modlens": "^3.16.6",
+    "dsh-at-file": "github:omdsh-dev/dsh-at-file",
+    "dsh-better-sidebar": "^0.12.1",
+    "dsh-client-auto-continue": "^0.4.0",
+    "dsh-codex-tools": "github:SPYQWER1/dsh-codex-tools#9519949dd340ff07a7ef8182692704d2487ce690",
+    "dsh-context": "^0.7.3",
+    "dsh-deep-whale": "github:Small-tailqwq/dsh-deep-whale",
+    "dsh-find-plugin": "^0.3.6",
+    "dsh-maid-atelier-fix": "link:E:/deepseek_harness/themes/maid-atelier-fix",
+    "dsh-notification": "github:omdsh-dev/dsh-notification",
+    "dsh-open-in-vscode": "github:omdsh-dev/dsh-open-in-vscode",
+    "dshmarket": "^1.2.2",
+    "whale-girl": "github:vlln/whale-girl"
+  },
+  "dsh": {
+    "profile": {
+      "bundles": [
+        "@deepseek-ai/dsh-base",
+        "@deepseek-ai/dsh-web-app",
+        "dshmarket",
+        "dsh-find-plugin",
+        "@liustack/modlens",
+        "dsh-at-file",
+        "dsh-better-sidebar",
+        "dsh-client-auto-continue",
+        "dsh-context",
+        "dsh-notification",
+        "dsh-open-in-vscode",
+        "whale-girl",
+        "@dsh-external/dsh-client-ui-skin-maid-atelier",
+        "dsh-maid-atelier-fix",
+        "dsh-codex-tools"
+      ]
+    }
+  }
+}

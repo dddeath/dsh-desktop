@@ -1,20 +1,21 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-16T13:01:58+00:00",
+  "updated_at": "2026-08-16T13:17:00+00:00",
   "status": "in_progress",
   "current_phase": "P2",
-  "latest_result": "Phase 2 operation 1 source audit complete; dsh-codex-tools pinned candidate awaits manual gate A",
-  "next_action": "User confirms dsh-codex-tools and the pinned install command, then snapshot the web profile and install",
+  "latest_result": "dsh-codex-tools 1.0.1 installed from pinned commit; machine gates passed; runtime restart/manual gate B pending",
+  "next_action": "User restarts Harness and confirms plugin/tool visibility, then run one real image_vision test",
   "blockers": [
-    "manual_gate_a_pending"
+    "manual_gate_b_pending"
   ],
   "state_dir": "E:\\deepseek_harness\\.agent",
   "last_verification": {
-    "kind": "candidate_source_audit",
-    "phase": "P2-operation1",
-    "result": "recommendation_ready_with_documented_risks",
-    "completed_at": "2026-08-16T13:01:58+00:00",
-    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation1-source-snapshot.json"
+    "kind": "plugin_install_machine_gate",
+    "phase": "P2-operation2",
+    "passed": true,
+    "runtime_reload_confirmed": false,
+    "completed_at": "2026-08-16T13:17:00+00:00",
+    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\evidence\\verification-result.json"
   },
   "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
   "phase2_baseline_verification": {
@@ -93,7 +94,30 @@
     "repository": "https://github.com/SPYQWER1/dsh-codex-tools",
     "head": "9519949dd340ff07a7ef8182692704d2487ce690",
     "manual_gate": "A",
+    "manual_gate_status": "accepted",
+    "installed": true,
+    "version": "1.0.1"
+  },
+  "phase2_operation2": {
+    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800",
+    "profile": "web",
+    "package": "dsh-codex-tools",
+    "version": "1.0.1",
+    "source_head": "9519949dd340ff07a7ef8182692704d2487ce690",
+    "install_exit": 0,
+    "plugin_count_before": 13,
+    "plugin_count_after": 14,
+    "registered_tools": [
+      "image_gen",
+      "image_vision",
+      "web_search"
+    ],
+    "http_status": 200,
+    "machine_gate_passed": true,
+    "runtime_reload_confirmed": false,
+    "manual_gate": "B",
     "manual_gate_status": "pending",
-    "installed": false
+    "verification_record": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\verification-install.md",
+    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\rollback.ps1"
   }
 }

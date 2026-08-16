@@ -1,0 +1,1 @@
+{"name":"dsh-codex-tools","tools":["image_gen","image_vision","web_search"]}

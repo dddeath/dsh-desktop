@@ -1,0 +1,3 @@
+COMMAND=C:\Users\19739\AppData\Roaming\npm\codex.cmd login status
+OUTPUT=CODEX_CLI_MISSING
+EXIT=127

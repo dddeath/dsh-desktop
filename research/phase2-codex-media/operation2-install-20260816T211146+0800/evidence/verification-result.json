@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "kind": "dsh_plugin_install_verification",
+  "completed_at": "2026-08-16T21:16:10.5213416+08:00",
+  "profile": "web",
+  "package": "dsh-codex-tools",
+  "version": "1.0.1",
+  "source_head": "9519949dd340ff07a7ef8182692704d2487ce690",
+  "install_exit": 0,
+  "plugin_list_exit": 0,
+  "dump_config_exit": 0,
+  "registration_probe_exit": 0,
+  "registered_tools": [
+    "image_gen",
+    "image_vision",
+    "web_search"
+  ],
+  "http_status": 200,
+  "http_exit": 0,
+  "machine_gate_passed": true,
+  "runtime_reload_confirmed": false,
+  "manual_gate": "B",
+  "manual_gate_status": "pending",
+  "roles": {
+    "modified_artifact": {
+      "path": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\artifacts\\web-profile-manifests-after.zip",
+      "sha256": "746F62BFE31C0044C80D05D662F2ADEC8B892D40277EC69766A1610ACF319C17",
+      "entries": [
+        {
+          "entry": "package.json",
+          "length": 1370,
+          "sha256": "765BB02389D2A7DE57C7C6E6CF63AE83049CE85B8F961D4413D3E963FF36A5B6"
+        },
+        {
+          "entry": "pnpm-lock.yaml",
+          "length": 29142,
+          "sha256": "886218B682F5EC17FEBCDA476E11DD1686C151745D0CD7BB991CBFAC53C35FC8"
+        }
+      ]
+    },
+    "patch": {
+      "path": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\artifacts\\web-profile-manifests.patch",
+      "sha256": "A5B351033F48991F93AD4C8F7A620B47ABDAB6ACEC38533B306EB47AAE836C50"
+    },
+    "verification_record": {
+      "path": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\verification-install.md",
+      "sha256": "F8CC4BBEE5BAA3B3A364FD1145BF635C6E241535A544DA20568412AB3347C5EB"
+    },
+    "rollback": {
+      "path": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\rollback.ps1",
+      "sha256": "A6506F1F0B772A6B6BA53D0ED7691F2079A33593068DDCA72E9D2CB3FB7BBC97",
+      "isolation_exit": 0
+    }
+  }
+}
