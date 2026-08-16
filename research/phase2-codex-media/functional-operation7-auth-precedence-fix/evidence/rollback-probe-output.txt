@@ -1,0 +1,10 @@
+﻿ROLLBACK_ROLE=tools PATH=E:\deepseek_harness\research\phase2-codex-media\functional-operation7-auth-precedence-fix\evidence\rollback-probe-20260817000444\plugin\tools.js SHA256=56644ae1a8a872dd10b0425cf237ea63a9d42c3d8dc814be6693927f2e1ba896
+ROLLBACK_ROLE=codex-common PATH=E:\deepseek_harness\research\phase2-codex-media\functional-operation7-auth-precedence-fix\evidence\rollback-probe-20260817000444\plugin\scripts\codex-common.mjs SHA256=6fc5b0594e44bc79aa2df53a91956d257adf03085c3b1e953b82e746a189a9ec
+ROLLBACK_ROLE=codex-imagegen PATH=E:\deepseek_harness\research\phase2-codex-media\functional-operation7-auth-precedence-fix\evidence\rollback-probe-20260817000444\plugin\scripts\codex-imagegen.mjs SHA256=94a08a6875eb2a272e3ddf69c64cd246894285ec93be0cc1bdf8619f0fc4478b
+ROLLBACK_ROLE=codex-vision PATH=E:\deepseek_harness\research\phase2-codex-media\functional-operation7-auth-precedence-fix\evidence\rollback-probe-20260817000444\plugin\scripts\codex-vision.mjs SHA256=b6f42f7019852fd5354ee764c03cfe518a736b951104e23fcd55d79c05a31702
+ROLLBACK_ROLE=codex-search PATH=E:\deepseek_harness\research\phase2-codex-media\functional-operation7-auth-precedence-fix\evidence\rollback-probe-20260817000444\plugin\scripts\codex-search.mjs SHA256=21c1bd2119aaa776b447a56e009e5b1c5c133ce72a2afc4bc9a53abe7436f3ba
+ROLLBACK_ROLE=state PATH=E:\deepseek_harness\research\phase2-codex-media\functional-operation7-auth-precedence-fix\evidence\rollback-probe-20260817000444\.agent\STATE.json SHA256=ff22aa351f8b7c0e53373a872c500db7e7bbb3d66256c880d054d5c1c90973c8
+RESTART_REQUIRED=true
+ROLLBACK_OK=true
+ROLLBACK_SCRIPT_EXIT=0
+ROLLBACK_PROBE_DIR=E:\deepseek_harness\research\phase2-codex-media\functional-operation7-auth-precedence-fix\evidence\rollback-probe-20260817000444

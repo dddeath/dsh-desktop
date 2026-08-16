@@ -1,0 +1,14 @@
+﻿{
+    "backend":  "chatgpt-subscription",
+    "ok":  true,
+    "outputPath":  "output/imagegen/base64-publication-live.png",
+    "absolutePath":  "E:\\deepseek_workspace\\pro1\\output\\imagegen\\base64-publication-live.png",
+    "workspaceRoot":  "E:\\deepseek_workspace\\pro1",
+    "bytes":  990149,
+    "width":  1254,
+    "height":  1254,
+    "sha256":  "031a8bb0cfb6a06f9b6f50e54c3f97ea802a883dc3e13a2b17159410e6a89e3d",
+    "model":  "gpt-5.5",
+    "fileWritten":  true,
+    "livePid":  38708
+}

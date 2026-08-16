@@ -1,0 +1,9 @@
+﻿SESSION_WORKSPACE=C:\Users\19739\AppData\Local\Temp\dsh-codex-tools-publication-4TNyO8
+TRANSFER_MODE=stdout-base64
+STDOUT_MAX_BYTES=33554432
+FINAL_PATH=C:\Users\19739\AppData\Local\Temp\dsh-codex-tools-publication-4TNyO8\output\probe.png
+FINAL_BYTES=68
+FILE_WRITTEN=true
+AUTH_FILE_PRIORITY_FLAG=true
+STAGED_PUBLICATION_TEST=true
+TEST_EXIT=0

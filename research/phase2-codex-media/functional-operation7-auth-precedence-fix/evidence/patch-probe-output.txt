@@ -1,0 +1,10 @@
+﻿PATCH_CHECK_EXIT=0
+PATCH_APPLY_EXIT=0
+PATCH_MATCH_tools=True
+PATCH_MATCH_codex-common=True
+PATCH_MATCH_codex-imagegen=True
+PATCH_MATCH_codex-vision=True
+PATCH_MATCH_codex-search=True
+PATCH_MATCH_STATE=True
+PATCH_PROBE_OK=True
+PATCH_PROBE_DIR=research/phase2-codex-media/functional-operation7-auth-precedence-fix/evidence/patch-probe-20260817000902

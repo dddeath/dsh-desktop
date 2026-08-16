@@ -1,0 +1,400 @@
+diff --git a/tools.js b/tools.js
+index 1fa3459..f5268f6 100644
+--- a/tools.js
++++ b/tools.js
+@@ -8,8 +8,8 @@
+ // import.meta.url, so the package works from any install location.
+ import { fileURLToPath } from 'node:url'
+ import { join } from 'node:path'
+-import { stat } from 'node:fs/promises'
+-import { resolveWorkspacePath } from './scripts/codex-common.mjs'
++import { stat, writeFile } from 'node:fs/promises'
++import { prepareWorkspaceOutput, resolveWorkspacePath, workspaceRelativePath, workspaceRootPath } from './scripts/codex-common.mjs'
+ 
+ const SCRIPTS_DIR = join(fileURLToPath(new URL('.', import.meta.url)), 'scripts')
+ const SCRIPT_CODEX = join(SCRIPTS_DIR, 'codex-imagegen.mjs')
+@@ -53,7 +53,8 @@ export function installImageTools(define, deps, register) {
+   }
+   const safeBackendError = (value) => {
+     const text = typeof value === 'string' ? value : ''
+-    if (/401|auth|token|login|credential/i.test(text)) return 'auth_failed'
++    if (/^(auth_failed|backend_timeout|invalid_path|rate_limited|request_rejected|access_forbidden|service_unavailable|network_error|backend_unavailable)$/.test(text)) return text
++    if (/401|auth_failed|authentication|access token|login|credential/i.test(text)) return 'auth_failed'
+     if (/timeout|timed out|stalled/i.test(text)) return 'backend_timeout'
+     if (/path|file|image|output|workspace|symbolic|exist/i.test(text)) return 'invalid_path'
+     return 'backend_unavailable'
+@@ -68,7 +69,7 @@ export function installImageTools(define, deps, register) {
+   const codexEnv = async (extra) => {
+     const access = await resolveCredential('OPENAI_CODEX_API_KEY')
+     const refresh = await resolveCredential('OPENAI_CODEX_REFRESH_TOKEN')
+-    const env = { ...extra }
++    const env = { CODEX_PREFER_AUTH_FILE: '1', ...extra }
+     if (access && access.value) env.CODEX_ACCESS_TOKEN = access.value
+     if (refresh && refresh.value) env.CODEX_REFRESH_TOKEN = refresh.value
+     return env
+@@ -82,6 +83,7 @@ export function installImageTools(define, deps, register) {
+     const envInput = {
+       CG_PROMPT: prompt,
+       CG_OUT: out,
++      CG_RETURN_BASE64: '1',
+       CG_FORMAT: format,
+       CG_SIZE: size === undefined ? 'auto' : size,
+       CG_MODEL: model === undefined ? 'gpt-5.5' : model,
+@@ -94,6 +96,7 @@ export function installImageTools(define, deps, register) {
+         command: 'node ' + JSON.stringify(shellScriptPath(SCRIPT_CODEX)),
+         env,
+         timeoutMs: 360000,
++        stdoutMaxBytes: 32 * 1024 * 1024,
+         signal,
+       })
+       run = await shell.run(spec)
+@@ -104,7 +107,14 @@ export function installImageTools(define, deps, register) {
+     if (!parsed) {
+       return { ok: false, backend: 'chatgpt-subscription', exitCode: run.exitCode, error: 'backend returned no parseable result' }
+     }
+-    if (parsed.ok === false) return { backend: 'chatgpt-subscription', ok: false, error: safeBackendError(parsed.error) }
++    if (parsed.ok === false) return {
++      backend: 'chatgpt-subscription',
++      ok: false,
++      error: safeBackendError(parsed.error),
++      ...(typeof parsed.detail === 'string' ? { detail: parsed.detail } : {}),
++      ...(typeof parsed.authSource === 'string' ? { authSource: parsed.authSource } : {}),
++      ...(typeof parsed.authPath === 'string' ? { authPath: parsed.authPath } : {}),
++    }
+     return { backend: 'chatgpt-subscription', ...parsed }
+   }
+ 
+@@ -205,6 +215,26 @@ export function installImageTools(define, deps, register) {
+ 
+       const result = await runCodexBackend({ prompt, out, size, format, model, workspaceRoot, signal: exec.signal })
+ 
++      try {
++        if (result.ok) {
++          if (typeof result.imageBase64 !== 'string' || result.imageBase64.length > 32 * 1024 * 1024) {
++            return { backend: 'chatgpt-subscription', ok: false, error: 'backend_unavailable', detail: 'backend returned an invalid image payload' }
++          }
++          const target = prepareWorkspaceOutput(out, 'out', workspaceRoot)
++          const bytes = Buffer.from(result.imageBase64, 'base64')
++          if (!bytes.length || bytes.length > 24 * 1024 * 1024) {
++            return { backend: 'chatgpt-subscription', ok: false, error: 'backend_unavailable', detail: 'decoded image payload is outside the supported size range' }
++          }
++          await writeFile(target, bytes, { flag: 'wx', mode: 0o600 })
++          delete result.imageBase64
++          result.outputPath = workspaceRelativePath(target, workspaceRoot)
++          result.absolutePath = target
++          result.workspaceRoot = workspaceRootPath(workspaceRoot)
++        }
++      } catch (err) {
++        return { backend: 'chatgpt-subscription', ok: false, error: 'invalid_path', detail: String(err?.message || err) }
++      }
++
+       if (result.ok && result.absolutePath) {
+         try {
+           const info = await stat(result.absolutePath)
+diff --git a/scripts/codex-common.mjs b/scripts/codex-common.mjs
+index df31a21..0c687e2 100644
+--- a/scripts/codex-common.mjs
++++ b/scripts/codex-common.mjs
+@@ -160,14 +160,40 @@ export function detectVersion(versionPath = defaultVersionPath()) {
+ export function resolveCodexAuth(env = process.env, authPath = defaultAuthPath(env)) {
+   const auth = readAuthJson(authPath)
+   const tokens = auth.tokens && typeof auth.tokens === 'object' ? auth.tokens : {}
++  const preferAuthFile = env.CODEX_PREFER_AUTH_FILE === '1'
++  const fileAccessToken = tokens.access_token || null
++  const fileRefreshToken = tokens.refresh_token || null
++  const envAccessToken = env.CODEX_ACCESS_TOKEN || null
++  const envRefreshToken = env.CODEX_REFRESH_TOKEN || null
+   return {
+     auth,
+     authPath,
+-    accessToken: env.CODEX_ACCESS_TOKEN || tokens.access_token || null,
+-    refreshToken: env.CODEX_REFRESH_TOKEN || tokens.refresh_token || null,
++    accessToken: preferAuthFile ? fileAccessToken || envAccessToken : envAccessToken || fileAccessToken,
++    refreshToken: preferAuthFile ? fileRefreshToken || envRefreshToken : envRefreshToken || fileRefreshToken,
++    accessSource: preferAuthFile && fileAccessToken ? 'auth-file' : envAccessToken ? 'environment' : fileAccessToken ? 'auth-file' : 'none',
++    refreshSource: preferAuthFile && fileRefreshToken ? 'auth-file' : envRefreshToken ? 'environment' : fileRefreshToken ? 'auth-file' : 'none',
+   }
+ }
+ 
++export function classifyBackendFailure(value) {
++  const text = String(value?.message || value || '')
++  if (/\b401\b|auth_failed|authentication|access token|login|credential/i.test(text)) return 'auth_failed'
++  if (/\b403\b|forbidden/i.test(text)) return 'access_forbidden'
++  if (/\b429\b|rate.?limit/i.test(text)) return 'rate_limited'
++  if (/\b400\b|bad request|invalid request/i.test(text)) return 'request_rejected'
++  if (/\b5\d\d\b|service unavailable|bad gateway/i.test(text)) return 'service_unavailable'
++  if (/timeout|timed out|stalled|abort/i.test(text)) return 'backend_timeout'
++  if (/network|ECONN|ENOTFOUND|EAI_AGAIN|socket/i.test(text)) return 'network_error'
++  return 'backend_unavailable'
++}
++
++export function safeBackendDetail(value) {
++  return String(value?.message || value || 'unknown backend error')
++    .replace(/Bearer\s+[A-Za-z0-9._~-]+/gi, 'Bearer [redacted]')
++    .replace(/[A-Za-z0-9_-]{80,}/g, '[redacted]')
++    .slice(0, 1000)
++}
++
+ // One HTTPS JSON request; resolves { status, body } or rejects with { message }.
+ export function jsonRequest(url, { method = 'POST', headers = {}, body = null, timeoutMs = CONNECT_TIMEOUT_MS } = {}) {
+   return new Promise((resolvePromise, rejectPromise) => {
+@@ -264,9 +290,17 @@ export async function* streamSSE(
+     signal: ac.signal,
+   }, (res) => {
+     if (res.statusCode !== 200) {
+-      res.resume()
++      const errorChunks = []
++      let errorBytes = 0
++      res.on('data', (chunk) => {
++        if (errorBytes >= 4096) return
++        const kept = chunk.subarray(0, 4096 - errorBytes)
++        errorChunks.push(kept)
++        errorBytes += kept.length
++      })
+       res.on('end', () => {
+-        queue.push({ error: new Error(`HTTP ${res.statusCode} from ${url}`) })
++        const detail = Buffer.concat(errorChunks).toString('utf8').replace(/\s+/g, ' ').trim()
++        queue.push({ error: new Error(`HTTP ${res.statusCode} from ${url}${detail ? `: ${detail}` : ''}`) })
+         done = true
+       })
+       return
+diff --git a/scripts/codex-imagegen.mjs b/scripts/codex-imagegen.mjs
+index 9e52376..438d4a5 100644
+--- a/scripts/codex-imagegen.mjs
++++ b/scripts/codex-imagegen.mjs
+@@ -14,6 +14,7 @@
+ //   CG_SIZE          one of the supported dimensions or "auto" (optional)
+ //   CG_FORMAT        png | jpeg | webp (default png)
+ //   CG_MODEL         model id (default gpt-5.5)
++//   CG_RETURN_BASE64 return image bytes to the plugin host for final publication
+ //   CODEX_ACCESS_TOKEN   ChatGPT OAuth access token (optional; falls back to
+ //                        ~/.codex/auth.json)
+ //   CODEX_REFRESH_TOKEN  ChatGPT OAuth refresh token (optional; falls back to
+@@ -31,17 +32,21 @@
+ import {
+   CODEX_RESPONSES_URL,
+   prepareWorkspaceOutput,
++  resolveWorkspacePath,
+   workspaceRootPath,
+   workspaceRelativePath,
+   writeNewWorkspaceFile,
+   defaultAuthPath,
+   readAuthJson,
++  resolveCodexAuth,
+   persistAuth,
+   detectVersion,
+   refreshAccessToken,
+   buildHeaders,
+   streamSSE,
+   safeJson,
++  classifyBackendFailure,
++  safeBackendDetail,
+ } from './codex-common.mjs'
+ 
+ const TOTAL_TIMEOUT_MS = 300_000
+@@ -52,8 +57,8 @@ const ALLOWED_SIZES = new Set(['1024x1024', '1536x1024', '1024x1536', '2048x2048
+ const verbose = process.env.CG_VERBOSE === '1'
+ const log = (msg) => { if (verbose) console.error(msg) }
+ 
+-function die(message) {
+-  console.log(JSON.stringify({ ok: false, error: String(message) }))
++function die(message, extra = {}) {
++  console.log(JSON.stringify({ ok: false, error: String(message), ...extra }))
+   process.exit(1)
+ }
+ 
+@@ -123,17 +128,16 @@ async function main() {
+   if (!/^(png|jpeg|webp)$/.test(format)) die('format must be png, jpeg, or webp')
+   if (!ALLOWED_SIZES.has(size)) die('size must be one of 1024x1024, 1536x1024, 1024x1536, 2048x2048, 2048x1152, auto')
+   if (!model || model.length > 200) die('CG_MODEL must be between 1 and 200 characters')
++  let finalTarget
++  const returnBase64 = process.env.CG_RETURN_BASE64 === '1'
+   try {
+-    prepareWorkspaceOutput(out, 'CG_OUT')
++    finalTarget = returnBase64 ? resolveWorkspacePath(out, 'CG_OUT') : prepareWorkspaceOutput(out, 'CG_OUT')
+   } catch (err) {
+-    die(/already exists/i.test(String(err?.message)) ? 'output_exists' : 'invalid_path')
++    die(/already exists/i.test(String(err?.message)) ? 'output_exists' : 'invalid_path', { detail: safeBackendDetail(err) })
+   }
+ 
+-  const authPath = defaultAuthPath()
+-  const auth = readAuthJson(authPath)
+-  const tokens = auth.tokens && typeof auth.tokens === 'object' ? auth.tokens : {}
+-  let accessToken = process.env.CODEX_ACCESS_TOKEN || tokens.access_token || null
+-  const refreshToken = process.env.CODEX_REFRESH_TOKEN || tokens.refresh_token || null
++  const { authPath, accessToken: selectedAccessToken, refreshToken, accessSource } = resolveCodexAuth()
++  let accessToken = selectedAccessToken
+   if (!accessToken) die('auth_failed')
+ 
+   const version = detectVersion()
+@@ -142,14 +146,17 @@ async function main() {
+   for (let attempt = 1; attempt <= 2; attempt++) {
+     try {
+       const { bytes, revisedPrompt } = await generateOnce(accessToken, version, payload)
+-      const target = prepareWorkspaceOutput(out, 'CG_OUT')
+-      writeNewWorkspaceFile(target, bytes)
++      if (!returnBase64) {
++        const writeTarget = prepareWorkspaceOutput(out, 'CG_OUT')
++        writeNewWorkspaceFile(writeTarget, bytes)
++      }
+       console.log(JSON.stringify({
+         ok: true,
+-        outputPath: workspaceRelativePath(target),
+-        absolutePath: target,
++        outputPath: workspaceRelativePath(finalTarget),
++        absolutePath: finalTarget,
+         workspaceRoot: workspaceRootPath(),
+         bytes: bytes.length,
++        ...(returnBase64 ? { imageBase64: bytes.toString('base64') } : {}),
+         revisedPrompt,
+         model,
+       }))
+@@ -182,7 +189,11 @@ async function main() {
+           die('auth_failed')
+         }
+       }
+-      die(isAuthError ? 'auth_failed' : 'backend_unavailable')
++      die(classifyBackendFailure(err), {
++        detail: safeBackendDetail(err),
++        authSource: accessSource,
++        authPath,
++      })
+     }
+   }
+ }
+diff --git a/scripts/codex-vision.mjs b/scripts/codex-vision.mjs
+index 591ad35..2b9b1d1 100644
+--- a/scripts/codex-vision.mjs
++++ b/scripts/codex-vision.mjs
+@@ -26,6 +26,7 @@ import {
+   workspaceRelativePath,
+   defaultAuthPath,
+   readAuthJson,
++  resolveCodexAuth,
+   persistAuth,
+   detectVersion,
+   refreshAccessToken,
+@@ -140,11 +141,8 @@ async function main() {
+   if (bytes.length > MAX_IMAGE_BYTES) die('image_too_large')
+   const imageDataUrl = `data:${mime};base64,${bytes.toString('base64')}`
+ 
+-  const authPath = defaultAuthPath()
+-  const auth = readAuthJson(authPath)
+-  const tokens = auth.tokens && typeof auth.tokens === 'object' ? auth.tokens : {}
+-  let accessToken = process.env.CODEX_ACCESS_TOKEN || tokens.access_token || null
+-  const refreshToken = process.env.CODEX_REFRESH_TOKEN || tokens.refresh_token || null
++  const { authPath, accessToken: selectedAccessToken, refreshToken } = resolveCodexAuth()
++  let accessToken = selectedAccessToken
+   if (!accessToken) die('auth_failed')
+ 
+   const version = detectVersion()
+diff --git a/scripts/codex-search.mjs b/scripts/codex-search.mjs
+index 4e73967..c08a285 100644
+--- a/scripts/codex-search.mjs
++++ b/scripts/codex-search.mjs
+@@ -14,6 +14,7 @@ import {
+   CODEX_RESPONSES_URL,
+   defaultAuthPath,
+   readAuthJson,
++  resolveCodexAuth,
+   persistAuth,
+   detectVersion,
+   refreshAccessToken,
+@@ -163,11 +164,8 @@ async function main() {
+   const model = String(process.env.CS_MODEL || DEFAULT_MODEL).trim()
+   if (!model || model.length > MAX_MODEL_CHARS) die(`CS_MODEL must be between 1 and ${MAX_MODEL_CHARS} characters`)
+ 
+-  const authPath = defaultAuthPath()
+-  const auth = readAuthJson(authPath)
+-  const tokens = auth.tokens && typeof auth.tokens === 'object' ? auth.tokens : {}
+-  let accessToken = process.env.CODEX_ACCESS_TOKEN || tokens.access_token || null
+-  const refreshToken = process.env.CODEX_REFRESH_TOKEN || tokens.refresh_token || null
++  const { authPath, accessToken: selectedAccessToken, refreshToken } = resolveCodexAuth()
++  let accessToken = selectedAccessToken
+   if (!accessToken) die('auth_failed')
+ 
+   const version = detectVersion()
+diff --git a/.agent/STATE.json b/.agent/STATE.json
+index 30c29f7..0b91abc 100644
+--- a/.agent/STATE.json
++++ b/.agent/STATE.json
+@@ -1,23 +1,24 @@
+ {
+   "schema_version": 1,
+-  "updated_at": "2026-08-16T15:38:18.744Z",
++  "updated_at": "2026-08-16T16:01:58.061Z",
+   "status": "in_progress",
+   "current_phase": "P2",
+-  "latest_result": "ChatGPT subscription image generation recovered and produced a verified PNG inside E:\\deepseek_workspace\\pro1 with absolutePath and workspaceRoot returned.",
+-  "next_action": "User opens or retries image_gen from the pro1 DSH conversation and confirms the displayed absolutePath; no further machine retry is scheduled.",
++  "latest_result": "DSH internal image_gen now transfers generated bytes over bounded stdout and publishes them from the plugin host; live pro1 generation returned ok:true and fileWritten:true at the session workspace path.",
++  "next_action": "User opens E:\\deepseek_workspace\\pro1\\output\\imagegen\\base64-publication-live.png and confirms the internal image generation checkpoint; then continue the next phase 2 item.",
+   "blockers": [
+     "manual_gate_e_internal_image_gen_fix_pending",
+     "manual_gate_composer_permission_sync_pending",
+-    "manual_gate_image_workspace_output_fix_pending"
++    "manual_gate_image_workspace_output_fix_pending",
++    "manual_gate_internal_image_publication_pending"
+   ],
+   "state_dir": "E:\\deepseek_harness\\.agent",
+   "last_verification": {
+-    "kind": "image_backend_recovery",
+-    "phase": "P2-operation6-backend-recovery",
++    "kind": "internal_image_base64_publication",
++    "phase": "P2-operation7-internal-publication",
+     "passed": true,
+     "manual_gate_status": "pending",
+-    "completed_at": "2026-08-16T15:38:18.744Z",
+-    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation6-backend-recovery\\verification.md"
++    "completed_at": "2026-08-16T16:01:58.061Z",
++    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation7-auth-precedence-fix\\verification.md"
+   },
+   "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
+   "phase2_baseline_verification": {
+@@ -362,5 +363,46 @@
+     "manual_gate": "image-backend-recovery",
+     "manual_gate_status": "pending",
+     "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation6-backend-recovery\\verification.md"
++  },
++  "phase2_internal_image_publication_fix": {
++    "phase": "P2-operation7-internal-publication",
++    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation7-auth-precedence-fix",
++    "plugin": "dsh-codex-tools",
++    "version": "1.0.1",
++    "reported_error": "backend_unavailable",
++    "root_causes": [
++      "the tool wrapper collapsed post-generation file publication errors into backend_unavailable",
++      "the DSH shell sandbox denied the image child process from opening both the session workspace and system temporary paths",
++      "DSH credential injection could override the current Codex auth file"
++    ],
++    "changed_fields": [
++      "Codex auth file is preferred for DSH tool calls while DSH credentials remain fallback",
++      "backend failures preserve typed error, safe detail, auth source, and auth path",
++      "image bytes return through a 32 MiB bounded stdout channel instead of child-process file writes",
++      "the in-process plugin host validates, decodes, and atomically creates the final workspace file"
++    ],
++    "transfer_mode": "stdout-base64",
++    "stdout_max_bytes": 33554432,
++    "decoded_max_bytes": 25165824,
++    "live_result": {
++      "backend": "chatgpt-subscription",
++      "ok": true,
++      "outputPath": "output/imagegen/base64-publication-live.png",
++      "absolutePath": "E:\\deepseek_workspace\\pro1\\output\\imagegen\\base64-publication-live.png",
++      "workspaceRoot": "E:\\deepseek_workspace\\pro1",
++      "bytes": 990149,
++      "width": 1254,
++      "height": 1254,
++      "sha256": "031a8bb0cfb6a06f9b6f50e54c3f97ea802a883dc3e13a2b17159410e6a89e3d",
++      "model": "gpt-5.5",
++      "fileWritten": true
++    },
++    "live_pid": 38708,
++    "http_status": 200,
++    "machine_gate_passed": true,
++    "manual_gate": "internal-image-publication",
++    "manual_gate_status": "pending",
++    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation7-auth-precedence-fix\\verification.md",
++    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation7-auth-precedence-fix\\rollback.ps1"
+   }
+ }
