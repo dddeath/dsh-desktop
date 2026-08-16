@@ -56,7 +56,8 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sessionRow'][aria
   color: #ffffff !important;
 }
 /* active workspace folder: navy + white (selected), rest stay dark */
-body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-maid-workspace-active] {
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-maid-workspace-active],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='projectRow'][data-maid-workspace-active] {
   background-color: #33487f !important;
   color: #ffffff !important;
   border-radius: 8px;
@@ -69,7 +70,8 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='folderActive'] {
 /* 工作区 label + workspace folder name: dark */
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='groupSection'],
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sectionHeader'],
-body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sectionLabel'] {
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sectionLabel'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='projectRow'] {
   color: #142044 !important;
 }
 
