@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "project": {
+    "id": "deepseek_harness",
+    "goal": "在保留已验收桌面 UI 的前提下，为 DeepSeek Harness 桌面端实现复用本机 Codex/ChatGPT 登录态与 Pro 账号额度的视觉识别和图片生成工具入口，不使用独立 API Key 计费路径。",
+    "non_goals": [
+      "本阶段不重做已验收的 maid-atelier-fix UI",
+      "本阶段不展开完整插件市场或插件管理中心重构",
+      "不引入独立 OpenAI API Key 计费路径"
+    ],
+    "writable_scope": [
+      "E:\\deepseek_harness",
+      "C:\\Users\\19739\\.dsh"
+    ],
+    "acceptance_criteria": [
+      "阶段 1 UI 源码、验收图、补丁和回滚记录保持可验证",
+      "阶段 2 方案明确复用本机 Codex/ChatGPT OAuth 登录态及 Pro 账号额度",
+      "DeepSeek Harness 对话中出现可调用的 image_vision 与 image_gen 等价工具入口",
+      "使用真实图片输入和真实生成图片完成端到端冒烟验证并保存证据",
+      "插件可卸载，配置可恢复，阶段 1 UI 无回归"
+    ],
+    "consult_before": [
+      "irreversible production change",
+      "destructive data operation",
+      "credential acquisition"
+    ]
+  },
+  "source": {
+    "mode": "local",
+    "path": "E:\\deepseek_harness"
+  },
+  "build_profiles": [
+    {
+      "id": "default",
+      "cwd": "E:\\deepseek_harness",
+      "commands": [
+        "powershell.exe -NoProfile -Command \"& 'C:\\Program Files\\nodejs\\node.exe' --check 'desktop\\main.js'\"",
+        "powershell.exe -NoProfile -Command \"& 'C:\\Program Files\\nodejs\\node.exe' --check 'themes\\maid-atelier-fix\\lib\\client.js'\"",
+        "powershell.exe -NoProfile -Command \"& 'C:\\Program Files\\nodejs\\node.exe' --check 'research\\dom-probe\\verify-runtime-clarity-sidebar-sync.cjs'\"",
+        "powershell.exe -NoProfile -Command \"$r=Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:3080/' -TimeoutSec 10; Write-Output ('HTTP_STATUS=' + [int]$r.StatusCode); if([int]$r.StatusCode -ne 200){exit 1}\""
+      ],
+      "timeout_seconds": 900
+    }
+  ],
+  "dialogue": {
+    "max_blocking_questions": 5,
+    "use_defaults_for_non_blocking": true
+  },
+  "verification": {
+    "stop_on_failure": true
+  },
+  "suggested_commands": [
+    "dsh plugin --profile web list",
+    "dsh plugin --profile web add <selected-codex-plugin>",
+    "dsh plugin --profile web remove <selected-codex-plugin>"
+  ],
+  "last_discovery_at": "2026-08-16T12:29:02+00:00"
+}

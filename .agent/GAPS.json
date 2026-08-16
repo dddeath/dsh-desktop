@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-16T12:29:02+00:00",
+  "confirmed": [
+    {
+      "field": "project.goal",
+      "value": "阶段 1 UI 收尾后进入 Codex 额度视觉识别与图片生成插件阶段",
+      "evidence": "用户当前指令及前序四阶段目标"
+    },
+    {
+      "field": "phase1.acceptance",
+      "value": "accepted",
+      "evidence": "用户已明确验收通过，后续两项修正也有最终 PASS 记录"
+    },
+    {
+      "field": "phase2.billing_constraint",
+      "value": "Codex/ChatGPT OAuth Pro quota; no separate API key",
+      "evidence": "用户原始阶段 3 要求"
+    },
+    {
+      "field": "baseline_commit",
+      "value": "bff5c9a99901e5d9c01f53ec4893542258f1ba56",
+      "evidence": "Phase 1 consolidation commit"
+    }
+  ],
+  "inferred": [
+    {
+      "field": "phase2.preferred_start",
+      "value": "优先审阅 dsh-codex-tools，再与 dsh-plugin-codex 和 dsh-codex-connect 对比",
+      "confidence": "medium",
+      "evidence": "本地更新后的 research/plugins.json 显示 dsh-codex-tools 同时声明 image_gen、image_vision 与 ChatGPT OAuth 复用"
+    }
+  ],
+  "missing_blocking": [],
+  "missing_optional": [
+    {
+      "field": "phase2.selected_plugin",
+      "recommended": "完成实时源码审阅和本机兼容性探针后自动选择",
+      "impact": "不阻塞候选审阅与备份"
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "preserve-profile",
+      "recommendation": "安装前导出 web profile 插件清单与配置哈希",
+      "default": "执行",
+      "impact": "支持插件级回滚"
+    },
+    {
+      "id": "single-candidate-first",
+      "recommendation": "先只启用一个 Codex 桥接插件，避免重复注册同名工具或模型路由",
+      "default": "执行",
+      "impact": "降低路由冲突与归因困难"
+    }
+  ]
+}

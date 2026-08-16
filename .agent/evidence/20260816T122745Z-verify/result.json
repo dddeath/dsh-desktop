@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "kind": "baseline_verification",
+  "started_at": "20260816T122745Z",
+  "completed_at": "2026-08-16T12:27:47+00:00",
+  "passed": true,
+  "phase": "P2-baseline",
+  "profile": "default",
+  "records": [
+    {
+      "index": 1,
+      "command": "powershell.exe -NoProfile -Command \"& 'C:\\Program Files\\nodejs\\node.exe' --check 'desktop\\main.js'\"",
+      "cwd": "E:\\deepseek_harness",
+      "source_mode": "local",
+      "host": null,
+      "exit_status": 0,
+      "duration_seconds": 0.375,
+      "timed_out": false,
+      "stdout_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\01-stdout.log",
+      "stderr_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\01-stderr.log"
+    },
+    {
+      "index": 2,
+      "command": "powershell.exe -NoProfile -Command \"& 'C:\\Program Files\\nodejs\\node.exe' --check 'themes\\maid-atelier-fix\\lib\\client.js'\"",
+      "cwd": "E:\\deepseek_harness",
+      "source_mode": "local",
+      "host": null,
+      "exit_status": 0,
+      "duration_seconds": 0.515,
+      "timed_out": false,
+      "stdout_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\02-stdout.log",
+      "stderr_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\02-stderr.log"
+    },
+    {
+      "index": 3,
+      "command": "powershell.exe -NoProfile -Command \"& 'C:\\Program Files\\nodejs\\node.exe' --check 'research\\dom-probe\\verify-runtime-clarity-sidebar-sync.cjs'\"",
+      "cwd": "E:\\deepseek_harness",
+      "source_mode": "local",
+      "host": null,
+      "exit_status": 0,
+      "duration_seconds": 0.453,
+      "timed_out": false,
+      "stdout_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\03-stdout.log",
+      "stderr_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\03-stderr.log"
+    },
+    {
+      "index": 4,
+      "command": "powershell.exe -NoProfile -Command \"$r=Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:3080/' -TimeoutSec 10; Write-Output ('HTTP_STATUS=' + [int]$r.StatusCode); if([int]$r.StatusCode -ne 200){exit 1}\"",
+      "cwd": "E:\\deepseek_harness",
+      "source_mode": "local",
+      "host": null,
+      "exit_status": 0,
+      "duration_seconds": 0.907,
+      "timed_out": false,
+      "stdout_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\04-stdout.log",
+      "stderr_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\04-stderr.log"
+    }
+  ],
+  "evidence_dir": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify"
+}

@@ -1,0 +1,9 @@
+{
+  "captured_utc": "2026-08-16T12:29:52.605088+00:00",
+  "http_status": 200,
+  "dsh_version": "0.1.0-rc.6",
+  "boot_revision": "39c9289dc775",
+  "runtime_plugin_entry_count": 48,
+  "profile_dependency_count": 13,
+  "catalog_sha256": "0A6A1CC7487B6AFBBF8075CD91566BFF35D6C7D271BF4B24FD0D2150ABC964E0"
+}

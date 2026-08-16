@@ -1,0 +1,36 @@
+{
+  "captured_utc": "2026-08-16T12:29:52.588619+00:00",
+  "profile": "C:\\Users\\19739\\.dsh\\profiles\\web",
+  "files": [
+    {
+      "path": "cordis.patch.yml",
+      "bytes": 255,
+      "sha256": "9374D4607541E9FDDFCCC1B0B2E841BA10CA2D595D9B0C7AA3B53844FE23A5C8"
+    },
+    {
+      "path": "cordis.yml",
+      "bytes": 223,
+      "sha256": "C300DCF2EBC5F02062D6591268D29D3DB6FE45E0CB138F5467276FE2BA06076E"
+    },
+    {
+      "path": "data/whale-girl/state.json",
+      "bytes": 502,
+      "sha256": "A6F9FC686E2B1226D505BA98D8630AD35058D9A7BD6E04766D1643500F765A0A"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1244,
+      "sha256": "661DBCA2ADBC5DCE7ACD32A11EB26FE8307643557392B63182B20A5A6BF02B81"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "bytes": 28129,
+      "sha256": "7A6AF21F6F569E03ED954061EA2BDA1EA7FEE3EBB46326D880E200521BF6CEC1"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "bytes": 91,
+      "sha256": "DEC785C63870DB94E06786457D525E76B226C3F213151D10D194871453552ED0"
+    }
+  ]
+}

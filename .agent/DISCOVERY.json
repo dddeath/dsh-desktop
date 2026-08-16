@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "discovered_at": "2026-08-16T12:29:02+00:00",
+  "project_path": "E:\\deepseek_harness",
+  "project_name": "deepseek_harness",
+  "platform": {
+    "system": "Windows",
+    "release": "10",
+    "machine": "AMD64",
+    "python": "3.11.7"
+  },
+  "git": {
+    "is_repository": true,
+    "root": "E:/deepseek_harness",
+    "commit": "bff5c9a99901e5d9c01f53ec4893542258f1ba56",
+    "branch": "codex/phase1-ui-complete-phase2-ready",
+    "dirty": true,
+    "changed_entry_count": 8,
+    "remote_names": [
+      "origin"
+    ]
+  },
+  "manifests": [
+    "README.md",
+    "desktop/package.json",
+    "themes/maid-atelier-fix/package.json"
+  ],
+  "detected_commands": [
+    "node --check desktop/main.js",
+    "node --check themes/maid-atelier-fix/lib/client.js",
+    "python research/ui-audit/phase1-completion/verify_phase1_completion.py"
+  ]
+}

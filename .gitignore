@@ -23,3 +23,4 @@ research/dsh-hub/
 Thumbs.db
 Desktop.ini
 *.log
+!.agent/evidence/**/*.log

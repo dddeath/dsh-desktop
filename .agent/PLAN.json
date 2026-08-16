@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "current_phase": "P2",
+  "phases": [
+    {
+      "id": "P1",
+      "name": "阶段 1：桌面 UI 优化与验收",
+      "status": "completed",
+      "inputs": [
+        "research/ui-audit/phase1-completion/verification-phase1-ui.txt",
+        "user acceptance feedback"
+      ],
+      "actions": [
+        "完成品牌栏、对话/轨迹/上下文选中态与左右侧栏表面统一",
+        "完成 Composer、设置中心、响应式三栏和右侧栏拖拽同步",
+        "完成桌面运行状态与安全重启入口，并移除运行状态文字特效",
+        "保存补丁、验证记录、验收图和可执行回滚"
+      ],
+      "acceptance": [
+        "生产脚本通过 node --check",
+        "运行状态文字无 text-shadow/filter/stroke",
+        "右侧栏可拖过视口 50% 且面板宽度持续跟随拖拽目标",
+        "HTTP 入口返回 200",
+        "补丁重放、压缩包重开与隔离回滚均通过",
+        "用户已验收阶段 1 UI"
+      ],
+      "rollback_point": "c5046d59d8b63dedf2fc3a88fe3edd4a34d238f8",
+      "requires_verification": false,
+      "completion_evidence": "research/ui-audit/phase1-completion/verification-phase1-ui.txt"
+    },
+    {
+      "id": "P2",
+      "name": "阶段 2：Codex 额度视觉识别与图片生成插件入口",
+      "status": "in_progress",
+      "inputs": [
+        "research/plugins.json",
+        "当前 web profile 插件清单",
+        "本机 Codex/ChatGPT OAuth 登录态",
+        "阶段 1 已验收 UI 基线"
+      ],
+      "actions": [
+        "实时核验 dsh-codex-tools、dsh-plugin-codex、dsh-codex-connect 的源码、登录路径和工具覆盖",
+        "选择最小依赖且明确复用登录额度的实现，先备份 web profile 与插件清单",
+        "安装或实现 DSH 插件入口并桥接 image_vision 与 image_gen",
+        "用真实输入图片和真实生成图片验证对话入口、工具轨迹和持久化产物",
+        "验证卸载、配置恢复以及阶段 1 UI 回归"
+      ],
+      "acceptance": [
+        "登录路径基于 Codex/ChatGPT OAuth，不要求独立 API Key",
+        "视觉识别返回与给定图片一致的可核对结果",
+        "图片生成返回可打开的真实图片文件",
+        "DSH 工具轨迹能区分视觉识别和图片生成调用",
+        "安装前后插件清单、版本与哈希均被记录",
+        "卸载/回滚脚本通过隔离验证"
+      ],
+      "rollback_point": "bff5c9a99901e5d9c01f53ec4893542258f1ba56",
+      "requires_verification": true
+    },
+    {
+      "id": "P3",
+      "name": "阶段 3：插件结构与管理优化",
+      "status": "pending",
+      "inputs": [
+        "阶段 2 插件实现与现有插件清单"
+      ],
+      "actions": [
+        "分析插件职责、冲突、更新与重启要求",
+        "给出分组、启停、版本锁定、更新、回滚与健康检查方案",
+        "实现可验收的最小插件管理入口"
+      ],
+      "acceptance": [
+        "插件来源、版本、状态、权限和重启要求可见",
+        "启停、更新和回滚均有验证记录"
+      ],
+      "rollback_point": "待阶段 2 完成后回填",
+      "requires_verification": true
+    },
+    {
+      "id": "P4",
+      "name": "发布与收尾",
+      "status": "pending",
+      "inputs": [
+        "全部通过的阶段验收证据"
+      ],
+      "actions": [
+        "固定 Git 提交与产物哈希",
+        "推送维护分支并记录恢复方法"
+      ],
+      "acceptance": [
+        "GitHub 分支包含源码、计划与紧凑验收证据",
+        "最终状态与下一步均可从 .agent 读取"
+      ],
+      "rollback_point": "待阶段 3 完成后回填",
+      "requires_verification": false
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+CAPTURED_UTC=2026-08-16T12:29:51.969633+00:00
+DSH_VERSION=0.1.0-rc.6
+COMMAND=C:\Users\19739\AppData\Roaming\npm\dsh.cmd plugin --profile web list
+Legend: production dependency, optional only, dev only
+
+dsh-profile-web C:\Users\19739\.dsh\profiles\web (PRIVATE)
+│
+│   dependencies:
+├── @dsh-external/dsh-client-ui-skin-maid-atelier@0.0.1
+├── @liustack/modlens@3.16.6
+├── dsh-at-file@0.6.1
+├── dsh-better-sidebar@0.12.1
+├── dsh-client-auto-continue@0.4.0
+├── dsh-context@0.7.3
+├── dsh-deep-whale@0.0.0
+├── dsh-find-plugin@0.3.6
+├── dsh-maid-atelier-fix@link:E:/deepseek_harness/themes/maid-atelier-fix
+├── dsh-notification@0.1.2
+├── dsh-open-in-vscode@0.1.6
+├── dshmarket@1.2.2
+└── whale-girl@0.1.0
+
+13 packages
+EXIT=0
