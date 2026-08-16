@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "responsive_background_characters",
+  "phase": "P2-operation4",
+  "completed_at": "2026-08-16T22:09:43+08:00",
+  "machine_gate_passed": true,
+  "manual_gate": "D",
+  "manual_gate_status": "pending",
+  "baseline": {
+    "sidebar_width_px": 384,
+    "character_right_px": 319.179,
+    "bound_to_sidebar_width": false
+  },
+  "modified": {
+    "sidebar_width_px": 384,
+    "character_right_px": 390.4,
+    "clearance_px": 6.4,
+    "bound_to_sidebar_width": true,
+    "drag_transition": "none"
+  },
+  "checks": {
+    "client_syntax_exit": 0,
+    "package_json_exit": 0,
+    "diff_check_exit": 0,
+    "patch_reverse_check_exit": 0,
+    "rollback_exit": 0
+  },
+  "artifacts": {
+    "modified": "E:\\deepseek_harness\\themes\\maid-atelier-fix",
+    "patch": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\change.patch",
+    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\verification-ui.md",
+    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\rollback.ps1",
+    "acceptance_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\acceptance-responsive-character.png"
+  }
+}

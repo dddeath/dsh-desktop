@@ -987,20 +987,6 @@ body[data-dsh-responsive-band='wide'] #root {
   margin-right: var(--dsh-sidebar-width, 0px) !important;
 }
 
-/* The skin's right character used a viewport-based fixed offset while
-   dsh-better-sidebar writes its real drag width to --dsh-sidebar-width on
-   every animation frame. Bind the character to that same value so it stays
-   beside the panel instead of freezing while the conversation keeps moving. */
-body[data-dsh-maid-atelier][data-maid-better-sidebar-open]
-  [data-skin-chrome='character-stage'] [data-maid-character='right'] {
-  right: calc(var(--dsh-sidebar-width, 0px) + clamp(0px, 0.5vw, 8px)) !important;
-}
-body[data-dsh-maid-atelier][data-maid-better-sidebar-open][data-dsh-sidebar-dragging]
-  [data-skin-chrome='character-stage'] [data-maid-character='right'] {
-  transition: none !important;
-  will-change: right;
-}
-
 /* Compact windows use the built-in icon rail and let the conversation own the
    remaining viewport. The min() guard keeps very small windows scroll-safe. */
 body[data-dsh-responsive-band='compact'] [class*='_centerCol'] {
