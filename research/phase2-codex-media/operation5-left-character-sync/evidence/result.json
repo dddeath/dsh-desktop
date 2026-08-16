@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "kind": "left_character_sidebar_sync",
+  "phase": "P2-operation5",
+  "completed_at": "2026-08-16T22:14:34+08:00",
+  "machine_gate_passed": true,
+  "manual_gate": "E",
+  "manual_gate_status": "pending",
+  "modified": {
+    "sidebar_width_px": 280,
+    "live_variable_px": 280,
+    "character_translate_px": 280,
+    "drag_transition": "none"
+  },
+  "checks": {
+    "client_syntax_exit": 0,
+    "package_json_exit": 0,
+    "diff_check_exit": 0,
+    "patch_reverse_check_exit": 0,
+    "rollback_exit": 0
+  },
+  "artifacts": {
+    "modified": "E:\\deepseek_harness\\themes\\maid-atelier-fix",
+    "patch": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\change.patch",
+    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\verification-ui.md",
+    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\rollback.ps1",
+    "acceptance_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\acceptance-left-character.png"
+  }
+}

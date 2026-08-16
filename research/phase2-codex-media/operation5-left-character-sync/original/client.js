@@ -987,19 +987,6 @@ body[data-dsh-responsive-band='wide'] #root {
   margin-right: var(--dsh-sidebar-width, 0px) !important;
 }
 
-/* Mirror the core layout's live left-column width instead of relying only on
-   the skin's own sidebar observer. The fix controller below owns
-   --dsh-left-sidebar-width and refreshes it for every ResizeObserver frame. */
-body[data-dsh-maid-atelier]
-  [data-skin-chrome='character-stage'] [data-maid-character='left'] {
-  translate: var(--dsh-left-sidebar-width, var(--maid-sidebar-width, 0px)) 0 !important;
-}
-body[data-dsh-maid-atelier][data-dsh-left-sidebar-dragging='true']
-  [data-skin-chrome='character-stage'] [data-maid-character='left'] {
-  transition: none !important;
-  will-change: translate;
-}
-
 /* The skin's right character used a viewport-based fixed offset while
    dsh-better-sidebar writes its real drag width to --dsh-sidebar-width on
    every animation frame. Bind the character to that same value so it stays
@@ -1333,66 +1320,6 @@ body[data-dsh-maid-atelier] :is(button, [role='button'], [role='tab'], textarea,
           root.style.removeProperty("margin-right");
           delete root.dataset.dshResponsiveRootPush;
         }
-      };
-    }
-
-    function installCharacterAlignment() {
-      let disposed = false;
-      let observedSidebar = null;
-      let frame = null;
-      let scheduled = false;
-
-      const writeLeftWidth = (width) => {
-        if (!Number.isFinite(width) || width < 0) return;
-        document.documentElement.style.setProperty("--dsh-left-sidebar-width", `${Math.round(width * 100) / 100}px`);
-      };
-
-      const resizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver((entries) => {
-        const entry = entries.at(-1);
-        if (!entry) return;
-        const borderSize = Array.isArray(entry.borderBoxSize)
-          ? entry.borderBoxSize[0]?.inlineSize
-          : entry.borderBoxSize?.inlineSize;
-        writeLeftWidth(Number.isFinite(borderSize) ? borderSize : entry.target.getBoundingClientRect().width);
-      });
-
-      const reconcile = () => {
-        if (disposed || !document.body) return;
-        scheduled = false;
-        const nextFrame = document.querySelector("[class*='_frame']:has(> [class*='_sidebarCol'])");
-        const nextSidebar = nextFrame?.querySelector(":scope > [class*='_sidebarCol']") || null;
-        if (nextSidebar !== observedSidebar) {
-          if (observedSidebar && resizeObserver) resizeObserver.unobserve(observedSidebar);
-          observedSidebar = nextSidebar;
-          if (observedSidebar && resizeObserver) resizeObserver.observe(observedSidebar);
-        }
-        frame = nextFrame;
-        if (observedSidebar) writeLeftWidth(observedSidebar.getBoundingClientRect().width);
-        const leftDragging = Boolean(frame?.querySelector("[data-side='sidebar'][data-dragging='true']"));
-        document.body.dataset.dshLeftSidebarDragging = leftDragging ? "true" : "false";
-      };
-
-      const schedule = () => {
-        if (disposed || scheduled) return;
-        scheduled = true;
-        requestAnimationFrame(reconcile);
-      };
-
-      const mutationObserver = new MutationObserver(schedule);
-      mutationObserver.observe(document.body, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ["data-dragging", "data-sidebar-collapsed", "style"],
-      });
-      reconcile();
-
-      return () => {
-        disposed = true;
-        mutationObserver.disconnect();
-        resizeObserver?.disconnect();
-        document.documentElement.style.removeProperty("--dsh-left-sidebar-width");
-        if (document.body) delete document.body.dataset.dshLeftSidebarDragging;
       };
     }
 
@@ -2147,7 +2074,6 @@ body[data-dsh-maid-atelier] :is(button, [role='button'], [role='tab'], textarea,
       style.textContent = CSS;
       document.head.appendChild(style);
       const disposeResponsiveLayout = installResponsiveLayout();
-      const disposeCharacterAlignment = installCharacterAlignment();
       const disposeComposerEnhancements = installComposerEnhancements();
       installAgentToolsSettings(ctx);
       const disposeSettingsEnhancements = installSettingsEnhancements();
@@ -2159,7 +2085,6 @@ body[data-dsh-maid-atelier] :is(button, [role='button'], [role='tab'], textarea,
             disposeDesktopStatusEnhancements();
             disposeSettingsEnhancements();
             disposeComposerEnhancements();
-            disposeCharacterAlignment();
             disposeResponsiveLayout();
             style.remove();
           });

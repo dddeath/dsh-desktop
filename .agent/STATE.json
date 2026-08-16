@@ -1,21 +1,21 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-16T14:09:43.7460373Z",
+  "updated_at": "2026-08-16T14:15:13.3469482Z",
   "status": "in_progress",
   "current_phase": "P2",
-  "latest_result": "Settings scrolling and Agent tool inventory passed manual Gate C; the right background character now binds to the live workbench sidebar width.",
-  "next_action": "User drags the right sidebar through narrow and wide positions and confirms the background character remains beside the panel without lag.",
+  "latest_result": "Right character follows the workbench width; left character now has an independent core-sidebar ResizeObserver and zero-lag drag state.",
+  "next_action": "User drags both sidebar handles across narrow and wide widths and confirms each background character remains aligned to its adjacent sidebar.",
   "blockers": [
-    "manual_gate_d_pending"
+    "manual_gate_d_e_pending"
   ],
   "state_dir": "E:\\deepseek_harness\\.agent",
   "last_verification": {
-    "kind": "responsive_background_characters",
-    "phase": "P2-operation4",
+    "kind": "left_character_sidebar_sync",
+    "phase": "P2-operation5",
     "passed": true,
     "manual_gate_status": "pending",
-    "completed_at": "2026-08-16T14:09:43.7460373Z",
-    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\evidence\\result.json"
+    "completed_at": "2026-08-16T14:15:13.3469482Z",
+    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\evidence\\result.json"
   },
   "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
   "phase2_baseline_verification": {
@@ -164,5 +164,18 @@
     "acceptance_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\acceptance-responsive-character.png",
     "patch": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\change.patch",
     "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\rollback.ps1"
+  },
+  "phase2_operation5": {
+    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync",
+    "theme": "dsh-maid-atelier-fix",
+    "version": "0.2.2",
+    "changed_field": "left character translate now follows --dsh-left-sidebar-width",
+    "machine_gate_passed": true,
+    "manual_gate": "E",
+    "manual_gate_status": "pending",
+    "verification_record": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\verification-ui.md",
+    "acceptance_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\acceptance-left-character.png",
+    "patch": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\change.patch",
+    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\rollback.ps1"
   }
 }
