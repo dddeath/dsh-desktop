@@ -1,11 +1,17 @@
 # dependencies / build output
 desktop/node_modules/
 desktop/dist/
+desktop/dist-status/
 
 # research artifacts (cloned third-party repos + raw data)
 research/awesome-dsh-plugin/
 research/awesome-deepseek-harness/
 research/dsh-hub/
+research/ui-audit/**/capture-profile-*/
+research/ui-audit/**/electron-acceptance-userdata*/
+research/ui-audit/**/electron-probe-userdata/
+research/ui-audit/**/rollback-probe/
+research/ui-audit/**/*.zip
 research/dom-probe/node_modules/
 research/dom-probe/package-lock.json
 research/plugins.json

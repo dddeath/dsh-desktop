@@ -1,0 +1,105 @@
+FINAL VERIFICATION RECORD — maid-atelier-fix runtime clarity + right sidebar synchronization
+Generated: 2026-08-16 Asia/Shanghai
+
+[MUTABLE DSH RUNTIME INVENTORY]
+Plugin and boot revisions are runtime values and are recorded independently from immutable source/artifact hashes.
+CURRENT_DSH_BOOT_REV=39c9289dc775
+CURRENT_PLUGIN_COUNT=48
+CURRENT_HTTP_STATUS=200
+CURRENT_LISTENER_PID=19300
+
+[CHANGED FIELDS]
+client.js CSS: runtime text-effect reset; solid status surfaces; wide workbench max-width:none; wide center min-width:0; #root margin binding.
+client.js JS: installResponsiveLayout.syncWideSidebarPush binds #root margin-right to --dsh-sidebar-width for wide mode and removes the owned inline rule during cleanup.
+
+[BASELINE COMMANDS AND LITERAL OUTPUTS]
+COMMAND="C:\Program Files\nodejs\node.exe" --check "E:\deepseek_harness\research\ui-audit\phase2\implementation-maid-atelier-fix-runtime-clarity-sidebar-sync\baseline\client.runtime-clarity-sidebar-sync-original.js"
+EXIT=0
+COMMAND=Get-FileHash -Algorithm SHA256 "E:\deepseek_harness\research\ui-audit\phase2\implementation-maid-atelier-fix-runtime-clarity-sidebar-sync\baseline\client.runtime-clarity-sidebar-sync-original.js"
+OUTPUT=B4600F892EF4E25F84711802CBBD943ED5A5D79E0C54DA2B0FE4926A83FFB049
+BASELINE_BEHAVIOR_STATUS=Runtime panel used translucent surfaces and inherited decorative typography without a component-level hard reset, allowing page text to bleed through visually.
+BASELINE_BEHAVIOR_SIDEBAR=The visual panel had an independent calc(...) max-width and the center column had min-width:680px; the upstream drag variable could keep increasing after the visible panel stopped near half-screen.
+
+[MODIFIED SOURCE COMMANDS AND LITERAL OUTPUTS]
+COMMAND="C:\Program Files\nodejs\node.exe" --check "E:\deepseek_harness\themes\maid-atelier-fix\lib\client.js"
+EXIT=0
+COMMAND="C:\Program Files\nodejs\node.exe" --check "E:\deepseek_harness\research\dom-probe\verify-runtime-clarity-sidebar-sync.cjs"
+EXIT=0
+COMMAND=Get-FileHash -Algorithm SHA256 "E:\deepseek_harness\themes\maid-atelier-fix\lib\client.js"
+OUTPUT=24E08046E3403ACC68B8A545D878E11679D8FD4A144B32A268BC347D5C71FF57
+MODIFIED_BEHAVIOR_STATUS=All runtime status text nodes explicitly use text-shadow:none, filter:none and zero text stroke; the panel is opaque and has no backdrop filter.
+MODIFIED_BEHAVIOR_SIDEBAR=The visible panel, drag target and --dsh-sidebar-width share one width; no secondary max-width cap remains and the wide center can shrink continuously.
+
+[BROWSER STATUS VISUAL ACCEPTANCE]
+COMMAND=Open http://127.0.0.1:3080/?acceptance=runtime-clarity-final and expand 查看 Harness 运行状态
+OUTPUT_RUNTIME_TEXT_NODE_COUNT=20
+OUTPUT_ALL_TEXT_PLAIN=True
+OUTPUT_UNIQUE_TEXT_STYLE={shadow:none,filter:none,stroke:empty,opacity:1}
+OUTPUT_PANEL_BACKGROUND=rgb(252, 253, 255)
+OUTPUT_PANEL_BACKDROP_FILTER=none
+OUTPUT_FRONTEND_REVISION=39c9289dc775
+SCREENSHOT=E:\deepseek_harness\research\ui-audit\phase2\implementation-maid-atelier-fix-runtime-clarity-sidebar-sync\modified\02-runtime-plain-text-acceptance.jpg
+SCREENSHOT_BYTES=153049
+SCREENSHOT_SHA256=B5EA9F5DB432B196F728080E0A0B15889E1C8A45951CDC641CC918DD6314278C
+
+[ELECTRON WIDE DRAG ACCEPTANCE]
+COMMAND=Start-Process electron.exe verify-runtime-clarity-sidebar-sync.cjs --user-data-dir=<isolated-userdata> -WindowStyle Hidden -Wait
+ELECTRON_ACCEPTANCE_EXIT=0
+VIEWPORT=1692x956 logical px (2048x1200 requested window under Windows display scaling)
+PANEL_BEFORE_PX=338.7
+PANEL_AFTER_PX=1049.7
+PANEL_RATIO_PERCENT=62
+SIDEBAR_VARIABLE=1049px
+PANEL_LEFT_PX=642.3
+ASSERT_responsiveBandWide=True
+ASSERT_panelPastHalfViewport=True
+ASSERT_panelMatchesSidebarVariable=True
+ASSERT_panelBoundaryTracksDragTarget=True
+ASSERT_panelExpandedByDragDelta=True
+ASSERT_noPanelMaxWidthCap=True
+ASSERT_centerCanShrinkContinuously=True
+SCREENSHOT=E:\deepseek_harness\research\ui-audit\phase2\implementation-maid-atelier-fix-runtime-clarity-sidebar-sync\modified\03-right-sidebar-over-50-sync-acceptance.png
+SCREENSHOT_BYTES=1490922
+SCREENSHOT_SHA256=B77B0DF4DE191EC60BAE84518428BCF42356958A2A4E6F8D900B47022140DC02
+METRICS=E:\deepseek_harness\research\ui-audit\phase2\implementation-maid-atelier-fix-runtime-clarity-sidebar-sync\modified\03-right-sidebar-over-50-sync-metrics.json
+METRICS_SHA256=44DCB250B6EA685A35E104FAE8F9C7220578AD2C6203762530848847EE552DD3
+
+[MODIFIED ARTIFACT]
+PATH=E:\deepseek_harness\research\ui-audit\phase2\implementation-maid-atelier-fix-runtime-clarity-sidebar-sync\modified\runtime-clarity-sidebar-sync-modified-v1.zip
+BYTES=1643129
+SHA256=744C353881261B8A05127A165F28578E0ADEA16580C91E6F58E194E28638A7C0
+REOPEN=Expand-Archive succeeded; archived production source and acceptance probe both passed node --check with exit 0; archived production hash equals the live source hash.
+
+[PATCH / DIFF]
+PATH=E:\deepseek_harness\research\ui-audit\phase2\implementation-maid-atelier-fix-runtime-clarity-sidebar-sync\runtime-clarity-sidebar-sync.patch
+BYTES=5390
+SHA256=48BA3068F4A7CD52D1B7C04B67DC174D5F4FD465F75627704A52151C97E79D80
+COMMAND=git apply --check --directory=<isolated-probe> runtime-clarity-sidebar-sync.patch
+PATCH_CHECK_EXIT=0
+COMMAND=git apply --directory=<isolated-probe> runtime-clarity-sidebar-sync.patch
+PATCH_APPLY_EXIT=0
+PATCHED_NODE_CHECK_EXIT=0
+PATCHED_SHA256=24E08046E3403ACC68B8A545D878E11679D8FD4A144B32A268BC347D5C71FF57
+PATCHED_MATCH_LIVE=True
+
+[ROLLBACK]
+PATH=E:\deepseek_harness\research\ui-audit\phase2\implementation-maid-atelier-fix-runtime-clarity-sidebar-sync\rollback-runtime-clarity-sidebar-sync.ps1
+BYTES=1908
+SHA256=B3EAE134DEF7A967E601CDF689DFF1BEE6714F9022A87407A8C8FAEE746B6270
+COMMAND=powershell -NoProfile -ExecutionPolicy Bypass -File rollback-runtime-clarity-sidebar-sync.ps1 -Target <isolated-client>
+ROLLBACK_PROCESS_EXIT=0
+ROLLBACK_NODE_CHECK_EXIT=0
+ROLLBACK_SHA256=B4600F892EF4E25F84711802CBBD943ED5A5D79E0C54DA2B0FE4926A83FFB049
+ROLLBACK_MATCH_BASELINE=True
+LIVE_AFTER_ROLLBACK_PROBE_SHA256=24E08046E3403ACC68B8A545D878E11679D8FD4A144B32A268BC347D5C71FF57
+LIVE_STILL_MODIFIED=True
+
+[FINAL RESULT]
+RUNTIME_TEXT_EFFECTS_REMOVED=True
+RUNTIME_PANEL_OPAQUE=True
+RIGHT_PANEL_EXPANDS_PAST_50_PERCENT=True
+RIGHT_PANEL_WIDTH_TRACKS_DRAG_TARGET=True
+PATCH_REPLAY_VERIFIED=True
+ROLLBACK_VERIFIED=True
+ARTIFACT_REOPEN_VERIFIED=True
+FINAL_RESULT=PASS

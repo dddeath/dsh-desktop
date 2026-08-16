@@ -1,0 +1,93 @@
+{
+  "before": {
+    "viewport": {
+      "width": 1692,
+      "height": 956
+    },
+    "band": "wide",
+    "rootMarginRight": "0px",
+    "sidebarVariable": "338px",
+    "panel": {
+      "x": 1353.3333740234375,
+      "y": 0,
+      "width": 338.66668701171875,
+      "height": 956,
+      "inlineStyle": "width: 338px;",
+      "minWidth": "300px",
+      "maxWidth": "none"
+    },
+    "resize": {
+      "x": 1350,
+      "y": 0,
+      "width": 8,
+      "height": 956,
+      "inlineStyle": null,
+      "minWidth": "0px",
+      "maxWidth": "none"
+    },
+    "center": {
+      "x": 280,
+      "y": 0,
+      "width": 1412,
+      "height": 956,
+      "inlineStyle": null,
+      "minWidth": "0px",
+      "maxWidth": "none"
+    }
+  },
+  "after": {
+    "viewport": {
+      "width": 1692,
+      "height": 956
+    },
+    "band": "wide",
+    "rootMarginRight": "0px",
+    "sidebarVariable": "1049px",
+    "panel": {
+      "x": 642.3333740234375,
+      "y": 0,
+      "width": 1049.666748046875,
+      "height": 956,
+      "inlineStyle": "width: 1049px;",
+      "minWidth": "300px",
+      "maxWidth": "none"
+    },
+    "resize": {
+      "x": 639,
+      "y": 0,
+      "width": 8,
+      "height": 956,
+      "inlineStyle": null,
+      "minWidth": "0px",
+      "maxWidth": "none"
+    },
+    "center": {
+      "x": 56,
+      "y": 0,
+      "width": 1636,
+      "height": 956,
+      "inlineStyle": null,
+      "minWidth": "0px",
+      "maxWidth": "none"
+    }
+  },
+  "plainText": {
+    "count": 0,
+    "allPlain": true,
+    "unique": [],
+    "panelBackground": null,
+    "panelBackdropFilter": null,
+    "panelIsolation": null
+  },
+  "assertions": {
+    "responsiveBandWide": true,
+    "panelPastHalfViewport": true,
+    "panelMatchesSidebarVariable": true,
+    "panelBoundaryTracksDragTarget": true,
+    "panelExpandedByDragDelta": true,
+    "noPanelMaxWidthCap": true,
+    "centerCanShrinkContinuously": true
+  },
+  "panelRatioPercent": 62,
+  "screenshotPath": "E:\\deepseek_harness\\research\\ui-audit\\phase2\\implementation-maid-atelier-fix-runtime-clarity-sidebar-sync\\modified\\03-right-sidebar-over-50-sync-acceptance.png"
+}

@@ -32,60 +32,10 @@ let attached = false;
 let mainWindow = null;
 let quitting = false;
 let serverOrigin = null; // origin of the DSH server the window is allowed to navigate within
-let restartPhase = "ready";
-let cachedDshVersion = null;
 
 const log = (...args) => console.log("[dsh-desktop]", ...args);
 
 // ---------------------------------------------------------------- helpers
-
-function readDshVersion() {
-  if (cachedDshVersion !== null) return cachedDshVersion;
-  const appData = process.env.APPDATA || path.join(os.homedir(), "AppData", "Roaming");
-  const packageFile = path.join(appData, "npm", "node_modules", "@deepseek-ai", "dsh", "package.json");
-  try {
-    const packageJson = JSON.parse(fs.readFileSync(packageFile, "utf8"));
-    cachedDshVersion = typeof packageJson.version === "string" ? packageJson.version : "unknown";
-  } catch {
-    cachedDshVersion = "unknown";
-  }
-  return cachedDshVersion;
-}
-
-function desktopStatusPayload(extra = {}) {
-  let port = DEFAULT_PORT;
-  try { port = Number(new URL(serverOrigin).port) || DEFAULT_PORT; } catch { /* server is starting */ }
-  return {
-    desktop: true,
-    desktopVersion: app.getVersion(),
-    dshVersion: readDshVersion(),
-    host: "127.0.0.1",
-    port,
-    mode: attached ? "attached" : "managed",
-    phase: restartPhase,
-    canRestart: true,
-    ...extra,
-  };
-}
-
-function publishDesktopStatus(extra = {}) {
-  if (!mainWindow || mainWindow.isDestroyed() || mainWindow.webContents.isDestroyed()) return Promise.resolve(false);
-  const payload = desktopStatusPayload(extra);
-  const script = `(() => {
-    const next = ${JSON.stringify(payload)};
-    document.documentElement.setAttribute("data-dsh-desktop-status", JSON.stringify(next));
-    window.dispatchEvent(new CustomEvent("dsh-desktop-status", { detail: next }));
-    return true;
-  })()`;
-  return mainWindow.webContents.executeJavaScript(script).catch(() => false);
-}
-
-async function setRestartPhase(phase, extra = {}) {
-  restartPhase = phase;
-  await publishDesktopStatus(extra);
-  // Give the renderer a frame to paint the new non-blocking progress state.
-  await new Promise((resolve) => setTimeout(resolve, 80));
-}
 
 function portBusy(port) {
   return new Promise((resolve) => {
@@ -285,25 +235,6 @@ function waitSessionQuiescence(maxMs, quietMs) {
   return false;
 }
 
-/** Async restart variant: keeps the Electron UI responsive while polling. */
-async function waitSessionQuiescenceAsync(maxMs, quietMs) {
-  const dir = dshSessionsDir();
-  const started = Date.now();
-  let quietSince = Date.now();
-  let prev = newestLogTick(dir);
-  while (Date.now() - started < maxMs) {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    const cur = newestLogTick(dir);
-    if (cur === prev) {
-      if (Date.now() - quietSince >= quietMs) return true;
-    } else {
-      quietSince = Date.now();
-      prev = cur;
-    }
-  }
-  return false;
-}
-
 function backupSessions() {
   const dir = dshSessionsDir();
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -324,14 +255,10 @@ function backupSessions() {
  * reload the window onto it. Invoked only from the user-facing menu item.
  */
 async function restartHarness() {
-  if (!["ready", "error"].includes(restartPhase)) return;
   log("restart requested");
-  await setRestartPhase("waiting");
-  const quiet = await waitSessionQuiescenceAsync(20000, 1200);
+  const quiet = waitSessionQuiescence(20000, 1200);
   if (!quiet) log("WARNING: session log still growing — an agent turn may be mid-write");
-  await setRestartPhase("backup", { sessionQuiet: quiet });
-  const backupPath = backupSessions();
-  await setRestartPhase("stopping", { sessionQuiet: quiet, backupPath });
+  backupSessions();
   killChild();
   if (attached) {
     const pids = await findDshWebPids();
@@ -342,16 +269,12 @@ async function restartHarness() {
     }
   }
   attached = false;
-  await setRestartPhase("reconnecting", { mode: "managed", sessionQuiet: quiet, backupPath });
   await waitPortFree(DEFAULT_PORT);
   try {
     const url = await spawnAndWait(DEFAULT_PORT);
-    restartPhase = "ready";
     if (mainWindow && !mainWindow.isDestroyed()) loadGui(url);
     log(`restarted: ${url}`);
   } catch (err) {
-    restartPhase = "error";
-    await publishDesktopStatus({ error: err.message });
     log("restart failed:", err.message);
     dialog.showErrorBox("Restart failed", `Could not start dsh web:\n${err.message}`);
   }
@@ -390,11 +313,7 @@ function buildMenu() {
       submenu: [
         { label: "Restart Harness (dsh web)", accelerator: "CmdOrCtrl+Shift+R", click: () => restartHarness() },
         { type: "separator" },
-        { label: "Reload Window", accelerator: "CmdOrCtrl+R", click: () => mainWindow && mainWindow.webContents.reload() },
-        { label: "Hard Reload (clear cache)", accelerator: "CmdOrCtrl+Shift+Alt+R", click: () => {
-          if (!mainWindow) return;
-          mainWindow.webContents.session.clearCache().then(() => mainWindow.webContents.reloadIgnoringCache());
-        } },
+        { label: "Reload Window", role: "reload" },
       ],
     },
     {
@@ -452,42 +371,15 @@ function createWindow(url) {
 
   // Open every external link in the system browser, keep the app single-origin.
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith("dsh-desktop://restart")) {
-      restartHarness();
-      return { action: "deny" };
-    }
     if (/^https?:\/\//.test(url)) shell.openExternal(url);
     return { action: "deny" };
   });
   mainWindow.webContents.on("will-navigate", (event, url) => {
-    if (url.startsWith("dsh-desktop://restart")) {
-      event.preventDefault();
-      restartHarness();
-      return;
-    }
     if (serverOrigin !== null && new URL(url).origin !== serverOrigin) {
       event.preventDefault();
       if (/^https?:\/\//.test(url)) shell.openExternal(url);
     }
   });
-
-  // Auto-recover: if the page fails to load (e.g. the server is mid-restart),
-  // retry the server URL until it succeeds instead of sitting on a broken
-  // text/blank state. ERR_ABORTED (-3) is expected during restarts/reloads.
-  let retryTimer = null;
-  mainWindow.webContents.on("did-fail-load", (_e, errorCode, errorDesc, _url, isMainFrame) => {
-    if (!isMainFrame) return;
-    if (errorCode === -3) return;
-    log(`load failed (${errorCode} ${errorDesc}) — retrying in 2s`);
-    if (retryTimer) clearTimeout(retryTimer);
-    retryTimer = setTimeout(() => {
-      if (mainWindow && !mainWindow.isDestroyed()) mainWindow.loadURL(`${serverOrigin}/`);
-    }, 2000);
-  });
-  mainWindow.webContents.on("did-navigate", () => {
-    if (retryTimer) { clearTimeout(retryTimer); retryTimer = null; }
-  });
-  mainWindow.webContents.on("did-finish-load", () => publishDesktopStatus());
 
   loadGui(url);
 }
