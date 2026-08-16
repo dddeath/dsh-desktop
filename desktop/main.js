@@ -64,17 +64,29 @@ function probeDsh(port) {
 
 function findDshCommand() {
   const isWin = process.platform === "win32";
-  const candidates = [];
-  if (process.env.DSH_BIN) candidates.push(process.env.DSH_BIN);
-  candidates.push(isWin ? "dsh.cmd" : "dsh");
-  for (const c of candidates) {
-    if (process.env.DSH_BIN === c || !isWin) {
-      // dsh.cmd resolves through PATH when spawned via cmd.exe; plain
-      // names are fine on POSIX via the shell.
-      return { command: c, viaCmd: isWin };
-    }
+  // explicit override wins
+  if (process.env.DSH_BIN) {
+    return isWin
+      ? { bin: "cmd.exe", args: ["/d", "/s", "/c", `"${process.env.DSH_BIN}"`] }
+      : { bin: process.env.DSH_BIN, args: [] };
   }
-  return { command: candidates[0], viaCmd: isWin };
+  if (isWin) {
+    const appData = process.env.APPDATA || path.join(os.homedir(), "AppData", "Roaming");
+    // Preferred: run node directly against the installed dsh bin.js. Absolute
+    // paths mean the packaged app does not depend on PATH or the npm cmd shim.
+    const binJs = path.join(appData, "npm", "node_modules", "@deepseek-ai", "dsh", "lib", "bin.js");
+    if (fs.existsSync(binJs)) {
+      const node = process.env.ProgramFiles
+        ? path.join(process.env.ProgramFiles, "nodejs", "node.exe")
+        : "node";
+      return { bin: node, args: [binJs] };
+    }
+    // Fallback: the npm global shim.
+    const dshCmd = path.join(appData, "npm", "dsh.cmd");
+    if (fs.existsSync(dshCmd)) return { bin: "cmd.exe", args: ["/d", "/s", "/c", `"${dshCmd}"`] };
+    return { bin: "cmd.exe", args: ["/d", "/s", "/c", '"dsh.cmd"'] };
+  }
+  return { bin: "dsh", args: [] };
 }
 
 /**
@@ -96,11 +108,10 @@ async function startServer() {
 
 function spawnAndWait(port) {
   return new Promise((resolve, reject) => {
-    const { command, viaCmd } = findDshCommand();
-    const args = viaCmd ? ["/d", "/s", "/c", `"${command}" web --port ${port}`] : ["web", "--port", String(port)];
-    const bin = viaCmd ? "cmd.exe" : command;
-    log(`starting: ${bin} ${args.join(" ")}`);
-    child = spawn(bin, args, {
+    const dsh = findDshCommand();
+    const args = [...dsh.args, "web", "--port", String(port)];
+    log(`starting: ${dsh.bin} ${args.join(" ")}`);
+    child = spawn(dsh.bin, args, {
       windowsHide: true,
       stdio: ["ignore", "pipe", "pipe"],
       env: { ...process.env },
