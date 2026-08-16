@@ -1,0 +1,39 @@
+diff --git a/tools.js b/tools.js
+index b69c367..986e905 100644
+--- a/tools.js
++++ b/tools.js
+@@ -14,6 +14,7 @@ const SCRIPTS_DIR = join(fileURLToPath(new URL('.', import.meta.url)), 'scripts'
+ const SCRIPT_CODEX = join(SCRIPTS_DIR, 'codex-imagegen.mjs')
+ const SCRIPT_VISION = join(SCRIPTS_DIR, 'codex-vision.mjs')
+ const SCRIPT_SEARCH = join(SCRIPTS_DIR, 'codex-search.mjs')
++const shellScriptPath = (value) => process.platform === 'win32' ? value.replaceAll('\\', '/') : value
+ 
+ const ALLOWED_SIZES = new Set(['1024x1024', '1536x1024', '1024x1536', '2048x2048', '2048x1152', 'auto'])
+ const ALLOWED_FORMATS = new Set(['png', 'jpeg', 'webp'])
+@@ -83,7 +84,7 @@ export function installImageTools(define, deps, register) {
+     let run
+     try {
+       const spec = shell.resolve({
+-        command: 'node ' + JSON.stringify(SCRIPT_CODEX),
++        command: 'node ' + JSON.stringify(shellScriptPath(SCRIPT_CODEX)),
+         env,
+         timeoutMs: 360000,
+         signal,
+@@ -109,7 +110,7 @@ export function installImageTools(define, deps, register) {
+     let run
+     try {
+       const spec = shell.resolve({
+-        command: 'node ' + JSON.stringify(SCRIPT_VISION),
++        command: 'node ' + JSON.stringify(shellScriptPath(SCRIPT_VISION)),
+         env,
+         timeoutMs: 240000,
+         signal,
+@@ -136,7 +137,7 @@ export function installImageTools(define, deps, register) {
+     let run
+     try {
+       const spec = shell.resolve({
+-        command: 'node ' + JSON.stringify(SCRIPT_SEARCH),
++        command: 'node ' + JSON.stringify(shellScriptPath(SCRIPT_SEARCH)),
+         env,
+         timeoutMs: 120000,
+         signal,

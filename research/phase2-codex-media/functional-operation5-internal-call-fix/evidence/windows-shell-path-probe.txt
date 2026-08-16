@@ -1,0 +1,4 @@
+﻿COMMAND=C:\Program Files\Git\bin\bash.exe -lc "command -v node; node <forward-slash-script-path>"
+/c/Program Files/nodejs/node
+{"ok":false,"error":"output_exists"}
+EXIT_STATUS=1

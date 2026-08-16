@@ -156,29 +156,6 @@ async function startServer() {
   return spawnAndWait(DEFAULT_PORT);
 }
 
-function buildDshChildEnv() {
-  const env = { ...process.env };
-  if (process.platform !== "win32") return env;
-
-  const pathKey = Object.keys(env).find((key) => key.toLowerCase() === "path") || "Path";
-  const programFiles = env.ProgramFiles || "C:\\Program Files";
-  const preferred = [
-    path.join(programFiles, "Git", "bin"),
-    path.join(programFiles, "nodejs"),
-  ].filter((entry) => fs.existsSync(entry));
-  const current = String(env[pathKey] || "").split(path.delimiter).filter(Boolean);
-  const seen = new Set();
-  env[pathKey] = [...preferred, ...current]
-    .filter((entry) => {
-      const key = entry.toLowerCase();
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    })
-    .join(path.delimiter);
-  return env;
-}
-
 function spawnAndWait(port) {
   return new Promise((resolve, reject) => {
     const dsh = findDshCommand();
@@ -187,7 +164,7 @@ function spawnAndWait(port) {
     child = spawn(dsh.bin, args, {
       windowsHide: true,
       stdio: ["ignore", "pipe", "pipe"],
-      env: buildDshChildEnv(),
+      env: { ...process.env },
     });
 
     let buffer = "";

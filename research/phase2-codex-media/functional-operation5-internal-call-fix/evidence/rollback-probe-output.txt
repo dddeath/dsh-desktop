@@ -1,0 +1,5 @@
+﻿ROLLBACK_ROLE=desktop-main PATH=E:\deepseek_harness\research\phase2-codex-media\functional-operation5-internal-call-fix\evidence\rollback-probe\desktop-main.js SHA256=761eea114638eddcfbf311ea220de1121355d3bdd8d302f41390f70a43288fa2
+ROLLBACK_ROLE=state PATH=E:\deepseek_harness\research\phase2-codex-media\functional-operation5-internal-call-fix\evidence\rollback-probe\STATE.json SHA256=ca37940df5de8efd262a9925c0f79d128e6235318cccf1120613fbfdf0cdf3b4
+ROLLBACK_ROLE=installed-plugin-tools PATH=E:\deepseek_harness\research\phase2-codex-media\functional-operation5-internal-call-fix\evidence\rollback-probe\dsh-codex-tools-tools.js SHA256=d8c6080e62c3ecb6f2359cda82f9e10bbbdbff8e74e1a760708bfdef7d4201db
+ROLLBACK_OK=true
+ROLLBACK_PROBE_EXIT=0

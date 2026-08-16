@@ -1,21 +1,21 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-16T14:49:55.9160861Z",
+  "updated_at": "2026-08-16T14:32:02.3333268Z",
   "status": "in_progress",
   "current_phase": "P2",
-  "latest_result": "DSH internal image_gen Windows launch and JSON parsing were repaired; zero-quota parser probe returned invalid_path in 0.7s, then one real ChatGPT-subscription generation returned ok=true and wrote a valid PNG.",
-  "next_action": "User confirms the repaired internal DSH tool result and generated image; after acceptance, execute phase 2 operation 6 persistence and recovery acceptance.",
+  "latest_result": "Image vision manual gate D was accepted; image_gen returned a PNG that decoded successfully. Requested size was 1024x1024 and actual size is 1254x1254.",
+  "next_action": "User judges prompt adherence, image quality, DSH display suitability, and the requested-versus-actual size difference; after acceptance, run persistence and recovery operation 6.",
   "blockers": [
-    "manual_gate_e_internal_image_gen_fix_pending"
+    "manual_gate_e_image_gen_pending"
   ],
   "state_dir": "E:\\deepseek_harness\\.agent",
   "last_verification": {
-    "kind": "dsh_internal_image_generation",
-    "phase": "P2-operation5-internal-fix",
+    "kind": "codex_image_generation",
+    "phase": "P2-operation5",
     "passed": true,
     "manual_gate_status": "pending",
-    "completed_at": "2026-08-16T14:49:55.9160861Z",
-    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix\\verification.md"
+    "completed_at": "2026-08-16T14:32:02.3333268Z",
+    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-image-gen\\verification.md"
   },
   "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
   "phase2_baseline_verification": {
@@ -219,46 +219,7 @@
     "decode_passed": true,
     "machine_gate_passed": true,
     "manual_gate": "E",
-    "manual_gate_status": "accepted",
-    "result": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-image-gen\\evidence\\result.json"
-  },
-  "phase2_internal_image_gen_fix": {
-    "phase": "P2-operation5-internal-fix",
-    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix",
-    "reported_error": "backend returned no parseable result",
-    "root_causes": [
-      "desktop child PATH resolved Windows System32 bash before Git Bash and did not guarantee node",
-      "JSON-quoted Windows backslashes in the script path were consumed by the bash command layer"
-    ],
-    "changed_fields": [
-      "desktop main buildDshChildEnv prepends Git Bash and Node directories on Windows",
-      "installed dsh-codex-tools shellScriptPath converts script paths to forward slashes before shell.resolve"
-    ],
-    "installed_plugin_path": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-codex-tools\\tools.js",
-    "plugin_version": "1.0.1",
-    "live_pid": 40492,
-    "http_status": 200,
-    "zero_quota_probe": {
-      "backend": "chatgpt-subscription",
-      "ok": false,
-      "error": "invalid_path",
-      "response_parseable": true,
-      "tool_seconds": 0.7
-    },
-    "real_generation": {
-      "backend": "chatgpt-subscription",
-      "ok": true,
-      "model": "gpt-5.5",
-      "file_written": true,
-      "output_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix\\generated\\internal-dsh-blue-whale-app-icon.png",
-      "bytes": 1637568,
-      "actual_size": "1254x1254",
-      "sha256": "a65d0ad66224590e0a7fd14ea1228ed8a8c27c940a3685a7d0fd081c787a40f8"
-    },
-    "machine_gate_passed": true,
-    "manual_gate": "E-internal",
     "manual_gate_status": "pending",
-    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix\\verification.md",
-    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix\\rollback.ps1"
+    "result": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-image-gen\\evidence\\result.json"
   }
 }
