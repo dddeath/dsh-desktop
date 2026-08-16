@@ -1,0 +1,53 @@
+{
+  "idle": {
+    "pet": {
+      "inlineStyle": "position: fixed; right: 16px; bottom: 16px; z-index: 2147483000; width: var(--pet-size, 110px); height: var(--pet-size, 110px); font-family: system-ui, sans-serif; user-select: none; touch-action: none; --pet-size: 110px; --pet-opacity: 1;",
+      "inlineOpacity025": false,
+      "configuredOpacity": "1",
+      "computedOpacity": "1"
+    },
+    "composer": {
+      "status": "idle",
+      "pseudoContent": "none",
+      "pseudoDisplay": "none",
+      "pseudoWidth": "auto",
+      "pseudoHeight": "auto",
+      "pseudoBackground": "rgba(0, 0, 0, 0)",
+      "rect": {
+        "x": 552.46875,
+        "y": 421.75,
+        "width": 633.0521240234375,
+        "height": 185.8229217529297
+      }
+    }
+  },
+  "running": {
+    "pet": {
+      "inlineStyle": "position: fixed; right: 16px; bottom: 16px; z-index: 2147483000; width: var(--pet-size, 110px); height: var(--pet-size, 110px); font-family: system-ui, sans-serif; user-select: none; touch-action: none; --pet-size: 110px; --pet-opacity: 1;",
+      "inlineOpacity025": false,
+      "configuredOpacity": "1",
+      "computedOpacity": "1"
+    },
+    "composer": {
+      "status": "running",
+      "pseudoContent": "none",
+      "pseudoDisplay": "none",
+      "pseudoWidth": "auto",
+      "pseudoHeight": "auto",
+      "pseudoBackground": "rgba(0, 0, 0, 0)",
+      "rect": {
+        "x": 552.46875,
+        "y": 421.75,
+        "width": 633.0521240234375,
+        "height": 185.8229217529297
+      }
+    }
+  },
+  "assertions": {
+    "petUsesConfiguredOpacity": true,
+    "runningStateApplied": true,
+    "runningPseudoSuppressed": true,
+    "noRunningPseudoSurface": true
+  },
+  "screenshotPath": "E:\\deepseek_harness\\research\\ui-audit\\phase1-regression-pet-composer\\acceptance\\03-pet-composer-fixed.png"
+}

@@ -1,13 +1,21 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-16T12:30:09+00:00",
+  "updated_at": "2026-08-16T12:46:54+00:00",
   "status": "in_progress",
-  "current_phase": "P2",
-  "latest_result": "Phase 1 committed; Phase 2 baseline and updated plugin snapshot captured (13 profile dependencies, 48 runtime entries)",
-  "next_action": "Audit dsh-codex-tools, dsh-plugin-codex, and dsh-codex-connect against live source before selecting one candidate",
+  "current_phase": "P1",
+  "latest_result": "Pet opacity and running Composer regression fixes passed automated Electron acceptance",
+  "next_action": "User visually accepts the phase 1 regression screenshot, then resume P2 candidate audit",
   "blockers": [],
   "state_dir": "E:\\deepseek_harness\\.agent",
   "last_verification": {
+    "kind": "ui_regression_verification",
+    "phase": "P1",
+    "passed": true,
+    "completed_at": "2026-08-16T12:46:54+00:00",
+    "evidence_dir": "E:\\deepseek_harness\\research\\ui-audit\\phase1-regression-pet-composer"
+  },
+  "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
+  "phase2_baseline_verification": {
     "schema_version": 1,
     "kind": "baseline_verification",
     "started_at": "20260816T122745Z",
@@ -66,6 +74,5 @@
       }
     ],
     "evidence_dir": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify"
-  },
-  "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot"
+  }
 }

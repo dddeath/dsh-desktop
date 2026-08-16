@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "current_phase": "P2",
+  "current_phase": "P1",
   "phases": [
     {
       "id": "P1",
       "name": "阶段 1：桌面 UI 优化与验收",
-      "status": "completed",
+      "status": "in_progress",
       "inputs": [
         "research/ui-audit/phase1-completion/verification-phase1-ui.txt",
         "user acceptance feedback"
@@ -14,7 +14,9 @@
         "完成品牌栏、对话/轨迹/上下文选中态与左右侧栏表面统一",
         "完成 Composer、设置中心、响应式三栏和右侧栏拖拽同步",
         "完成桌面运行状态与安全重启入口，并移除运行状态文字特效",
-        "保存补丁、验证记录、验收图和可执行回滚"
+        "保存补丁、验证记录、验收图和可执行回滚",
+        "?? whale-girl ????? opacity:0.25 ????",
+        "?? Composer ?????? ::before ?????????????"
       ],
       "acceptance": [
         "生产脚本通过 node --check",
@@ -22,16 +24,20 @@
         "右侧栏可拖过视口 50% 且面板宽度持续跟随拖拽目标",
         "HTTP 入口返回 200",
         "补丁重放、压缩包重开与隔离回滚均通过",
-        "用户已验收阶段 1 UI"
+        "用户已验收阶段 1 UI",
+        "???? opacity ? --pet-opacity ????? 1?",
+        "running ??? Composer ::before ? content:none?display:none ??????"
       ],
-      "rollback_point": "c5046d59d8b63dedf2fc3a88fe3edd4a34d238f8",
-      "requires_verification": false,
-      "completion_evidence": "research/ui-audit/phase1-completion/verification-phase1-ui.txt"
+      "rollback_point": "e9ce9e447ea20f6a9c981191da6fe3ee438baa34",
+      "requires_verification": true,
+      "completion_evidence": "research/ui-audit/phase1-completion/verification-phase1-ui.txt",
+      "requires_user_acceptance": true,
+      "regression_evidence": "research/ui-audit/phase1-regression-pet-composer/verification-pet-composer-regression.txt"
     },
     {
       "id": "P2",
       "name": "阶段 2：Codex 额度视觉识别与图片生成插件入口",
-      "status": "in_progress",
+      "status": "pending",
       "inputs": [
         "research/plugins.json",
         "当前 web profile 插件清单",

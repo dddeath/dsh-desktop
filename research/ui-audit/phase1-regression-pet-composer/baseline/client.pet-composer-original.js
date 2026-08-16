@@ -222,13 +222,6 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-slot='details'] > di
   background: var(--maid-fix-surface-panel) !important;
 }
 
-/* Third-party desktop pets own their requested opacity through --pet-opacity.
-   whale-girl also writes opacity: .25 inline while its root is marked inert;
-   keep the user's configured opacity instead of washing out the sprite. */
-body[data-dsh-maid-atelier] [data-whale-girl] {
-  opacity: var(--pet-opacity, 1) !important;
-}
-
 /* Workbench/right sidebar: inner panes previously repainted the unified panel
    with an almost-white layer. Apply the left sidebar material through the
    complete pane stack so both sides share the same visible background. */
@@ -867,13 +860,22 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-composer-role='m
   border-radius: 999px !important;
   background: rgba(211, 222, 244, 0.72) !important;
 }
-/* Upstream uses the card's ::before for its ornamental frame. Reusing that
-   pseudo-element as a running badge inherits the frame geometry and creates a
-   large white layer over the input. DSH already renders the live agent state
-   above the composer, so the enhancer only keeps the machine-readable data. */
-body[data-dsh-maid-atelier] [data-composer-card='true'][data-dsh-composer-status]::before {
-  content: none !important;
-  display: none !important;
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-composer-card='true'][data-dsh-composer-status]:not([data-dsh-composer-status='idle'])::before {
+  content: attr(data-dsh-composer-status-label);
+  position: absolute;
+  top: -13px;
+  right: 22px;
+  z-index: 3;
+  min-height: 26px;
+  padding: 4px 11px;
+  border: 1px solid rgba(70, 98, 161, 0.3);
+  border-radius: 999px;
+  background: rgba(246, 249, 255, 0.98);
+  color: #24365f;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 16px;
+  box-shadow: 0 5px 16px rgba(28, 46, 91, 0.16);
 }
 
 /* Opening the workbench reduces the main column even on a wide viewport.
