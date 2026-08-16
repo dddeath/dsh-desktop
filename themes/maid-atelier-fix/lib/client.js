@@ -55,6 +55,16 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sessionRow'][aria
   background-color: #33487f !important;
   color: #ffffff !important;
 }
+/* active workspace folder: navy + white (selected), rest stay dark */
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-maid-workspace-active] {
+  background-color: #33487f !important;
+  color: #ffffff !important;
+  border-radius: 8px;
+}
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-maid-workspace-active] [class*='folder'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='folderActive'] {
+  color: #ffffff !important;
+}
 
 /* 工作区 label + workspace folder name: dark */
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='groupSection'],
@@ -63,8 +73,7 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sectionLabel'] {
   color: #142044 !important;
 }
 
-/* top bar: ONE consistent opaque light surface + dark text everywhere
-   (fixes 标准模式 white text and the tab/session.log transparency mismatch) */
+/* top bar: ONE consistent SEMI-TRANSPARENT light surface + dark text */
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) .wSkVaW_header,
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='titleRow'],
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='titleCluster'],
@@ -72,7 +81,7 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='crumbs'],
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='headerActions'],
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='headerUtilities'],
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [role='tablist'] {
-  background-color: #eef2fa !important;
+  background-color: rgba(238, 242, 250, 0.72) !important;
   color: #142044 !important;
 }
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='crumb'],
@@ -81,15 +90,17 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='header'] [class*=
   color: #142044 !important;
 }
 
-/* tabs: sit on the opaque strip, dark text, active pill */
+/* tabs: light-blue fill for all, balanced padding, active = deeper + gold border */
 body[data-dsh-maid-atelier] [role='tab'] {
-  background-color: transparent !important;
+  background-color: #e2e9f7 !important;
   border: 1px solid var(--dsw-alias-border-l2);
   border-radius: 9px;
   color: #142044 !important;
+  padding: 6px 14px !important;
+  line-height: 18px !important;
 }
 body[data-dsh-maid-atelier] [role='tab'][aria-selected='true'] {
-  background-color: #dbe3f4 !important;
+  background-color: #d3ddf2 !important;
   border-color: var(--dsw-alias-border-l3);
   color: #142044 !important;
 }
@@ -100,10 +111,18 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sessionLogButton'
   border: 1px solid var(--dsw-alias-border-l2);
 }
 
-/* settings + brand: consistent dark text (same family as new session) */
+/* settings + brand: button frame matching the new-session button (rounded,
+   subtle border + porcelain fill; brand keeps its wordmark but gets a frame) */
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='trigger'],
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='brand'] {
   color: #1e2a52 !important;
+  border: 1px solid rgba(71, 91, 145, 0.35) !important;
+  border-radius: 10px !important;
+  background-color: rgba(255, 253, 248, 0.55) !important;
+}
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='trigger']:hover,
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='brand']:hover {
+  background-color: rgba(255, 253, 248, 0.85) !important;
 }
 
 /* empty / read-only text readable in light mode */
