@@ -1,7 +1,7 @@
 {
   "name": "dsh-maid-atelier-fix",
-  "description": "Maid Atelier appearance and character adapter; generic desktop behavior is supplied by dsh-desktop-ui-compat.",
-  "version": "0.3.0",
+  "description": "Maid Atelier desktop UI fixes, responsive settings layout, runtime status, and a read-only Agent tool inventory.",
+  "version": "0.2.3",
   "private": true,
   "type": "module",
   "main": "lib/index.js",
@@ -16,7 +16,9 @@
     },
     "client": {
       "inject": [
-        "dsh-desktop-ui-compat"
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-trajectory"
       ],
       "platform": "web"
     }

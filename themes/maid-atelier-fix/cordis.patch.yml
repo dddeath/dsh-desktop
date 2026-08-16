@@ -1,5 +1,5 @@
-# Override layer that runs after the maid-atelier skin and corrects its
-# light-mode coverage. Installed as a sibling bundle so it survives skin updates.
+# Maid-specific appearance and character adapter. Generic functional surfaces
+# are owned by dsh-desktop-ui-compat so switching themes cannot leak Maid rules.
 - insert:
     - id: ui-skin-maid-atelier-fix
       name: 'dsh-maid-atelier-fix'

@@ -1,0 +1,5 @@
+# Theme-neutral desktop UI capability layer. It remains mounted while visual
+# skin rows are switched, so functional layout behavior has one stable owner.
+- insert:
+    - id: ui-desktop-compat
+      name: 'dsh-desktop-ui-compat'
