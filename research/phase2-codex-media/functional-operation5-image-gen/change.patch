@@ -1,0 +1,61 @@
+diff --git a/.agent/STATE.json b/.agent/STATE.json
+index 0a06d33..9776df7 100644
+--- a/.agent/STATE.json
++++ b/.agent/STATE.json
+@@ -1,21 +1,21 @@
+ {
+   "schema_version": 1,
+-  "updated_at": "2026-08-16T14:21:57.8790286Z",
++  "updated_at": "2026-08-16T14:32:02.3333268Z",
+   "status": "in_progress",
+   "current_phase": "P2",
+-  "latest_result": "User accepted both sidebar character synchronization fixes; ChatGPT subscription login was confirmed and image_vision returned a parseable result for the accepted UI screenshot.",
+-  "next_action": "User judges the image_vision result for subject, text, layout, and detail accuracy; after acceptance, run one image_gen test with the user-approved prompt.",
++  "latest_result": "Image vision manual gate D was accepted; image_gen returned a PNG that decoded successfully. Requested size was 1024x1024 and actual size is 1254x1254.",
++  "next_action": "User judges prompt adherence, image quality, DSH display suitability, and the requested-versus-actual size difference; after acceptance, run persistence and recovery operation 6.",
+   "blockers": [
+-    "manual_gate_d_vision_pending"
++    "manual_gate_e_image_gen_pending"
+   ],
+   "state_dir": "E:\\deepseek_harness\\.agent",
+   "last_verification": {
+-    "kind": "codex_oauth_image_vision",
+-    "phase": "P2-functional-operations-3-4",
++    "kind": "codex_image_generation",
++    "phase": "P2-operation5",
+     "passed": true,
+     "manual_gate_status": "pending",
+-    "completed_at": "2026-08-16T14:21:57.8790286Z",
+-    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation3-4-oauth-vision\\verification.md"
++    "completed_at": "2026-08-16T14:32:02.3333268Z",
++    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-image-gen\\verification.md"
+   },
+   "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
+   "phase2_baseline_verification": {
+@@ -201,7 +201,25 @@
+     "response_parseable": true,
+     "machine_gate_passed": true,
+     "manual_gate": "D",
+-    "manual_gate_status": "pending",
++    "manual_gate_status": "accepted",
+     "result": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation3-4-oauth-vision\\evidence\\vision-result.json"
++  },
++  "phase2_image_gen_operation": {
++    "phase": "P2-operation5",
++    "tool": "image_gen",
++    "model": "gpt-5.5",
++    "prompt_file": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-image-gen\\prompt.txt",
++    "requested_size": "1024x1024",
++    "actual_size": "1254x1254",
++    "size_match": false,
++    "output_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-image-gen\\generated\\dsh-maid-whale.png",
++    "output_sha256": "ea4c5eb4c8d80d316b97b8ae6bc5d0ca5414b1da4f8790c44e576371d4c88577",
++    "bytes": 2375371,
++    "call_exit": 0,
++    "decode_passed": true,
++    "machine_gate_passed": true,
++    "manual_gate": "E",
++    "manual_gate_status": "pending",
++    "result": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-image-gen\\evidence\\result.json"
+   }
+ }

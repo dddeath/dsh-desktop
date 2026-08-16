@@ -1,0 +1,7 @@
+{
+  "auth_sha256_before": "b915374d71b3131183816d220bf4c1baa56602d91d03c1943bed488d2584373c",
+  "auth_sha256_after": "b915374d71b3131183816d220bf4c1baa56602d91d03c1943bed488d2584373c",
+  "auth_hash_stable": true,
+  "token_content_recorded": false,
+  "image_sha256": "ea4c5eb4c8d80d316b97b8ae6bc5d0ca5414b1da4f8790c44e576371d4c88577"
+}
