@@ -1,0 +1,1759 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-16T17:56:35.695Z",
+  "profileRoot": "C:/Users/19739/.dsh/profiles/web",
+  "profilePackage": {
+    "path": "C:\\Users\\19739\\.dsh\\profiles\\web\\package.json",
+    "sha256": "35F6C56ED0F296F4D74D2D6392342CB005EB17F0DD13998CBD732F49623D663C"
+  },
+  "lockfile": {
+    "path": "C:\\Users\\19739\\.dsh\\profiles\\web\\pnpm-lock.yaml",
+    "sha256": "ED0EC1581354108EA8313FC9E3A9C5902294C2BF1C0D37C7F2FF5E553AB61BDF"
+  },
+  "profileOverlays": {
+    "cordis": {
+      "relativePath": "cordis.yml",
+      "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\cordis.yml",
+      "bytes": 223,
+      "sha256": "C300DCF2EBC5F02062D6591268D29D3DB6FE45E0CB138F5467276FE2BA06076E",
+      "preview": "# dsh profile root — an empty entry list. The tree is composed as patches:\n# each bundle in package.json's dsh.profile.bundles, then cordis.patch.yml, then any\n# --patch overlays. Edit cordis.patch.yml, not this file.\n[]\n"
+    },
+    "cordisPatch": {
+      "relativePath": "cordis.patch.yml",
+      "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\cordis.patch.yml",
+      "bytes": 255,
+      "sha256": "9374D4607541E9FDDFCCC1B0B2E841BA10CA2D595D9B0C7AA3B53844FE23A5C8",
+      "preview": "﻿# Your patch layer for this dsh profile, applied after every bundle layer:\n# a top-level YAML array of loader patch entries (id-targeted config\n# overrides, disables, and insert lists; `!!js` expressions allowed).\n- id: auto-continue\n  disabled: true\r\n"
+    },
+    "marketState": {
+      "disabledSkins": [
+        "dsh-arknights"
+      ]
+    },
+    "marketHotLayers": [
+      {
+        "relativePath": "hot-1.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\.dsh-market\\hot-1.yml",
+        "bytes": 54,
+        "sha256": "44F9A3653D4D91BBD6171FE4B5E02103CDA7D982D7C7E63684103ACF3CCD2A1A",
+        "preview": "- id: 'mkt-ui-skin-arknights'\n  name: 'dsh-arknights'\n"
+      }
+    ]
+  },
+  "bundleOrder": [
+    {
+      "index": 0,
+      "name": "@deepseek-ai/dsh-base",
+      "kind": "official"
+    },
+    {
+      "index": 1,
+      "name": "@deepseek-ai/dsh-web-app",
+      "kind": "official"
+    },
+    {
+      "index": 2,
+      "name": "dshmarket",
+      "kind": "profile"
+    },
+    {
+      "index": 3,
+      "name": "dsh-find-plugin",
+      "kind": "profile"
+    },
+    {
+      "index": 4,
+      "name": "@liustack/modlens",
+      "kind": "profile"
+    },
+    {
+      "index": 5,
+      "name": "dsh-at-file",
+      "kind": "profile"
+    },
+    {
+      "index": 6,
+      "name": "dsh-better-sidebar",
+      "kind": "profile"
+    },
+    {
+      "index": 7,
+      "name": "dsh-context",
+      "kind": "profile"
+    },
+    {
+      "index": 8,
+      "name": "dsh-notification",
+      "kind": "profile"
+    },
+    {
+      "index": 9,
+      "name": "dsh-open-in-vscode",
+      "kind": "profile"
+    },
+    {
+      "index": 10,
+      "name": "whale-girl",
+      "kind": "profile"
+    },
+    {
+      "index": 11,
+      "name": "@dsh-external/dsh-client-ui-skin-maid-atelier",
+      "kind": "profile"
+    },
+    {
+      "index": 12,
+      "name": "dsh-maid-atelier-fix",
+      "kind": "profile"
+    },
+    {
+      "index": 13,
+      "name": "dsh-codex-tools",
+      "kind": "profile"
+    },
+    {
+      "index": 14,
+      "name": "dsh-desktop-ui-compat",
+      "kind": "profile"
+    },
+    {
+      "index": 15,
+      "name": "dsh-arknights",
+      "kind": "profile"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "@dsh-external/dsh-client-ui-skin-maid-atelier",
+      "declared": "github:Small-tailqwq/dsh-deep-whale#path:/maid-atelier",
+      "lockSpecifier": "github:Small-tailqwq/dsh-deep-whale#path:/maid-atelier",
+      "lockResolution": "https://codeload.github.com/Small-tailqwq/dsh-deep-whale/tar.gz/cdb4da4f9c708571c6303cc1053185c62c8b617b#path:/maid-atelier",
+      "installedVersion": "0.0.1",
+      "description": "Hot-pluggable Deep-sea maid atelier skin with character backdrop and ornamental navy UI for the dsh web GUI",
+      "license": "CC-BY-NC-SA-4.0",
+      "repository": null,
+      "homepage": null,
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\@dsh-external\\dsh-client-ui-skin-maid-atelier",
+      "realPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\@dsh-external\\dsh-client-ui-skin-maid-atelier",
+      "linked": false,
+      "profileBundleIndex": 11,
+      "profileBundleEnabled": true,
+      "main": "lib/index.js",
+      "exports": {
+        ".": "./lib/index.js",
+        "./client": "./lib/client.js",
+        "./skin.json": "./skin.json",
+        "./package.json": "./package.json"
+      },
+      "dsh": {
+        "bundle": {
+          "patch": "./cordis.patch.yml"
+        },
+        "client": {
+          "inject": [],
+          "platform": "web"
+        }
+      },
+      "scripts": {
+        "build": "tsdown",
+        "test": "vitest run"
+      },
+      "manifestSha256": "37FCFE5C644E1B6C45ADF8D445DBB49EA3C0B338317AC40A4453D94AB8D57266",
+      "entry": {
+        "relativePath": "lib/index.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\@dsh-external\\dsh-client-ui-skin-maid-atelier\\lib\\index.js",
+        "bytes": 172,
+        "sha256": "A40AC37EF8EFF572BDB1849F84C013E0DB00CBB66E90B53DBC33EEE12CA41224",
+        "preview": "//#region src/index.ts\n/** Host loader entry for the browser-only skin plugin. */\n/** Provides no host-side behavior. */\nfunction apply() {}\n//#endregion\nexport { apply };\n",
+        "staticInject": []
+      },
+      "client": {
+        "relativePath": "lib/client.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\@dsh-external\\dsh-client-ui-skin-maid-atelier\\lib\\client.js",
+        "bytes": 2726803,
+        "sha256": "4455DF839E9C11CB18BC6C33BA8E5960EB67C504074D2C708227F7A8B2F048DC",
+        "preview": "window.__ModuleLoader__.load({\n\tid: \"@dsh-external/dsh-client-ui-skin-maid-atelier\",\n\tfactory: (require) => {\n\t\tvar module = { exports: {} };\n\t\tvar exports = module.exports;\n\t\tObject.defineProperty(exports, Symbol.toStringTag, { value: \"Module\" });\n\t\t//#region src/client/art.ts\n\t\t/**\n\t\t* Generated sidebar and ornamental raster assets. The full-viewport day and\n\t\t* night backgrounds are generated separately from the source PNG files.\n\t\t*/\n\t\tconst MAID_ATELIER_CHIBI = \"data:image/webp;base64,UklGRkxlAQBXRUJQVlA4WAoAAAAQAAAAawIAKAIAQUxQSPpBAAAB/yckSPD/eGtEpO7hj///9VLi/7vfH2eG7g5BFGxQxBZBd7HWzl3dRexau7tXdG3XtTvXDuwubLABC7AI6Y6ZeTzuf5yYM2fmxIvP5/P9RvR/AvD/h5ZgrquwkGZE/WnGVUxII5Fu1amWa2+08ZBNNhkyaN3uKSKdNK4qQjOkd1l32HaH3vPIw09+/v1Pk6dM/nHSN28/dNv1p2yzeXcAoHHVD9IANOs19NDrXp8wZ8EK1b9m1oxXbz5ty+4AaFylgwTQccOj7vroj+XK6O4e2d3dlV47861/7doNALnKBgm03uyUl6bWSlK4R2blHhHhkjT/vUu2aQGQq2LQAHQ94KnfQ5JnjJzdI1PGiAhJv9+3axuAq14YkNr41LeWSOHurvxGRGRKjwhp7qM7NQO5agWB5sNvnCzJ61ySfO7Ed9+77dTTTz/1lJNPOfXMM+/8+JMZSg+PLJIipFk3rg1wFQoSNvzemZLcJfkvL1971I5rd+pUjRyru3Xb9sgz7/96iaSIyCJFSOP3S8FWmSCw9rXTpXCXfNJtJw7pgMyWIzI2X2OfC96YK8kjixSu+Zd3hK0iQbQ/6ispwqXlb528NgDQjCSRI0kzA4DO2178aa0U2aRQPLEeuCoEgSGPr1REhOreO6gzQBqRb"
+      },
+      "patch": {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\@dsh-external\\dsh-client-ui-skin-maid-atelier\\cordis.patch.yml",
+        "bytes": 412,
+        "sha256": "0DF91D79178A71B18AA8508594E1CACD2F87DC626444B0A9BC32266F211F95ED",
+        "preview": "# maid-atelier skin bundle patch: inserts its public dsh.client entry into the web plugin roster.\n# The bundle is the official dsh plugin shape — install it with\n# `dsh plugin --profile <name> add <path-or-git-url>`; mutual exclusion between\n# skins is managed by scripts/dsh-skin (home-layer disabled rows).\n- insert:\n    - id: ui-skin-maid-atelier\n      name: '@dsh-external/dsh-client-ui-skin-maid-atelier'\n"
+      }
+    },
+    {
+      "name": "@liustack/modlens",
+      "declared": "^3.16.7",
+      "lockSpecifier": "^3.16.7",
+      "lockResolution": "3.16.7",
+      "installedVersion": "3.16.7",
+      "description": "Plug-in vision for text-only LLMs, powered by the free Antigravity CLI",
+      "license": "MIT",
+      "repository": "git+https://github.com/liustack/modlens.git",
+      "homepage": "https://github.com/liustack/modlens#readme",
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\@liustack\\modlens",
+      "realPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\@liustack\\modlens",
+      "linked": false,
+      "profileBundleIndex": 4,
+      "profileBundleEnabled": true,
+      "main": null,
+      "exports": {
+        ".": "./dsh/index.js",
+        "./dsh": "./dsh/index.js",
+        "./package.json": "./package.json",
+        "./client": "./dsh/client.js"
+      },
+      "dsh": {
+        "bundle": {
+          "patch": "./cordis.patch.yml"
+        },
+        "client": {
+          "inject": [],
+          "platform": "web",
+          "immediately": true
+        }
+      },
+      "scripts": {
+        "dev": "vite build --watch",
+        "build": "vite build",
+        "typecheck": "tsc --noEmit",
+        "test": "vitest run",
+        "coverage": "vitest run --coverage",
+        "lint": "biome check src scripts dsh",
+        "format": "biome check --write src scripts",
+        "eval": "node evals/run.mjs",
+        "release": "node scripts/release.mjs",
+        "prepublishOnly": "pnpm build",
+        "docs:list": "node scripts/docs-list.js"
+      },
+      "manifestSha256": "84A51A479164A1588DB3F2F574488646C445836DD372010216CE369384031A55",
+      "entry": {
+        "relativePath": "dsh/index.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\@liustack\\modlens\\dsh\\index.js",
+        "bytes": 50702,
+        "sha256": "E684D9C68575F1F87B4DCA0924CD9BA27960F681AF550C6603B2719E1EC20481",
+        "preview": "// DeepSeek Harness (dsh) plugin: registers a modlens_read_image tool backed\n// by the modlens CLI that ships in this very package. dsh models are\n// text-only, so the tool is the vision bridge; unlike prompt-triggered\n// skills, a registered tool schema reaches the model on every request, so\n// there is no trigger gamble. The name is ours rather than the host's\n// `read_image` (see the registration in apply, and issue #34).\n// The engine is spawned from ../dist/main.js inside this package:\n// no PATH lookup, no npx, the plugin and its engine version-lock together.\n//\n// Loaded via the cordis.patch.yml row `@liustack/modlens/dsh` (see the\n// package.json `dsh.bundle` manifest). Providers, reuse grants, and guard\n// rules keep living in ~/.modlens/config.json, shared with every harness.\nimport { spawn } from 'node:child_process'\nimport { chmodSync, lstatSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'\nimport { homedir } from 'node:os'\nimport { dirname, join } from 'node:path'\nimport { fileURLToPath } from 'node:url'\n\nconst CLI_PATH = fileURLToPath(new URL('../dist/main.js', import.meta.url))\n// Kept in lockstep with src/schema.ts by a repo test; the plugin file cannot\n/",
+        "staticInject": [
+          "tools",
+          "agents",
+          "attachments",
+          "llm"
+        ]
+      },
+      "client": {
+        "relativePath": "dsh/client.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\@liustack\\modlens\\dsh\\client.js",
+        "bytes": 31341,
+        "sha256": "A076512615D970BCD081E631E245C3EA8259AE4CE95DE39B78092BA64618C22B",
+        "preview": "// Browser half of the modlens dsh plugin: paste-to-path.\n//\n// A capture-phase paste listener runs before the composer's own handler.\n// When the clipboard carries image files, the default intake (attachment ->\n// host image admission -> \"model does not support images\" for text-only\n// models) is suppressed; the bytes go to the plugin's host route\n// (POST /modlens/paste), land as a private temp file, and the returned path\n// is inserted into the composer as plain text. A text-only model then sees\n// exactly what Pi, OpenCode, and Claude Code hand their models: a file path,\n// which is also the modlens skill's and the read tool's primary trigger.\n//\n// Hand-written in the lazy-CJS bundle protocol (window.__ModuleLoader__.load\n// with a factory returning cordis-plugin exports), so no build step and no\n// imports from dsh client packages — the same zero-dependency stance as the\n// host half.\nwindow.__ModuleLoader__.load({\n  id: '@liustack/modlens',\n  factory: (require) => {\n    var module = { exports: {} }\n    var exports = module.exports\n\n    function imageFilesOf(event) {\n      var items = event.clipboardData?.items\n      if (!items) return []\n      var files = []\n      for (var i"
+      },
+      "patch": {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\@liustack\\modlens\\cordis.patch.yml",
+        "bytes": 213,
+        "sha256": "B190EF90625C1417A7A798B2982A84C0219F0030F0FEA11133C7602815C3F00B",
+        "preview": "# dsh bundle layer: mount the modlens vision plugin (dsh/index.js via the\n# package root export; bin stays the CLI, nothing imports the root otherwise).\n- insert:\n    - id: modlens\n      name: '@liustack/modlens'\n"
+      }
+    },
+    {
+      "name": "dsh-arknights",
+      "declared": "github:DocJlm/dsh-arknights#path:/skins/pramanix-eyjafjalla",
+      "lockSpecifier": "github:DocJlm/dsh-arknights#path:/skins/pramanix-eyjafjalla",
+      "lockResolution": "https://codeload.github.com/DocJlm/dsh-arknights/tar.gz/6419ea4d249945daa4bc05112b32ee868f5d2d6c#path:/skins/pramanix-eyjafjalla",
+      "installedVersion": "0.1.0",
+      "description": "Unofficial non-commercial Pramanix and Eyjafjalla astral garden skin for DeepSeek Harness Web",
+      "license": "MIT",
+      "repository": null,
+      "homepage": null,
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-arknights",
+      "realPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-arknights",
+      "linked": false,
+      "profileBundleIndex": 15,
+      "profileBundleEnabled": true,
+      "main": "lib/index.js",
+      "exports": {
+        ".": "./lib/index.js",
+        "./client": "./lib/client.js",
+        "./skin.json": "./skin.json",
+        "./package.json": "./package.json"
+      },
+      "dsh": {
+        "bundle": {
+          "patch": "./cordis.patch.yml"
+        },
+        "client": {
+          "inject": [],
+          "platform": "web"
+        }
+      },
+      "scripts": {
+        "clean": "node scripts/clean-lib.mjs",
+        "embed-assets": "node scripts/embed-assets.mjs",
+        "build": "pnpm clean && pnpm embed-assets && tsdown && pnpm verify",
+        "test": "vitest run",
+        "typecheck": "tsc --noEmit",
+        "verify": "node scripts/verify-package.mjs"
+      },
+      "manifestSha256": "B0CF08DCC744415CAC8CE241D50486ABE3A399982D939CCFF4BD350556F297A9",
+      "entry": {
+        "relativePath": "lib/index.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-arknights\\lib\\index.js",
+        "bytes": 124,
+        "sha256": "E86EF2F1780D4FFF0A114EEFA196CAE2AE25B32F95C9DC3271B07E8A5998AD9C",
+        "preview": "//#region src/index.ts\n/** Host half of the browser-only skin bundle. */\nfunction apply() {}\n//#endregion\nexport { apply };\n",
+        "staticInject": []
+      },
+      "client": {
+        "relativePath": "lib/client.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-arknights\\lib\\client.js",
+        "bytes": 7531322,
+        "sha256": "D0D24A18EC0A93FAA815D7DA59285050EEB7A5875BA277088C913B57A141120B",
+        "preview": "window.__ModuleLoader__.load({\n\tid: \"dsh-arknights\",\n\tfactory: (require) => {\n\t\tvar module = { exports: {} };\n\t\tvar exports = module.exports;\n\t\tObject.defineProperty(exports, Symbol.toStringTag, { value: \"Module\" });\n\t\t//#region src/client/art.generated.ts\n\t\t/** Generated by scripts/embed-assets.mjs. Do not edit by hand. */\n\t\tconst ARKNIGHTS_BACKGROUND_LIGHT = \"data:image/webp;base64,UklGRlYBDwBXRUJQVlA4IEoBDwAQNCOdASoACuEEPhkKhEEhBWZ/gAQAYSxtXI5/NfWf6r9ufMe7o/Tv/T/nfzB97f2y4/+V5XPprfV/b4R/679xf+T7aHx3/GftB1Fn/D1tfDP+17Iv5B/yPWv/2eo39J+1/w6syCHtoMIfzb+jcSAy/pO8w/2P23bZAZf93zGuSfzf/M/27x9/TfAG6v+wB+nv+49aPAG9s/wHsB/sN/3vS2+qf8z+9+of9L/mv+t/xn5OfRN/Rv9B66/7L+qXsBfnH9t/33uBfp5/vf7h/g/ft/Y/+v/YedD9h/z3/u/0PuR/YD/tf4v/Oe+17SHeza1fevLzlp1NMr+BP6P+s/zv/G/xf7nfJZyL1Veu/uP+M/5n+I/dn5V/+n/Vfmd1P9Q/+b/Qf7X9x/ep9I/e/+d/jP9L/7/9X////v9yf87/5/9L/qPhL/Tf8b/4v8p/qf/5/yPsN/n39q/5X+A/z3/5/3v////H4w/6v7jf8X///MH/Gf9T9yf+X////Z9Fv7D/uf/x/v/+H////N9Lv/V//H/K/4n///5v1M/rn/H//H/D/4X///632J/0b/L/+v/Rf7j/9f8H6yv/t//P/Z8OH+v/+f/8/8fwa/u///f+d/zffo/dD/mf///4/b3/YP+j/+f+B/xv///6fsm/qP+l/9v+r/2n///6/0Af/726f4B/++kf8V/73/H/tfqH+Sf0n/D/v/+l/4P+K/9nqn+OfOv3z+2/5H/Vf3T/8f7n7B/qn+3/xf+c/7H54+6j1T+O/3H+I/y//Z/zH/7/7"
+      },
+      "patch": {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-arknights\\cordis.patch.yml",
+        "bytes": 152,
+        "sha256": "C3898326C907952ED33985577D5123BA8D22E248077668B155E2EAB58EC6C8D2",
+        "preview": "# Install-time patch: registers the public browser client entry in the DSH web profile.\n- insert:\n    - id: ui-skin-arknights\n      name: dsh-arknights\n"
+      }
+    },
+    {
+      "name": "dsh-at-file",
+      "declared": "github:omdsh-dev/dsh-at-file",
+      "lockSpecifier": "github:omdsh-dev/dsh-at-file",
+      "lockResolution": "https://codeload.github.com/omdsh-dev/dsh-at-file/tar.gz/e0db46f643ceceed5a9001e1a643b08855672b0d",
+      "installedVersion": "0.6.1",
+      "description": "Codex-style @path references for the DeepSeek Harness web GUI: search workspace paths without injecting file content",
+      "license": "MIT",
+      "repository": null,
+      "homepage": null,
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-at-file",
+      "realPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-at-file",
+      "linked": false,
+      "profileBundleIndex": 5,
+      "profileBundleEnabled": true,
+      "main": "lib/index.js",
+      "exports": {
+        ".": {
+          "types": "./lib/types/index.d.ts",
+          "default": "./lib/index.js"
+        },
+        "./client": {
+          "types": "./lib/types/client/index.d.ts",
+          "default": "./lib/client.js"
+        },
+        "./invariant": {
+          "types": "./lib/types/invariant.d.ts",
+          "default": "./lib/invariant.js"
+        },
+        "./package.json": "./package.json"
+      },
+      "dsh": {
+        "bundle": {
+          "patch": "./cordis.patch.yml"
+        },
+        "client": {
+          "platform": "web",
+          "inject": [
+            "@deepseek-ai/dsh-client-runtime",
+            "@deepseek-ai/dsh-client-ui-input-trigger",
+            "@deepseek-ai/dsh-client-ui-slots",
+            "@deepseek-ai/dsh-client-locale"
+          ]
+        }
+      },
+      "scripts": {
+        "build": "node build.mjs",
+        "typecheck": "tsc --noEmit",
+        "test": "vitest run",
+        "check": "pnpm run typecheck && pnpm run test && pnpm run build"
+      },
+      "manifestSha256": "A83A24A9A70255CFAFCD42ECB20DA8169853C730178507F0B9F6D478897B4EF0",
+      "entry": {
+        "relativePath": "lib/index.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-at-file\\lib\\index.js",
+        "bytes": 594535,
+        "sha256": "840450885AA87DC748FD8AE664389AC38FB2724399655187C65C609486657015",
+        "preview": "var __create = Object.create;\nvar __defProp = Object.defineProperty;\nvar __getOwnPropDesc = Object.getOwnPropertyDescriptor;\nvar __knownSymbol = (name2, symbol2) => (symbol2 = Symbol[name2]) ? symbol2 : Symbol.for(\"Symbol.\" + name2);\nvar __typeError = (msg) => {\n  throw TypeError(msg);\n};\nvar __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;\nvar __name = (target, value) => __defProp(target, \"name\", { value, configurable: true });\nvar __export = (target, all) => {\n  for (var name2 in all)\n    __defProp(target, name2, { get: all[name2], enumerable: true });\n};\nvar __decoratorStart = (base) => [, , , __create(base?.[__knownSymbol(\"metadata\")] ?? null)];\nvar __decoratorStrings = [\"class\", \"method\", \"getter\", \"setter\", \"accessor\", \"field\", \"value\", \"get\", \"set\"];\nvar __expectFn = (fn) => fn !== void 0 && typeof fn !== \"function\" ? __typeError(\"Function expected\") : fn;\nvar __decoratorContext = (kind, name2, done, metadata, fns) => ({ kind: __decoratorStrings[kind], name: name2, metadata, addInitializer: (fn) => done._ ? __typeError(\"Already initialized\") : fns.push(__expectFn(fn ||",
+        "staticInject": []
+      },
+      "client": {
+        "relativePath": "lib/client.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-at-file\\lib\\client.js",
+        "bytes": 606748,
+        "sha256": "E7C7D2B13257345AED71A2692C094AB156F1C362BA8EA8116D2FBBC574DDBA1F",
+        "preview": "window.__ModuleLoader__.load({ id: 'dsh-at-file', factory: (require) => { var module = { exports: {} }; var exports = module.exports;\n\"use strict\";\nvar __defProp = Object.defineProperty;\nvar __getOwnPropDesc = Object.getOwnPropertyDescriptor;\nvar __getOwnPropNames = Object.getOwnPropertyNames;\nvar __hasOwnProp = Object.prototype.hasOwnProperty;\nvar __export = (target, all) => {\n  for (var name in all)\n    __defProp(target, name, { get: all[name], enumerable: true });\n};\nvar __copyProps = (to, from, except, desc) => {\n  if (from && typeof from === \"object\" || typeof from === \"function\") {\n    for (let key of __getOwnPropNames(from))\n      if (!__hasOwnProp.call(to, key) && key !== except)\n        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });\n  }\n  return to;\n};\nvar __toCommonJS = (mod) => __copyProps(__defProp({}, \"__esModule\", { value: true }), mod);\n\n// src/client/index.ts\nvar index_exports = {};\n__export(index_exports, {\n  apply: () => apply,\n  inject: () => inject\n});\nmodule.exports = __toCommonJS(index_exports);\nvar import_client = require(\"@deepseek-ai/dsh-client-runtime/client\");\n\n// node_modules/zod/v4/cla"
+      },
+      "patch": {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-at-file\\cordis.patch.yml",
+        "bytes": 56,
+        "sha256": "2BA66827FB5825230BBE9AAD2E62150A4B6F78446330FFAFDADA53D4632FE484",
+        "preview": "- insert:\n    - id: dsh-at-file\n      name: dsh-at-file\n"
+      }
+    },
+    {
+      "name": "dsh-better-sidebar",
+      "declared": "^0.12.2",
+      "lockSpecifier": "^0.12.2",
+      "lockResolution": "0.12.2",
+      "installedVersion": "0.12.2",
+      "description": "DSH web plugin: a VSCode-like right sidebar (explorer / editor / terminal / git / browser), isolated per conversation session. Exposes a service for other plugins to register sidebar tabs and file viewers.",
+      "license": "MIT",
+      "repository": "https://github.com/omdsh-dev/DSH-better-sidebar",
+      "homepage": null,
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-better-sidebar",
+      "realPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-better-sidebar",
+      "linked": false,
+      "profileBundleIndex": 6,
+      "profileBundleEnabled": true,
+      "main": "lib/index.js",
+      "exports": {
+        ".": {
+          "types": "./lib/types/index.d.ts",
+          "default": "./lib/index.js"
+        },
+        "./invariant": {
+          "types": "./lib/types/invariant.d.ts",
+          "default": "./lib/invariant.js"
+        },
+        "./client": {
+          "types": "./lib/types/client/index.d.ts",
+          "default": "./lib/client.js"
+        },
+        "./client/service": {
+          "types": "./lib/types/client/service.d.ts",
+          "default": "./lib/client.js"
+        },
+        "./client/api": {
+          "types": "./lib/types/client/service.d.ts",
+          "default": "./lib/client.js"
+        },
+        "./src/*": "./src/*",
+        "./package.json": "./package.json"
+      },
+      "dsh": {
+        "bundle": {
+          "patch": "./cordis.patch.yml"
+        },
+        "client": {
+          "inject": [
+            "@deepseek-ai/dsh-client-runtime",
+            "@deepseek-ai/dsh-client-locale",
+            "@deepseek-ai/dsh-client-ui-slots",
+            "@deepseek-ai/dsh-client-ui-conversation"
+          ],
+          "platform": "web"
+        }
+      },
+      "scripts": {
+        "build": "rm -rf lib && tsc -p tsconfig.build.json && tsdown",
+        "prepublishOnly": "pnpm build",
+        "typecheck": "tsc --noEmit",
+        "bundle": "tsdown",
+        "watch": "tsdown --watch",
+        "prepare": "tsdown",
+        "test": "vitest run",
+        "test:mount": "bash scripts/e2e-mount.sh",
+        "check:consumer-types": "bash scripts/check-consumer-types.sh"
+      },
+      "manifestSha256": "92D0338F8EF72D2C09BA27DF3CB9917A1C756A68D9B5E63D62C4EEFF7508CEB9",
+      "entry": {
+        "relativePath": "lib/index.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-better-sidebar\\lib\\index.js",
+        "bytes": 93447,
+        "sha256": "C68727AD189AAD4BF807A268E3DD29F4E954869CC4B8978CDD89CDA127845567",
+        "preview": "import { createRequire } from \"node:module\";\nimport { mkdir, open, opendir, readFile, rename, rm, stat, writeFile } from \"node:fs/promises\";\nimport { basename, dirname, extname, isAbsolute, join, resolve } from \"node:path\";\nimport { WebSocket, WebSocketServer } from \"ws\";\nimport z from \"schemastery\";\nimport { createHash, randomUUID } from \"node:crypto\";\nimport { fileURLToPath } from \"node:url\";\nimport { spawn } from \"node:child_process\";\nimport { SettingsConflictError, settingsNamespace } from \"@deepseek-ai/dsh-settings\";\nimport { chmodSync, existsSync } from \"node:fs\";\nimport { userInfo } from \"node:os\";\nimport * as nodePty from \"node-pty\";\nimport { defineTool } from \"@deepseek-ai/dsh-tools\";\n//#region src/prefs-shared.ts\n/**\n* Shared \"Side card\" preference vocabulary (types + constants), consumed by\n* BOTH halves: the host registers the schemastery schema over these values\n* (config.ts) and the client reads/writes them through the settings RPC\n* (client/prefs.ts, client/SideCardSection.tsx). Kept free of schemastery so\n* the browser bundle never pulls the schema runtime in.\n*/\n/** The user-settings namespace holding the side card preferences. */\nconst SIDEBAR_PREFS_NS = \"dsh-bett",
+        "staticInject": [
+          "webServer",
+          "sessions",
+          "webRuntime",
+          "tools"
+        ]
+      },
+      "client": {
+        "relativePath": "lib/client.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-better-sidebar\\lib\\client.js",
+        "bytes": 414750,
+        "sha256": "F5EEDBDE5E23D4D4639C688EBF2C1A9C96E2CA2A5EEF9F06C9AFD9D4CDDBCC82",
+        "preview": "window.__ModuleLoader__.load({\n\tid: \"dsh-better-sidebar\",\n\tfactory: (require) => {\n\t\tvar module = { exports: {} };\n\t\tvar exports = module.exports;\n\t\tObject.defineProperty(exports, Symbol.toStringTag, { value: \"Module\" });\n\t\tlet react = require(\"react\");\n\t\tlet react_dom_client = require(\"react-dom/client\");\n\t\tlet _deepseek_ai_dsh_client_ui_primitives = require(\"@deepseek-ai/dsh-client-ui-primitives\");\n\t\tlet react_jsx_runtime = require(\"react/jsx-runtime\");\n\t\t/** Fallback prefs used whenever the settings document is unreachable or malformed. */\n\t\tconst SIDEBAR_PREFS_DEFAULTS = {\n\t\t\topenByDefault: true,\n\t\t\tdefaultWidthPercent: 30,\n\t\t\tautoOpenSubagent: true,\n\t\t\tautoOpenJobs: true,\n\t\t\tagentTerminalTools: false,\n\t\t\tbottomPanelAutoTerminal: true,\n\t\t\tterminalFontFamily: \"\",\n\t\t\tterminalFontSize: 13,\n\t\t\tinterceptOpenPath: true,\n\t\t\ttitleBarCompat: false,\n\t\t\ttitleBarStripPx: 40,\n\t\t\thtmlViewerNoSandbox: false,\n\t\t\thtmlViewerDefaultUnsafe: false,\n\t\t\tbrowserNoSandbox: false,\n\t\t\tbrowserInterceptLinks: true,\n\t\t\tbrowserInterceptHttp: true,\n\t\t\tbrowserInterceptHttps: false,\n\t\t\ttabsEnabled: {},\n\t\t\tviewersEnabled: {},\n\t\t\tpluginSettings: {}\n\t\t};\n\t\t/** Clamp one width percent into the contract range (share"
+      },
+      "patch": {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-better-sidebar\\cordis.patch.yml",
+        "bytes": 881,
+        "sha256": "69AF4CB83FD0A5972CA9F75B1F949EEA0CDEF85F6C1F9C436914CA9486D24D9E",
+        "preview": "# dsh-better-sidebar bundle patch\n#\n# This file is the `dsh.bundle.patch` layer of the published npm package: when\n# the plugin is installed through the official CLI —\n#\n#   dsh plugin --profile <name> add dsh-better-sidebar@<version>\n#\n# — the command reconciles `dsh.profile.bundles` against installed packages\n# and, seeing this declaration, appends `dsh-better-sidebar` to the bundle\n# stack. The profile boot then merges THIS patch (a single `insert` of the\n# plugin row) exactly like the manual cordis.patch.yml mount line used\n# before. No profile file edits needed — one command installs and mounts.\n#\n# If the profile still carries the old manual mount line in its own\n# cordis.patch.yml, remove it before switching to the bundle channel to\n# avoid double-mounting (two Node halves, two sidebars).\n- insert:\n    - id: better-sidebar\n      name: 'dsh-better-sidebar'\n"
+      }
+    },
+    {
+      "name": "dsh-codex-tools",
+      "declared": "github:SPYQWER1/dsh-codex-tools#9519949dd340ff07a7ef8182692704d2487ce690",
+      "lockSpecifier": "github:SPYQWER1/dsh-codex-tools#9519949dd340ff07a7ef8182692704d2487ce690",
+      "lockResolution": "https://codeload.github.com/SPYQWER1/dsh-codex-tools/tar.gz/9519949dd340ff07a7ef8182692704d2487ce690",
+      "installedVersion": "1.0.1",
+      "description": "Codex-backed web search, image generation, and image understanding tools for the DeepSeek Harness.",
+      "license": "MIT",
+      "repository": "git+https://github.com/SPYQWER1/dsh-codex-tools.git",
+      "homepage": "https://github.com/SPYQWER1/dsh-codex-tools#readme",
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-codex-tools",
+      "realPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-codex-tools",
+      "linked": false,
+      "profileBundleIndex": 13,
+      "profileBundleEnabled": true,
+      "main": "index.js",
+      "exports": {
+        ".": "./index.js"
+      },
+      "dsh": {
+        "bundle": {
+          "patch": "./cordis.patch.yml"
+        }
+      },
+      "scripts": null,
+      "manifestSha256": "20B7B6E051EF41D16C177F0230CE5744FBACFEFD2E04DA93F20011BD52BE70E5",
+      "entry": {
+        "relativePath": "index.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-codex-tools\\index.js",
+        "bytes": 1032,
+        "sha256": "764005C8A4939CCE215846950479709EAB486C17FCE3C1F2050111ACB0C97084",
+        "preview": "// dsh-codex-tools — deployment bundle entry point (installed via `dsh plugin add`).\n//\n// Registers Codex-backed image_gen, image_vision, and web_search into the host\n// tools registry so every session of the profile sees them. All transport and\n// validation logic lives in tools.js.\nimport { defineTool } from '@deepseek-ai/dsh-tools'\nimport { installImageTools } from './tools.js'\n\nexport const name = 'dsh-codex-tools'\n\nexport function apply(ctx) {\n  const shell = ctx.get('shell')\n  const credentials = ctx.get('credentials')\n  const fs = ctx.get('fs')\n  const [genDispose, visionDispose, searchDispose] = installImageTools(\n    (definition) => defineTool(definition),\n    { shell, credentials, fs },\n    (tool) => ctx.tools.register(tool),\n  )\n  ctx.effect(() => genDispose, 'dsh-codex-tools: register image_gen')\n  ctx.effect(() => visionDispose, 'dsh-codex-tools: register image_vision')\n  ctx.effect(() => searchDispose, 'dsh-codex-tools: register web_search')\n}\n\nexport const inject = ['tools', 'shell', 'credentials']\n",
+        "staticInject": [
+          "tools",
+          "shell",
+          "credentials"
+        ]
+      },
+      "client": null,
+      "patch": {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-codex-tools\\cordis.patch.yml",
+        "bytes": 65,
+        "sha256": "360CD92E92AF3E788AC4F05C5AC5D0B5C4EC210C1BDC6945C82D7542C959836F",
+        "preview": "- insert:\n    - id: tool-codex-tools\n      name: dsh-codex-tools\n"
+      }
+    },
+    {
+      "name": "dsh-context",
+      "declared": "^0.7.3",
+      "lockSpecifier": "^0.7.3",
+      "lockResolution": "0.7.3",
+      "installedVersion": "0.7.3",
+      "description": "Context insight panel for DeepSeek Harness: see what the model's context window is made of and how it evolves — composition, per-request history, compactions, injections, and model switches.",
+      "license": "Apache-2.0",
+      "repository": "git+https://github.com/bowenliang123/dsh-context.git",
+      "homepage": "https://github.com/bowenliang123/dsh-context#readme",
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-context",
+      "realPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-context",
+      "linked": false,
+      "profileBundleIndex": 7,
+      "profileBundleEnabled": true,
+      "main": "lib/index.js",
+      "exports": {
+        ".": "./lib/index.js",
+        "./client": "./lib/client.js",
+        "./package.json": "./package.json"
+      },
+      "dsh": {
+        "bundle": {
+          "patch": "./cordis.patch.yml"
+        },
+        "client": {
+          "inject": [
+            "@deepseek-ai/dsh-client-connection",
+            "@deepseek-ai/dsh-client-locale",
+            "@deepseek-ai/dsh-client-runtime",
+            "@deepseek-ai/dsh-client-ui-conversation"
+          ],
+          "platform": "web"
+        }
+      },
+      "scripts": {
+        "build": "node scripts/build.mjs",
+        "typecheck": "tsc --noEmit",
+        "test": "npm run typecheck && node tests/host.test.mjs && node tests/client.test.mjs",
+        "release": "bash scripts/publish.sh",
+        "prepare": "husky",
+        "repro": "node tests/repro-real-react.mjs"
+      },
+      "manifestSha256": "7771F980E23343F520F47FF2216841C202EBC29BD06B9EC2A1FE0C56E267A188",
+      "entry": {
+        "relativePath": "lib/index.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-context\\lib\\index.js",
+        "bytes": 13997,
+        "sha256": "4D36726BA62EC7BF344E36225917D51E7890FACB9DAA1CB8BBC71C9295F48559",
+        "preview": "// src/host/pricing.ts\nvar CHARS_PER_TOKEN = 4;\nvar BLOCK_OVERHEAD = 4;\nvar ROLE_OVERHEAD = 4;\nfunction estimateToolsTotal(tools) {\n  return tools.length > 0 ? Math.ceil(JSON.stringify(tools).length / CHARS_PER_TOKEN) + BLOCK_OVERHEAD : 0;\n}\nfunction estimateBlocks(blocks) {\n  let tokens = 0;\n  if (!Array.isArray(blocks)) return 0;\n  for (const block of blocks) {\n    if (block === null || typeof block !== \"object\") continue;\n    switch (block.type) {\n      case \"text\":\n      case \"reasoning\":\n        tokens += Math.ceil(String(block.text || \"\").length / CHARS_PER_TOKEN) + BLOCK_OVERHEAD;\n        break;\n      case \"tool-call\":\n        tokens += Math.ceil(String(block.name || \"\").length / CHARS_PER_TOKEN) + Math.ceil(String(block.arguments || \"\").length / CHARS_PER_TOKEN) + BLOCK_OVERHEAD;\n        break;\n      case \"tool-result\":\n        tokens += estimateBlocks(block.content) + BLOCK_OVERHEAD;\n        break;\n      default:\n        tokens += BLOCK_OVERHEAD + Math.ceil(JSON.stringify(block).length / CHARS_PER_TOKEN);\n    }\n  }\n  return tokens;\n}\nfunction estimateMessage(message, emptyIsZero = false) {\n  if (emptyIsZero && (message === null || message === void 0 || !Array.isArray(messa",
+        "staticInject": []
+      },
+      "client": {
+        "relativePath": "lib/client.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-context\\lib\\client.js",
+        "bytes": 47771,
+        "sha256": "87356DEA3C0405AD5F06DD24C96946D47B366344E7739EA9B7B5888A623B01C9",
+        "preview": "/* dsh-context client bundle — generated by scripts/build.mjs from src/client/ */\nwindow.__ModuleLoader__.load({\n  id: \"dsh-context\",\n  factory: (require) => {\n    var module = { exports: {} };\n    var exports = module.exports;\n\"use strict\";\n\n// src/client/i18n.ts\nvar DICT_ZH = {\n  \"tab\": \"\\u4E0A\\u4E0B\\u6587\",\n  \"cat.system\": \"\\u7CFB\\u7EDF\\u63D0\\u793A\",\n  \"cat.tools\": \"\\u5DE5\\u5177\\u5B9A\\u4E49\",\n  \"cat.user\": \"\\u7528\\u6237\\u6D88\\u606F\",\n  \"cat.inject\": \"\\u6CE8\\u5165\\u4E0A\\u4E0B\\u6587\",\n  \"cat.assistant\": \"\\u52A9\\u624B\\u56DE\\u590D\",\n  \"cat.tool\": \"\\u5DE5\\u5177\\u7ED3\\u679C\",\n  \"overview.title\": \"\\u5F53\\u524D\\u6784\\u6210\",\n  \"overview.ofWindow\": \"tokens\\uFF08\\u7EA6 {p}%\\uFF09\",\n  \"overview.estimate\": \"tokens\\uFF08\\u4F30\\u7B97\\uFF09\",\n  \"overview.free\": \"\\u5269\\u4F59\\u7A97\\u53E3\",\n  \"stats.title\": \"\\u4E0A\\u4E0B\\u6587\\u7EDF\\u8BA1\",\n  \"stats.hint\": \"\\u7EDF\\u8BA1\\u5F53\\u524D\\u4FDD\\u7559\\u7684\\u5386\\u53F2\\u7A97\\u53E3\\uFF08\\u4E0E\\u8D8B\\u52BF\\u56FE\\u4E00\\u81F4\\uFF09\",\n  \"stats.turns\": \"\\u8F6E\\u6B21\",\n  \"stats.steps\": \"\\u6B65\\u6570\",\n  \"stats.recycled\": \"\\u2702 \\u56DE\\u6536\",\n  \"stats.recycleSub\": \"\\u538B\\u7F29 {c} \\u6B21 \\xB7 \\u526A\\u679D {p} \\u6B21\",\n  \"stats.injects\": \"\\uFF0B \\u6CE8\\u5165\""
+      },
+      "patch": {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-context\\cordis.patch.yml",
+        "bytes": 481,
+        "sha256": "3D01847C463EF02547A56BBA6294E038D8D2C32867F9F2002E040DDAB933653D",
+        "preview": "# dsh-context — bundle patch layer.\n#\n# Installing this package into a profile (`dsh plugin --profile <name> add dsh-context`)\n# appends it to `dsh.profile.bundles`; this patch is then applied as that\n# bundle's layer. The row below loads the package's main entry as the host\n# half (a plain Cordis plugin) and, because the package declares `dsh.client`,\n# the web app also loads its `./client` bundle as the browser half.\n- insert:\n    - id: dsh-context\n      name: dsh-context\n"
+      }
+    },
+    {
+      "name": "dsh-deep-whale",
+      "declared": "github:Small-tailqwq/dsh-deep-whale",
+      "lockSpecifier": "github:Small-tailqwq/dsh-deep-whale",
+      "lockResolution": "https://codeload.github.com/Small-tailqwq/dsh-deep-whale/tar.gz/873f5c6d7f52aa4e4283a5ffd5598229595184da",
+      "installedVersion": null,
+      "description": null,
+      "license": null,
+      "repository": null,
+      "homepage": null,
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-deep-whale",
+      "realPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-deep-whale",
+      "linked": false,
+      "profileBundleIndex": -1,
+      "profileBundleEnabled": false,
+      "main": null,
+      "exports": null,
+      "dsh": null,
+      "scripts": null,
+      "manifestSha256": "7A3A30F93872C3585131EAB17D2BFA052CC2318ADA49419E52C82C5E47D1340B",
+      "entry": null,
+      "client": null,
+      "patch": null
+    },
+    {
+      "name": "dsh-desktop-ui-compat",
+      "declared": "link:E:/deepseek_harness/themes/desktop-ui-compat",
+      "lockSpecifier": "link:E:/deepseek_harness/themes/desktop-ui-compat",
+      "lockResolution": "link:E:/deepseek_harness/themes/desktop-ui-compat",
+      "installedVersion": "0.1.0",
+      "description": "Theme-neutral desktop UI behavior for DSH: responsive panels, composer hierarchy, runtime status, settings navigation, and Agent tool inventory.",
+      "license": null,
+      "repository": null,
+      "homepage": null,
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-desktop-ui-compat",
+      "realPath": "E:\\deepseek_harness\\themes\\desktop-ui-compat",
+      "linked": true,
+      "profileBundleIndex": 14,
+      "profileBundleEnabled": true,
+      "main": "lib/index.js",
+      "exports": {
+        ".": "./lib/index.js",
+        "./client": "./lib/client.js",
+        "./package.json": "./package.json"
+      },
+      "dsh": {
+        "bundle": {
+          "patch": "./cordis.patch.yml"
+        },
+        "client": {
+          "inject": [
+            "@deepseek-ai/dsh-client-runtime",
+            "@deepseek-ai/dsh-client-ui-settings",
+            "@deepseek-ai/dsh-client-ui-theme",
+            "@deepseek-ai/dsh-client-ui-trajectory"
+          ],
+          "platform": "web"
+        }
+      },
+      "scripts": null,
+      "manifestSha256": "6933C7F87387FA2F77E1C1A25830A9DE033E448A9D08801C9EBD122BDA6FBD41",
+      "entry": {
+        "relativePath": "lib/index.js",
+        "absolutePath": "E:\\deepseek_harness\\themes\\desktop-ui-compat\\lib\\index.js",
+        "bytes": 914,
+        "sha256": "DF5617EF359F634B97C8A029130446644CC00B05A8BBBF1D2A8B3E57CB4F4A79",
+        "preview": "/** Host-side read-only catalog used by the Agent Tools settings page. */\nexport const inject = [\"tools\", \"webServer\"];\n\nexport function apply(ctx) {\n  let revision = 0;\n  const offChange = ctx.on(\"tools/change\", () => {\n    revision += 1;\n  });\n  const offRoute = ctx.webServer.register({\n    kind: \"exact\",\n    path: \"/__dsh-desktop-ui-compat/agent-tools\",\n    handler(_req, res) {\n      const tools = ctx.tools.schemas().map((tool) => ({\n        name: tool.name,\n        description: tool.description,\n        parameters: tool.parameters,\n      }));\n      const body = JSON.stringify({ revision, tools });\n      res.statusCode = 200;\n      res.setHeader(\"Content-Type\", \"application/json; charset=utf-8\");\n      res.setHeader(\"Cache-Control\", \"no-store\");\n      res.setHeader(\"Content-Length\", Buffer.byteLength(body));\n      res.end(body);\n    },\n  });\n  return () => {\n    offRoute();\n    offChange();\n  };\n}\n",
+        "staticInject": [
+          "tools",
+          "webServer"
+        ]
+      },
+      "client": {
+        "relativePath": "lib/client.js",
+        "absolutePath": "E:\\deepseek_harness\\themes\\desktop-ui-compat\\lib\\client.js",
+        "bytes": 75657,
+        "sha256": "25C5FD401AC330A3B4B20E472A6E58E7B8EF92B2B410B6F80695D2DD6B26F86A",
+        "preview": "/**\n * theme-neutral desktop UI compatibility layer — browser client bundle.\n *\n * DSH serves client bundles as classic scripts that self-register through\n * `window.__ModuleLoader__.load(...)` and return `module.exports` (with an\n * `apply` export) from the factory. No bare ESM `export` is allowed here.\n */\nwindow.__ModuleLoader__.load({\n  id: \"dsh-desktop-ui-compat\",\n  factory: (require) => {\n    var module = { exports: {} };\n    var exports = module.exports;\n    Object.defineProperty(exports, Symbol.toStringTag, { value: \"Module\" });\n\n    const React = require(\"react\");\n    const {\n      createElement: h,\n      useEffect,\n      useMemo,\n      useState,\n      useSyncExternalStore,\n    } = React;\n\n    const CSS = \"/* DSH desktop UI compatibility layer.\\n * Functional surfaces consume official semantic theme tokens and never select\\n * a concrete community skin. */\\n\\nbody[data-dsh-ui-compat] [role='dialog'][aria-modal='true'][data-dsh-settings-center='enhanced'] {\\n  width: min(980px, calc(100vw - 48px)) !important;\\n  height: min(760px, calc(100vh - 40px)) !important;\\n  max-width: none !important;\\n  max-height: none !important;\\n  display: grid !important;\\n  grid-template-colu"
+      },
+      "patch": {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "E:\\deepseek_harness\\themes\\desktop-ui-compat\\cordis.patch.yml",
+        "bytes": 229,
+        "sha256": "6C811D64A2AF0C3EC27EC3002FBC067AE35ACF1DC9A21B02A7E4B82928BA49C2",
+        "preview": "# Theme-neutral desktop UI capability layer. It remains mounted while visual\n# skin rows are switched, so functional layout behavior has one stable owner.\n- insert:\n    - id: ui-desktop-compat\n      name: 'dsh-desktop-ui-compat'\n"
+      }
+    },
+    {
+      "name": "dsh-find-plugin",
+      "declared": "^0.3.6",
+      "lockSpecifier": "^0.3.6",
+      "lockResolution": "0.3.6",
+      "installedVersion": "0.3.6",
+      "description": "Find DeepSeek Harness plugins inside the agent — live GitHub dsh-plugin topic search, ranked by stars.",
+      "license": "MIT",
+      "repository": "git+https://github.com/awesome-dsh-plugin/dsh-find-plugin.git",
+      "homepage": null,
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-find-plugin",
+      "realPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-find-plugin",
+      "linked": false,
+      "profileBundleIndex": 3,
+      "profileBundleEnabled": true,
+      "main": "lib/index.js",
+      "exports": {
+        ".": {
+          "types": "./lib/types/index.d.ts",
+          "default": "./lib/index.js"
+        },
+        "./cordis.patch.yml": "./cordis.patch.yml",
+        "./package.json": "./package.json"
+      },
+      "dsh": {
+        "bundle": {
+          "patch": "./cordis.patch.yml"
+        }
+      },
+      "scripts": {
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "build": "tsc -p tsconfig.json",
+        "check": "npm run typecheck && npm run build",
+        "prepack": "npm run build"
+      },
+      "manifestSha256": "B69A8D6641A0357EF44CA55C617566F14BAE29A4DDF50E373B863891369BB44F",
+      "entry": {
+        "relativePath": "lib/index.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-find-plugin\\lib\\index.js",
+        "bytes": 3760,
+        "sha256": "BE07FF5BDA8362B7A286C82EFE0E4A255BC892E4829915CBB0DD72902FB88818",
+        "preview": "/**\n * dsh-find-plugin — find DSH plugins inside the agent.\n *\n * Registers the `find_dsh_plugin` tool: a live GitHub search over the\n * public `dsh-plugin` topic, ranked by stars. When a result is also on\n * the awesome-dsh-plugin curated list, its bilingual description is used —\n * ranking and presentation are otherwise untouched.\n */\nimport { defineTool } from '@deepseek-ai/dsh-tools';\nimport { loadRegistry } from './registry.js';\nimport { searchGitHub } from './github.js';\nexport const name = 'dsh-find-plugin';\nexport const inject = ['tools'];\nfunction renderText(result) {\n    if (result.results.length === 0) {\n        return 'No matching plugins found. Try broader keywords, or browse https://awesome-dsh-plugin.com';\n    }\n    const lines = result.results.map((m, i) => `${i + 1}. ${m.name} ★${m.stars} — ${m.description}\\n   ${m.url}\\n   install: ${m.install}`);\n    return lines.join('\\n\\n') + (result.note ? `\\n\\n${result.note}` : '');\n}\nexport function apply(ctx) {\n    ctx.tools.register(defineTool({\n        name: 'find_dsh_plugin',\n        description: 'Search GitHub for DeepSeek Harness plugins (public `dsh-plugin` topic), ranked by stars. Returns ' +\n            'description",
+        "staticInject": [
+          "tools"
+        ]
+      },
+      "client": null,
+      "patch": {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-find-plugin\\cordis.patch.yml",
+        "bytes": 136,
+        "sha256": "37D977BA706948CA4DA431776E0E8F82598AD707B15BF23B27FF0AB2197B6F68",
+        "preview": "# dsh bundle patch: inserts this plugin into a profile's layer stack.\n- insert:\n    - id: find-dsh-plugin\n      name: 'dsh-find-plugin'\n"
+      }
+    },
+    {
+      "name": "dsh-maid-atelier-fix",
+      "declared": "link:E:/deepseek_harness/themes/maid-atelier-fix",
+      "lockSpecifier": "link:E:/deepseek_harness/themes/maid-atelier-fix",
+      "lockResolution": "link:E:/deepseek_harness/themes/maid-atelier-fix",
+      "installedVersion": "0.3.0",
+      "description": "Maid Atelier appearance and character adapter; generic desktop behavior is supplied by dsh-desktop-ui-compat.",
+      "license": null,
+      "repository": null,
+      "homepage": null,
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-maid-atelier-fix",
+      "realPath": "E:\\deepseek_harness\\themes\\maid-atelier-fix",
+      "linked": true,
+      "profileBundleIndex": 12,
+      "profileBundleEnabled": true,
+      "main": "lib/index.js",
+      "exports": {
+        ".": "./lib/index.js",
+        "./client": "./lib/client.js",
+        "./package.json": "./package.json"
+      },
+      "dsh": {
+        "bundle": {
+          "patch": "./cordis.patch.yml"
+        },
+        "client": {
+          "inject": [
+            "dsh-desktop-ui-compat"
+          ],
+          "platform": "web"
+        }
+      },
+      "scripts": null,
+      "manifestSha256": "12B6550998B0367E897A759C6015E6D00BAB8ED4EC72750313C660DD2B46C703",
+      "entry": {
+        "relativePath": "lib/index.js",
+        "absolutePath": "E:\\deepseek_harness\\themes\\maid-atelier-fix\\lib\\index.js",
+        "bytes": 95,
+        "sha256": "D9C4DB5C940DB5B3ECAD34E4B8899EBFE64074DA0D1E69F4CE03C34CB40FEA91",
+        "preview": "/** Host loader entry for the browser-only Maid Atelier adapter. */\nexport function apply() {}\n",
+        "staticInject": []
+      },
+      "client": {
+        "relativePath": "lib/client.js",
+        "absolutePath": "E:\\deepseek_harness\\themes\\maid-atelier-fix\\lib\\client.js",
+        "bytes": 46024,
+        "sha256": "DA3C9707FA5DBB012664B68DCAEF6D4612BEAFC92849ADF11CB90B65DD6C4028",
+        "preview": "/**\n * Maid Atelier visual adapter. Generic desktop behavior is owned by\n * dsh-desktop-ui-compat; this bundle only applies Maid-scoped appearance and\n * keeps the skin characters aligned with the live sidebars.\n */\nwindow.__ModuleLoader__.load({\n  id: \"dsh-maid-atelier-fix\",\n  factory: () => {\n    var module = { exports: {} };\n    var exports = module.exports;\n    Object.defineProperty(exports, Symbol.toStringTag, { value: \"Module\" });\n\n    const CSS = \"\\n/* ===== maid-atelier light-mode fixes ===== */\\n\\n/* base text tokens */\\nbody[data-dsh-maid-atelier]:not([data-ds-dark-theme]) {\\n  --dsw-alias-label-primary: #1e2a52 !important;\\n  --dsw-alias-label-secondary: #33466f !important;\\n  --dsw-alias-label-tertiary: #46567c !important;\\n  --dsw-alias-label-caption: #566384 !important;\\n  --maid-fix-surface-main: rgba(247, 249, 254, 0.94);\\n  --maid-fix-surface-strong: rgba(251, 252, 255, 0.97);\\n  --maid-fix-surface-panel: rgba(238, 243, 252, 0.96);\\n  --maid-fix-border: rgba(76, 98, 151, 0.30);\\n  --maid-fix-border-strong: rgba(62, 88, 151, 0.52);\\n  --maid-fix-shadow: 0 18px 52px rgba(29, 48, 94, 0.18);\\n  --maid-fix-focus: #315fc4;\\n}\\n\\n/* left sidebar: light surface + dark text"
+      },
+      "patch": {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "E:\\deepseek_harness\\themes\\maid-atelier-fix\\cordis.patch.yml",
+        "bytes": 239,
+        "sha256": "F64CAEE7B0C872AD4C6E1D3DAD0B8B9ADEEF9D01293DE123E022EA77070A96DB",
+        "preview": "# Maid-specific appearance and character adapter. Generic functional surfaces\n# are owned by dsh-desktop-ui-compat so switching themes cannot leak Maid rules.\n- insert:\n    - id: ui-skin-maid-atelier-fix\n      name: 'dsh-maid-atelier-fix'\n"
+      }
+    },
+    {
+      "name": "dsh-notification",
+      "declared": "github:omdsh-dev/dsh-notification",
+      "lockSpecifier": "github:omdsh-dev/dsh-notification",
+      "lockResolution": "https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/2399457a1f96ed86f761f3bc771539d131eb684f",
+      "installedVersion": "0.1.2",
+      "description": "Browser desktop notifications when the DeepSeek Harness finishes a turn: configurable per-outcome toggles and include/exclude keyword rules, shown through the browser Notification API.",
+      "license": "MIT",
+      "repository": null,
+      "homepage": null,
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-notification",
+      "realPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-notification",
+      "linked": false,
+      "profileBundleIndex": 8,
+      "profileBundleEnabled": true,
+      "main": "lib/index.js",
+      "exports": {
+        ".": {
+          "types": "./lib/types/index.d.ts",
+          "default": "./lib/index.js"
+        },
+        "./client": {
+          "types": "./lib/types/client/index.d.ts",
+          "default": "./lib/client.js"
+        },
+        "./invariant": {
+          "types": "./lib/types/invariant.d.ts",
+          "default": "./lib/invariant.js"
+        },
+        "./package.json": "./package.json"
+      },
+      "dsh": {
+        "bundle": {
+          "patch": "./cordis.patch.yml"
+        },
+        "client": {
+          "platform": "web",
+          "inject": [
+            "@deepseek-ai/dsh-client-runtime",
+            "@deepseek-ai/dsh-client-ui-slots",
+            "@deepseek-ai/dsh-client-ui-settings",
+            "@deepseek-ai/dsh-client-locale"
+          ]
+        }
+      },
+      "scripts": {
+        "build": "node build.mjs",
+        "typecheck": "tsc --noEmit",
+        "test": "vitest run",
+        "check": "pnpm run typecheck && pnpm run test && pnpm run build"
+      },
+      "manifestSha256": "B715EB36C7F3B008D4402FBB6FAE91D10F73AC3EBCDCC952896F3F70653F459D",
+      "entry": {
+        "relativePath": "lib/index.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-notification\\lib\\index.js",
+        "bytes": 574539,
+        "sha256": "AB920E6E7DA1BA1B02A68159E3EDF64F0F9EC34522FC1DAD41A0B4DC0BD7F111",
+        "preview": "var __defProp = Object.defineProperty;\nvar __export = (target, all) => {\n  for (var name2 in all)\n    __defProp(target, name2, { get: all[name2], enumerable: true });\n};\n\n// ../dsh/vendor/cosmokit/src/misc.ts\nfunction isNullable(value) {\n  return value === null || value === void 0;\n}\nfunction isPlainObject(data) {\n  return data && typeof data === \"object\" && !Array.isArray(data);\n}\nfunction filterKeys(object2, filter) {\n  return Object.fromEntries(Object.entries(object2).filter(([key, value]) => filter(key, value)));\n}\nfunction mapValues(object2, transform2) {\n  return Object.fromEntries(Object.entries(object2).map(([key, value]) => [key, transform2(value, key)]));\n}\nfunction pick(source, keys, forced) {\n  if (!keys) return { ...source };\n  const result = {};\n  for (const key of keys) {\n    if (forced || source[key] !== void 0) result[key] = source[key];\n  }\n  return result;\n}\n\n// ../dsh/vendor/cosmokit/src/types.ts\nfunction is(type, value) {\n  if (arguments.length === 1) return (value2) => is(type, value2);\n  return type in globalThis && value instanceof globalThis[type] || Object.prototype.toString.call(value).slice(8, -1) === type;\n}\nfunction isArrayBufferLike(value) {\n  return ",
+        "staticInject": []
+      },
+      "client": {
+        "relativePath": "lib/client.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-notification\\lib\\client.js",
+        "bytes": 43215,
+        "sha256": "7BBD26D6A0F167BA278583AE752D73015590B0405939ED7360A453C70C6FEB29",
+        "preview": "window.__ModuleLoader__.load({ id: 'dsh-notification', factory: (require) => { var module = { exports: {} }; var exports = module.exports;\n\"use strict\";\nvar __defProp = Object.defineProperty;\nvar __getOwnPropDesc = Object.getOwnPropertyDescriptor;\nvar __getOwnPropNames = Object.getOwnPropertyNames;\nvar __hasOwnProp = Object.prototype.hasOwnProperty;\nvar __export = (target, all) => {\n  for (var name in all)\n    __defProp(target, name, { get: all[name], enumerable: true });\n};\nvar __copyProps = (to, from, except, desc) => {\n  if (from && typeof from === \"object\" || typeof from === \"function\") {\n    for (let key of __getOwnPropNames(from))\n      if (!__hasOwnProp.call(to, key) && key !== except)\n        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });\n  }\n  return to;\n};\nvar __toCommonJS = (mod) => __copyProps(__defProp({}, \"__esModule\", { value: true }), mod);\n\n// src/client/index.ts\nvar index_exports = {};\n__export(index_exports, {\n  apply: () => apply,\n  inject: () => inject\n});\nmodule.exports = __toCommonJS(index_exports);\n\n// src/client/SettingsSection.tsx\nvar import_react = require(\"react\");\n\n// src/client/notifi"
+      },
+      "patch": {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-notification\\cordis.patch.yml",
+        "bytes": 192,
+        "sha256": "ACD491DD3C321A0DE6841922D7CA77CC14BE192F6BB3ECF6080FED735A3A9EE7",
+        "preview": "# dsh-notification bundle patch: mount the host plugin under its package name,\n# resolved through the profile's node_modules.\n- insert:\n    - id: dsh-notification\n      name: dsh-notification\n"
+      }
+    },
+    {
+      "name": "dsh-open-in-vscode",
+      "declared": "github:omdsh-dev/dsh-open-in-vscode",
+      "lockSpecifier": "github:omdsh-dev/dsh-open-in-vscode",
+      "lockResolution": "https://codeload.github.com/omdsh-dev/dsh-open-in-vscode/tar.gz/8aed144abdc158a332aa73bce42fc217d962f751",
+      "installedVersion": "0.1.6",
+      "description": "Open a workspace directory in VS Code from the web GUI: an Open in VSCode row in every workspace's overflow menu",
+      "license": "MIT",
+      "repository": null,
+      "homepage": null,
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-open-in-vscode",
+      "realPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-open-in-vscode",
+      "linked": false,
+      "profileBundleIndex": 9,
+      "profileBundleEnabled": true,
+      "main": "lib/index.js",
+      "exports": {
+        ".": {
+          "types": "./lib/types/index.d.ts",
+          "default": "./lib/index.js"
+        },
+        "./client": {
+          "types": "./lib/types/client/index.d.ts",
+          "default": "./lib/client.js"
+        },
+        "./invariant": {
+          "types": "./lib/types/invariant.d.ts",
+          "default": "./lib/invariant.js"
+        },
+        "./cordis.patch.yml": "./cordis.patch.yml",
+        "./package.json": "./package.json"
+      },
+      "dsh": {
+        "bundle": {
+          "patch": "./cordis.patch.yml"
+        },
+        "client": {
+          "platform": "web",
+          "inject": [
+            "@deepseek-ai/dsh-client-runtime",
+            "@deepseek-ai/dsh-client-ui-slots",
+            "@deepseek-ai/dsh-client-locale",
+            "@deepseek-ai/dsh-client-ui-primitives"
+          ]
+        }
+      },
+      "scripts": {
+        "build": "node build.mjs",
+        "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.tests.json --noEmit",
+        "test": "vitest run",
+        "lint": "eslint .",
+        "check": "pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run build"
+      },
+      "manifestSha256": "C75D1C81168A5698A297826FB4BAAC4BE593E1CBD7228CD7211954D0B97B6C3D",
+      "entry": {
+        "relativePath": "lib/index.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-open-in-vscode\\lib\\index.js",
+        "bytes": 581745,
+        "sha256": "057214E8C6BCDEDE01884030A43A909E87A17A149AD4AAE368FB511C4BB1A308",
+        "preview": "var __create = Object.create;\nvar __defProp = Object.defineProperty;\nvar __getOwnPropDesc = Object.getOwnPropertyDescriptor;\nvar __knownSymbol = (name2, symbol2) => (symbol2 = Symbol[name2]) ? symbol2 : Symbol.for(\"Symbol.\" + name2);\nvar __typeError = (msg) => {\n  throw TypeError(msg);\n};\nvar __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;\nvar __name = (target, value) => __defProp(target, \"name\", { value, configurable: true });\nvar __export = (target, all) => {\n  for (var name2 in all)\n    __defProp(target, name2, { get: all[name2], enumerable: true });\n};\nvar __decoratorStart = (base) => [, , , __create(base?.[__knownSymbol(\"metadata\")] ?? null)];\nvar __decoratorStrings = [\"class\", \"method\", \"getter\", \"setter\", \"accessor\", \"field\", \"value\", \"get\", \"set\"];\nvar __expectFn = (fn) => fn !== void 0 && typeof fn !== \"function\" ? __typeError(\"Function expected\") : fn;\nvar __decoratorContext = (kind, name2, done, metadata, fns) => ({ kind: __decoratorStrings[kind], name: name2, metadata, addInitializer: (fn) => done._ ? __typeError(\"Already initialized\") : fns.push(__expectFn(fn ||",
+        "staticInject": []
+      },
+      "client": {
+        "relativePath": "lib/client.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-open-in-vscode\\lib\\client.js",
+        "bytes": 551666,
+        "sha256": "3F058DF9088D4E4215F01F61EC02BE6A1FA21D43DAEA4573EEAB9D2A263D179F",
+        "preview": "window.__ModuleLoader__.load({ id: 'dsh-open-in-vscode', factory: (require) => { var module = { exports: {} }; var exports = module.exports;\n\"use strict\";\nvar __defProp = Object.defineProperty;\nvar __getOwnPropDesc = Object.getOwnPropertyDescriptor;\nvar __getOwnPropNames = Object.getOwnPropertyNames;\nvar __hasOwnProp = Object.prototype.hasOwnProperty;\nvar __export = (target, all) => {\n  for (var name in all)\n    __defProp(target, name, { get: all[name], enumerable: true });\n};\nvar __copyProps = (to, from, except, desc) => {\n  if (from && typeof from === \"object\" || typeof from === \"function\") {\n    for (let key of __getOwnPropNames(from))\n      if (!__hasOwnProp.call(to, key) && key !== except)\n        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });\n  }\n  return to;\n};\nvar __toCommonJS = (mod) => __copyProps(__defProp({}, \"__esModule\", { value: true }), mod);\n\n// src/client/index.ts\nvar index_exports = {};\n__export(index_exports, {\n  apply: () => apply,\n  inject: () => inject\n});\nmodule.exports = __toCommonJS(index_exports);\n\n// node_modules/zod/v4/classic/external.js\nvar external_exports = {};\n__export(external_ex"
+      },
+      "patch": {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-open-in-vscode\\cordis.patch.yml",
+        "bytes": 274,
+        "sha256": "A73E41919A729A2F7D3AF046E138F41939727B27572922C44DD18E2A71A33180",
+        "preview": "# dsh-open-in-vscode bundle patch: mount the host plugin under its package\n# name, resolved through the profile's node_modules (the healed mirror makes\n# every bundle dependency resolvable to bare rows).\n- insert:\n    - id: dsh-open-in-vscode\n      name: dsh-open-in-vscode\n"
+      }
+    },
+    {
+      "name": "dshmarket",
+      "declared": "^1.2.2",
+      "lockSpecifier": "^1.2.2",
+      "lockResolution": "1.2.2",
+      "installedVersion": "1.2.2",
+      "description": "Visual plugin market inside DeepSeek Harness — browse, search, and one-click install community plugins. · DSH 可视化插件市场：逛一逛，点一下，装好。",
+      "license": "MIT",
+      "repository": "git+https://github.com/dsh-market/dsh-market.git",
+      "homepage": "https://dshmarket.com",
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dshmarket",
+      "realPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dshmarket",
+      "linked": false,
+      "profileBundleIndex": 2,
+      "profileBundleEnabled": true,
+      "main": "lib/index.js",
+      "exports": {
+        ".": {
+          "types": "./lib/types/index.d.ts",
+          "default": "./lib/index.js"
+        },
+        "./client": "./client/client.js",
+        "./cordis.patch.yml": "./cordis.patch.yml",
+        "./package.json": "./package.json"
+      },
+      "dsh": {
+        "bundle": {
+          "patch": "./cordis.patch.yml"
+        },
+        "client": {
+          "inject": [
+            "@deepseek-ai/dsh-client-connection",
+            "@deepseek-ai/dsh-client-runtime",
+            "@deepseek-ai/dsh-client-locale",
+            "@deepseek-ai/dsh-client-ui-settings",
+            "@deepseek-ai/dsh-client-ui-theme"
+          ],
+          "platform": "web"
+        }
+      },
+      "scripts": {
+        "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.client.json --noEmit",
+        "build": "tsc -p tsconfig.json && npm run build:client",
+        "build:client": "tsdown && node scripts/normalize-client-banner.mjs",
+        "check": "npm run typecheck && npm run build",
+        "prepack": "npm run build && node scripts/preflight.mjs",
+        "prepare": "npm run build",
+        "snapshot": "curl -sf https://awesome-dsh-plugin.com/plugins.json -o data/registry-snapshot.json"
+      },
+      "manifestSha256": "F2968D63B5ED88B5B6C61AB33D8792E7B58A9C298D58E308CE4CA8EDC843D197",
+      "entry": {
+        "relativePath": "lib/index.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dshmarket\\lib\\index.js",
+        "bytes": 1168,
+        "sha256": "F9442FEED32A42242C9FF76C8A6A5D2B0FCAB9AEF8617FB1890B808224E32326",
+        "preview": "/**\n * dsh-market host entry: mounts the market's HTTP routes once the profile\n * composes the webServer and shell services.\n */\nimport { mountMarketRoutes } from './routes.js';\nexport const name = 'dsh-market';\n/**\n * Register the market against the host context.\n * @param ctx - Host context that may acquire webServer and shell services.\n * @param config - Optional profile override from the loader.\n */\n/**\n * The profile this host process actually booted (`--profile <name>` on the\n * dsh CLI invocation). Without it the market would default to `web` and\n * installs from a test/secondary profile would mutate the real one.\n */\nfunction argvProfile() {\n    const argv = process.argv;\n    const flag = argv.indexOf('--profile');\n    if (flag !== -1 && flag + 1 < argv.length && !argv[flag + 1].startsWith('-'))\n        return argv[flag + 1];\n    return undefined;\n}\nexport function apply(ctx, config) {\n    const resolved = { profile: config?.profile ?? argvProfile() ?? 'web' };\n    ctx.inject(['webServer', 'loader'], (hostCtx) => {\n        const host = hostCtx;\n        host.effect(() => mountMarketRoutes(host, resolved), 'dsh-market: http routes');\n    });\n}\n",
+        "staticInject": []
+      },
+      "client": {
+        "relativePath": "client/client.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dshmarket\\client\\client.js",
+        "bytes": 64352,
+        "sha256": "B7AA1A3625EC9E9C1AF2BAE1B44E4AEE04F701399963168AFB05CFD2540B00A5",
+        "preview": "window.__ModuleLoader__.load({ id: \"dshmarket\", factory: (require) => {\n\n\n\t\tvar module = { exports: {} };\n\t\tvar exports = module.exports;\n\t\tObject.defineProperty(exports, Symbol.toStringTag, { value: \"Module\" });\n\t\tlet react = require(\"react\");\n\t\tlet _deepseek_ai_dsh_client_ui_primitives = require(\"@deepseek-ai/dsh-client-ui-primitives\");\n\t\tlet react_jsx_runtime = require(\"react/jsx-runtime\");\n\t\t//#region src/client/locales.ts\n\t\t/** zh/en dictionaries for the Market settings section and install toast. */\n\t\tconst zh = {\n\t\t\tnav: \"插件市场\",\n\t\t\tsubtitle: \"发现社区为 DeepSeek Harness 打造的能力\",\n\t\t\tsearchPh: \"搜索插件，比如：通知、终端、记忆…\",\n\t\t\ttabDiscover: \"发现\",\n\t\t\ttabInstalled: \"已安装\",\n\t\t\tall: \"全部\",\n\t\t\tinstall: \"安装\",\n\t\t\tinstalling: \"安装中…\",\n\t\t\tinstalledBadge: \"✓ 已装好\",\n\t\t\talreadyInstalled: \"✓ 已安装\",\n\t\t\trestartBanner: \"项变更完成，重启 DeepSeek Harness 后生效\",\n\t\t\tuninstall: \"卸载\",\n\t\t\tconfirmRemove: \"确认卸载？\",\n\t\t\tuninstalling: \"卸载中…\",\n\t\t\trestartHint: \"重启方式：关闭当前 dsh 进程后重新运行（例如 dsh web）\",\n\t\t\tconfirmTitle: \"安装\",\n\t\t\tconfirmWarn: \"插件是社区第三方代码。安装即表示你信任该来源；构建脚本默认被禁止执行。\",\n\t\t\tcancel: \"取消\",\n\t\t\tempty: \"没有匹配的插件\",\n\t\t\tinstalledEmpty: \"还没有装过社区插件，去「发现」页逛逛吧\",\n\t\t\tloadFail: \"插件目录加载失败，请稍后重试\",\n\t\t\tinstallFail: \"安装失败\",\n\t\t\tviewSource: \"源码\",\n\t\t\thotBanne"
+      },
+      "patch": {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dshmarket\\cordis.patch.yml",
+        "bytes": 125,
+        "sha256": "8E2367E0370CA5C122F8B5C865159FEDF0422F834CF10A6FA3D3BE165A60640B",
+        "preview": "# dsh bundle patch: inserts this plugin into a profile's layer stack.\n- insert:\n    - id: dsh-market\n      name: 'dshmarket'\n"
+      }
+    },
+    {
+      "name": "whale-girl",
+      "declared": "github:vlln/whale-girl",
+      "lockSpecifier": "github:vlln/whale-girl",
+      "lockResolution": "https://codeload.github.com/vlln/whale-girl/tar.gz/d8203296eb598cf616be76e0ebdd8eba51c7c54c",
+      "installedVersion": "0.1.0",
+      "description": "DSH Web GUI 内的桌面宠物（QQ 宠物形态）",
+      "license": "MIT",
+      "repository": null,
+      "homepage": null,
+      "installPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\whale-girl",
+      "realPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\whale-girl",
+      "linked": false,
+      "profileBundleIndex": 10,
+      "profileBundleEnabled": true,
+      "main": "lib/index.mjs",
+      "exports": {
+        ".": "./lib/index.mjs",
+        "./client": "./lib/client.js",
+        "./cordis.patch.yml": "./cordis.patch.yml",
+        "./package.json": "./package.json"
+      },
+      "dsh": {
+        "bundle": {
+          "patch": "./cordis.patch.yml"
+        },
+        "client": {
+          "platform": "web"
+        }
+      },
+      "scripts": {
+        "gates": "node scripts/gates/run.mjs",
+        "gates:ci": "node scripts/gates/run.mjs --group ci",
+        "test": "node --test 'tests/*.test.mjs'",
+        "build:client": "node scripts/build-client.mjs",
+        "check:client": "node scripts/build-client.mjs --check"
+      },
+      "manifestSha256": "1E28BDE749013086F86DF6E844395F047FAF24B75422CAE17B4476160B634733",
+      "entry": {
+        "relativePath": "lib/index.mjs",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\whale-girl\\lib\\index.mjs",
+        "bytes": 29818,
+        "sha256": "6E917FA9609FC2CD6AE7A378C7757769E7F118A395DAB4FD1B1BFDDB9812D5EA",
+        "preview": "// whale-girl Node half：积累型账本宿主 + assets 静态服务 + 活动/事件推导 + 状态持久化。\n// 契约：官方 bundle 插件的 Node half（完整 Cordis 插件，仓库根 package.json 的 dsh.bundle/dsh.client）；交互经 webServer 路由；\n// 路由端点单一来源 src/routes.mjs（verify-routes-sync 门禁守护，改前缀只改那里）；\n// activity 是派生字段，不写入账本（账本保持纯函数积累，见 src/pet-state.mjs）。\n// 事件机制（v2，零负反馈）：任务完成 → 资历 +XP/称号/回忆 + celebrate；失败 → 只计数 +\n// error(4s) → disappointed(6s) 瞬发（任务失败与请求错误同一负面窗口，总 10s）；新会话 → welcome；\n// 工作态累加活跃时长。\n// 安全：/interact 校验跨源（CSRF）；body 上限 1KB；assets 路径净化拒绝 `\\` 段（Windows 穿越）。\n// 持久化：状态存 <dshHome>/data/whale-girl/state.json（.tmp + rename 原子写，1s 防抖，\n// 事件记账时落盘；disable 时末次落盘）。\nimport { readFileSync, writeFileSync, mkdirSync, renameSync } from 'node:fs'\nimport { join, dirname, resolve } from 'node:path'\nimport {\n  INITIAL_STATE, recordTaskCompleted, recordFailure, recordSession, recordSessionResume, recordActive,\n} from './src/pet-state.mjs'\nimport { deriveActivity, mergeCelebrate } from './src/activity.mjs'\nimport { sanitizeAssetPath, contentTypeFor, ASSETS_PATH } from './src/assets.mjs'\nimport { applyAction, isCrossOrigin } from './src/interact.mjs'\nimport { parseTurnEvent } from './src/session-events.mjs'\nimport { createSessionView, applySessionView, titleFrom",
+        "staticInject": [
+          "jobs",
+          "agents",
+          "sessions",
+          "settings",
+          "webServer"
+        ]
+      },
+      "client": {
+        "relativePath": "lib/client.js",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\whale-girl\\lib\\client.js",
+        "bytes": 54172,
+        "sha256": "2667436FC213E2480B6A2EFC06F8BD81A221CF1051D03663E93617416BCC8417",
+        "preview": "window.__ModuleLoader__.load({\n\tid: \"whale-girl\",\n\tfactory: (require) => {\n\t\tvar module = { exports: {} };\n\t\tvar exports = module.exports;\nvar __defProp = Object.defineProperty;\nvar __getOwnPropDesc = Object.getOwnPropertyDescriptor;\nvar __getOwnPropNames = Object.getOwnPropertyNames;\nvar __hasOwnProp = Object.prototype.hasOwnProperty;\nvar __export = (target, all) => {\n  for (var name2 in all)\n    __defProp(target, name2, { get: all[name2], enumerable: true });\n};\nvar __copyProps = (to, from, except, desc) => {\n  if (from && typeof from === \"object\" || typeof from === \"function\") {\n    for (let key of __getOwnPropNames(from))\n      if (!__hasOwnProp.call(to, key) && key !== except)\n        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });\n  }\n  return to;\n};\nvar __toCommonJS = (mod) => __copyProps(__defProp({}, \"__esModule\", { value: true }), mod);\n\n// lib/client/index.mjs\nvar index_exports = {};\n__export(index_exports, {\n  apply: () => apply,\n  name: () => name\n});\nmodule.exports = __toCommonJS(index_exports);\n\n// lib/src/snapshot.mjs\nvar TURN_COMPLETED_MS = 4e3;\n\n// lib/client/logic.mjs\nvar TRANSIENT_MS = 1500;\nvar"
+      },
+      "patch": {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\whale-girl\\cordis.patch.yml",
+        "bytes": 215,
+        "sha256": "5CE970CFF8350E64FD7C7D8C0DCD41F2448324CD1A78B0F1E6343B720DDB853A",
+        "preview": "# whale-girl bundle patch：向 web 组合挂载 whale-girl（Node half 读写状态/资产，\n# client half 由 __ModuleLoader__ 内核挂载渲染宠物）。\n- insert:\n    - id: whale-girl\n      name: whale-girl\n"
+      }
+    }
+  ],
+  "runtime": {
+    "home": {
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 14499
+    },
+    "bootRevision": "9be038c1abc5",
+    "bootEntries": [
+      {
+        "id": "@deepseek-ai/dsh-typert-registry",
+        "url": "/plugins/@deepseek-ai/dsh-typert-registry/client.js?rev=f41d56e0b747",
+        "rev": "f41d56e0b747",
+        "inject": [],
+        "immediately": true
+      },
+      {
+        "id": "@deepseek-ai/dsh-api-gateway",
+        "url": "/plugins/@deepseek-ai/dsh-api-gateway/client.js?rev=9e83e9d9c076",
+        "rev": "9e83e9d9c076",
+        "inject": [
+          "@deepseek-ai/dsh-typert-registry",
+          "@deepseek-ai/dsh-client-connection"
+        ],
+        "immediately": true
+      },
+      {
+        "id": "@deepseek-ai/dsh-session-log-export",
+        "url": "/plugins/@deepseek-ai/dsh-session-log-export/client.js?rev=c8b2bb57ded4",
+        "rev": "c8b2bb57ded4",
+        "inject": [
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-commands",
+          "@deepseek-ai/dsh-client-ui-conversation"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-hmr",
+        "url": "/plugins/@deepseek-ai/dsh-client-hmr/client.js?rev=774dfcde3162",
+        "rev": "774dfcde3162",
+        "inject": [],
+        "immediately": true
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-modules",
+        "url": "/plugins/@deepseek-ai/dsh-client-modules/client.js?rev=c3a65f7f440a",
+        "rev": "c3a65f7f440a",
+        "inject": [],
+        "immediately": true
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-connection",
+        "url": "/plugins/@deepseek-ai/dsh-client-connection/client.js?rev=bc3c3fa9d26b",
+        "rev": "bc3c3fa9d26b",
+        "inject": [],
+        "immediately": true
+      },
+      {
+        "id": "@deepseek-ai/dsh-api-remotes",
+        "url": "/plugins/@deepseek-ai/dsh-api-remotes/client.js?rev=e17dd6016653",
+        "rev": "e17dd6016653",
+        "inject": [
+          "@deepseek-ai/dsh-api-gateway"
+        ],
+        "immediately": true
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-runtime",
+        "url": "/plugins/@deepseek-ai/dsh-client-runtime/client.js?rev=5404bd0408a5",
+        "rev": "5404bd0408a5",
+        "inject": [
+          "@deepseek-ai/dsh-client-connection",
+          "@deepseek-ai/dsh-typert-registry",
+          "@deepseek-ai/dsh-api-remotes"
+        ],
+        "immediately": true
+      },
+      {
+        "id": "@deepseek-ai/dsh-cordis-client-runner",
+        "url": "/plugins/@deepseek-ai/dsh-cordis-client-runner/client.js?rev=53ff5565d917",
+        "rev": "53ff5565d917",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-api-remotes",
+          "@deepseek-ai/dsh-client-modules",
+          "@deepseek-ai/dsh-client-ui-theme"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-theme",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-theme/client.js?rev=f0a9f7028c4e",
+        "rev": "f0a9f7028c4e",
+        "inject": [
+          "@deepseek-ai/dsh-client-connection",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-ui-settings",
+          "@deepseek-ai/dsh-api-remotes"
+        ],
+        "immediately": true
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-locale",
+        "url": "/plugins/@deepseek-ai/dsh-client-locale/client.js?rev=af9b29eb6756",
+        "rev": "af9b29eb6756",
+        "inject": [
+          "@deepseek-ai/dsh-client-connection",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-settings",
+          "@deepseek-ai/dsh-api-remotes"
+        ],
+        "immediately": true
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-layout",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-layout/client.js?rev=5ab8c01f4dbb",
+        "rev": "5ab8c01f4dbb",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-theme"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-sidebar",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-sidebar/client.js?rev=74802f0ecce6",
+        "rev": "74802f0ecce6",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-layout",
+          "@deepseek-ai/dsh-client-locale"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-settings",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-settings/client.js?rev=09edeb10e0d0",
+        "rev": "09edeb10e0d0",
+        "inject": [
+          "@deepseek-ai/dsh-client-connection",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-api-remotes"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-settings-general",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-settings-general/client.js?rev=14258da36869",
+        "rev": "14258da36869",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-settings",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-connection",
+          "@deepseek-ai/dsh-api-remotes",
+          "@deepseek-ai/dsh-client-ui-sidebar"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-settings-models",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-settings-models/client.js?rev=edb7d16543b7",
+        "rev": "edb7d16543b7",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-settings",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-api-remotes"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-settings-plugin-inventory",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-settings-plugin-inventory/client.js?rev=110092f7caad",
+        "rev": "110092f7caad",
+        "inject": [
+          "@deepseek-ai/dsh-api-remotes",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-settings",
+          "@deepseek-ai/dsh-client-locale"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-conversation",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-conversation/client.js?rev=052ed3238a98",
+        "rev": "052ed3238a98",
+        "inject": [
+          "@deepseek-ai/dsh-client-connection",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-settings",
+          "@deepseek-ai/dsh-api-remotes",
+          "@deepseek-ai/dsh-client-ui-layout"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-tool",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-tool/client.js?rev=06eb630f1b65",
+        "rev": "06eb630f1b65",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-ui-conversation"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-cordis",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-cordis/client.js?rev=787f0de4a575",
+        "rev": "787f0de4a575",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-connection",
+          "@deepseek-ai/dsh-cordis-client-runner",
+          "@deepseek-ai/dsh-api-remotes",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-ui-input-trigger",
+          "@deepseek-ai/dsh-client-ui-tool",
+          "@deepseek-ai/dsh-client-ui-sidebar"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-workflow-run",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-workflow-run/client.js?rev=3f274d8d0ce1",
+        "rev": "3f274d8d0ce1",
+        "inject": [
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-conversation"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-deliverables",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-deliverables/client.js?rev=9a99d45f5d5e",
+        "rev": "9a99d45f5d5e",
+        "inject": [
+          "@deepseek-ai/dsh-client-connection",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-conversation"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-workspace",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-workspace/client.js?rev=66be5c305096",
+        "rev": "66be5c305096",
+        "inject": [
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-conversation",
+          "@deepseek-ai/dsh-client-ui-sidebar"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-input-trigger",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-input-trigger/client.js?rev=0bd00b04060f",
+        "rev": "0bd00b04060f",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-locale"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-commands",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-commands/client.js?rev=109bd87d209e",
+        "rev": "109bd87d209e",
+        "inject": [
+          "@deepseek-ai/dsh-api-remotes",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-ui-input-trigger",
+          "@deepseek-ai/dsh-client-ui-conversation"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-skill",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-skill/client.js?rev=0418706fedfa",
+        "rev": "0418706fedfa",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-ui-tool",
+          "@deepseek-ai/dsh-client-ui-input-trigger",
+          "@deepseek-ai/dsh-api-remotes"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-subagent",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-subagent/client.js?rev=b42b38d0424c",
+        "rev": "b42b38d0424c",
+        "inject": [
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-conversation",
+          "@deepseek-ai/dsh-client-ui-primitives",
+          "@deepseek-ai/dsh-client-ui-input-trigger"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-jobs",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-jobs/client.js?rev=a31e2a9cfc0c",
+        "rev": "a31e2a9cfc0c",
+        "inject": [
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-conversation",
+          "@deepseek-ai/dsh-client-ui-primitives"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-goal",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-goal/client.js?rev=13c440df3e0f",
+        "rev": "13c440df3e0f",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-api-remotes",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-ui-conversation"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-message-feedback",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-message-feedback/client.js?rev=205fdc15cd97",
+        "rev": "205fdc15cd97",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-api-remotes",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-ui-conversation"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-model-selection",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-model-selection/client.js?rev=f9ba63d5aa1e",
+        "rev": "f9ba63d5aa1e",
+        "inject": [
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-commands",
+          "@deepseek-ai/dsh-api-remotes"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-permission-presets",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-permission-presets/client.js?rev=d9d4d9d2a415",
+        "rev": "d9d4d9d2a415",
+        "inject": [
+          "@deepseek-ai/dsh-client-connection",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-commands",
+          "@deepseek-ai/dsh-api-remotes",
+          "@deepseek-ai/dsh-client-ui-settings"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-agent-preset",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-agent-preset/client.js?rev=59990c772575",
+        "rev": "59990c772575",
+        "inject": [
+          "@deepseek-ai/dsh-client-connection",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-conversation",
+          "@deepseek-ai/dsh-client-ui-settings",
+          "@deepseek-ai/dsh-api-remotes"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-settings-plugins",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-settings-plugins/client.js?rev=5d6a1d7f7aa6",
+        "rev": "5d6a1d7f7aa6",
+        "inject": [
+          "@deepseek-ai/dsh-client-connection",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-settings",
+          "@deepseek-ai/dsh-api-remotes"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-plan",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-plan/client.js?rev=a8cab1449aba",
+        "rev": "a8cab1449aba",
+        "inject": [
+          "@deepseek-ai/dsh-api-remotes",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-ui-conversation"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-user-questions",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-user-questions/client.js?rev=8b5b79d18d35",
+        "rev": "8b5b79d18d35",
+        "inject": [
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-ui-conversation"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-trajectory",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-trajectory/client.js?rev=50aaebcf123b",
+        "rev": "50aaebcf123b",
+        "inject": [
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-conversation"
+        ]
+      },
+      {
+        "id": "dshmarket",
+        "url": "/plugins/dshmarket/client.js?rev=663d50718d0e",
+        "rev": "663d50718d0e",
+        "inject": [
+          "@deepseek-ai/dsh-client-connection",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-ui-settings",
+          "@deepseek-ai/dsh-client-ui-theme"
+        ]
+      },
+      {
+        "id": "@liustack/modlens",
+        "url": "/plugins/@liustack/modlens/client.js?rev=01ec8ff1965d",
+        "rev": "01ec8ff1965d",
+        "inject": [],
+        "immediately": true
+      },
+      {
+        "id": "dsh-at-file",
+        "url": "/plugins/dsh-at-file/client.js?rev=66b233b76ef2",
+        "rev": "66b233b76ef2",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-input-trigger",
+          "@deepseek-ai/dsh-client-ui-slots",
+          "@deepseek-ai/dsh-client-locale"
+        ]
+      },
+      {
+        "id": "dsh-better-sidebar",
+        "url": "/plugins/dsh-better-sidebar/client.js?rev=105626503730",
+        "rev": "105626503730",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-ui-slots",
+          "@deepseek-ai/dsh-client-ui-conversation"
+        ]
+      },
+      {
+        "id": "dsh-context",
+        "url": "/plugins/dsh-context/client.js?rev=cafbb347009f",
+        "rev": "cafbb347009f",
+        "inject": [
+          "@deepseek-ai/dsh-client-connection",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-conversation"
+        ]
+      },
+      {
+        "id": "dsh-notification",
+        "url": "/plugins/dsh-notification/client.js?rev=db1e9ee79535",
+        "rev": "db1e9ee79535",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-slots",
+          "@deepseek-ai/dsh-client-ui-settings",
+          "@deepseek-ai/dsh-client-locale"
+        ]
+      },
+      {
+        "id": "dsh-open-in-vscode",
+        "url": "/plugins/dsh-open-in-vscode/client.js?rev=24f918fbf064",
+        "rev": "24f918fbf064",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-slots",
+          "@deepseek-ai/dsh-client-locale",
+          "@deepseek-ai/dsh-client-ui-primitives"
+        ]
+      },
+      {
+        "id": "whale-girl",
+        "url": "/plugins/whale-girl/client.js?rev=bd4daebd0793",
+        "rev": "bd4daebd0793"
+      },
+      {
+        "id": "dsh-maid-atelier-fix",
+        "url": "/plugins/dsh-maid-atelier-fix/client.js?rev=2e4d549546b2",
+        "rev": "2e4d549546b2",
+        "inject": [
+          "dsh-desktop-ui-compat"
+        ]
+      },
+      {
+        "id": "dsh-desktop-ui-compat",
+        "url": "/plugins/dsh-desktop-ui-compat/client.js?rev=36fda0f4d181",
+        "rev": "36fda0f4d181",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-settings",
+          "@deepseek-ai/dsh-client-ui-theme",
+          "@deepseek-ai/dsh-client-ui-trajectory"
+        ]
+      },
+      {
+        "id": "@deepseek-ai/dsh-client-ui-directory-picker-native",
+        "url": "/plugins/@deepseek-ai/dsh-client-ui-directory-picker-native/client.js?rev=94f8f82280f0",
+        "rev": "94f8f82280f0",
+        "inject": [
+          "@deepseek-ai/dsh-client-runtime",
+          "@deepseek-ai/dsh-client-ui-workspace"
+        ]
+      },
+      {
+        "id": "@dsh-external/dsh-client-ui-skin-maid-atelier",
+        "url": "/plugins/@dsh-external/dsh-client-ui-skin-maid-atelier/client.js?rev=ac95c3683427",
+        "rev": "ac95c3683427",
+        "inject": []
+      }
+    ],
+    "toolRoute": {
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    "toolRevision": 80,
+    "tools": [
+      {
+        "name": "find_dsh_plugin",
+        "description": "Search GitHub for DeepSeek Harness plugins (public `dsh-plugin` topic), ranked by stars. Returns descriptions and ready-to-run `dsh plugin add` install commands. Use when the user wants a capability DSH does not currently have, or asks what plugins exist. Plugins are third-party code — advise reviewing the source and pinning a commit.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Keywords describing the capability, e.g. \"wechat notifications\", \"TUI\", \"跨会话记忆\""
+            },
+            "limit": {
+              "type": "number",
+              "description": "Max results to return (default 8, max 20)"
+            },
+            "lang": {
+              "type": "string",
+              "description": "Preferred description language for curated entries (e.g. 'en', 'zh'). Defaults to 'en'."
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      },
+      {
+        "name": "modlens_read_image",
+        "description": "Read an image through the modlens vision bridge. Use whenever a message references an image the current model cannot see: a local file path or an http(s) URL to a screenshot, photo, chart, diagram, or document scan. Returns structured evidence with every word transcribed (ocr.full_text), layout regions in reading order, semantics, and an uncertainty list; quote the evidence instead of guessing. Requires a configured modlens engine (run `npx @liustack/modlens doctor` in a terminal to check).",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Absolute local file path or http(s) URL of the image"
+            },
+            "prompt": {
+              "type": "string",
+              "description": "Optional extra focus for the reading (e.g. \"focus on the axis labels\")"
+            }
+          },
+          "required": [
+            "path"
+          ]
+        }
+      },
+      {
+        "name": "image_gen",
+        "description": "Generate a new bitmap image (illustrations, icons, logos, photos, concept art, UI mockups, game assets) via the ChatGPT subscription. Use when the user asks to create or generate an image. Do NOT use to edit/transform an existing image (no input-image support), to produce transparent-background images (unsupported; suggest a chroma-key background instead), or when a vector/SVG/code asset is the better fit. Write `prompt` in detail: subject, style, composition, palette, lighting, constraints. Leave `size` as auto unless the user gives dimensions. On success the result carries workspace-relative `outputPath` plus `absolutePath` and `workspaceRoot`; report the path to the user and use it for later file operations. Result JSON: { ok, outputPath, absolutePath, workspaceRoot, bytes, revisedPrompt, model } or { ok: false, error }.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "prompt": {
+              "type": "string",
+              "description": "Image description: subject, style, composition, palette, lighting, constraints. More detail yields better results."
+            },
+            "out": {
+              "type": "string",
+              "description": "Output path relative to the workspace; absolute paths and parent-directory segments are rejected. Parent directories are created, and an existing file is never overwritten. Default: output/imagegen/<timestamp>.<format>."
+            },
+            "size": {
+              "type": "string",
+              "description": "One of 1024x1024, 1536x1024, 1024x1536, 2048x2048, 2048x1152. Default: auto — set only when the user specifies dimensions or aspect ratio."
+            },
+            "format": {
+              "type": "string",
+              "description": "Output format. Default: png; use jpeg/webp when the user wants a smaller file.",
+              "enum": [
+                "png",
+                "jpeg",
+                "webp"
+              ]
+            },
+            "model": {
+              "type": "string",
+              "description": "Backend model id. Default: gpt-5.5."
+            }
+          },
+          "required": [
+            "prompt"
+          ]
+        }
+      },
+      {
+        "name": "image_vision",
+        "description": "Describe or answer questions about an image via the ChatGPT subscription (multimodal). Use when the user references an image and you cannot see its content. `image` must be an existing file (png/jpeg/webp/gif) relative to the workspace; absolute paths, parent-directory segments, and symbolic links are rejected — verify it exists before calling; never guess the content. `question` is optional, any language (e.g. \"翻译图中文字\"); omit it for a full description (subjects, style, composition, colors, verbatim text). Never build your own OCR or read image bytes yourself — always use this tool. Returns { ok, text, model, image } or { ok: false, error }; relay `text` to the user.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "string",
+              "description": "Path to an existing image file (png/jpeg/webp/gif), relative to the workspace; absolute paths and symbolic links are rejected."
+            },
+            "question": {
+              "type": "string",
+              "description": "Optional focus question or instruction, any language. Omit for a full description."
+            },
+            "model": {
+              "type": "string",
+              "description": "Backend model id. Default: gpt-5.5."
+            }
+          },
+          "required": [
+            "image"
+          ]
+        }
+      },
+      {
+        "name": "web_search",
+        "description": "Search the public web through the ChatGPT Codex subscription. Use for current facts, documentation, news, product information, or any question that benefits from online sources. Returns a concise summary and source URLs. Use freshness=live for time-sensitive questions and cached for stable topics. Do not claim a source says something unless it appears in the returned sources.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "What to search for on the public web."
+            },
+            "maxSources": {
+              "type": "number",
+              "description": "Maximum number of sources to return, from 1 to 10. Default: 5."
+            },
+            "freshness": {
+              "type": "string",
+              "description": "Use live for time-sensitive queries; cached is suitable for stable topics.",
+              "enum": [
+                "cached",
+                "live"
+              ]
+            },
+            "model": {
+              "type": "string",
+              "description": "Backend model id. Default: gpt-5.4-mini."
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    ]
+  }
+}

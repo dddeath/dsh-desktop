@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-08-17T01:55:19+08:00",
+  "profile": "web",
+  "counts": {
+    "declaredDependencies": 15,
+    "profileBundles": 16,
+    "communityBundleRows": 14,
+    "runtimeBootEntries": 49,
+    "registeredTools": 5,
+    "installedDisabled": 1,
+    "dependencyOnly": 1,
+    "localLinks": 2
+  },
+  "runtime": {
+    "homeStatus": 200,
+    "toolsStatus": 200,
+    "profileNewerThanProcess": true,
+    "disabledSkins": ["dsh-arknights"],
+    "toolNames": ["find_dsh_plugin", "modlens_read_image", "image_gen", "image_vision", "web_search"],
+    "toolNameCollisions": []
+  },
+  "plugins": [
+    {
+      "name": "@dsh-external/dsh-client-ui-skin-maid-atelier",
+      "version": "0.0.1",
+      "source": "github:Small-tailqwq/dsh-deep-whale#path:/maid-atelier@cdb4da4",
+      "group": "UI/skin",
+      "runtimeStatus": "active-client",
+      "sensitivity": "medium",
+      "restartRequiredForPackageChange": true,
+      "recommendation": "keep-active",
+      "note": "Current visual skin; source commit differs from the root meta dependency and must be updated separately."
+    },
+    {
+      "name": "@liustack/modlens",
+      "version": "3.16.7",
+      "source": "npm:^3.16.7",
+      "group": "model/vision",
+      "runtimeStatus": "active-host-client-tool",
+      "sensitivity": "high",
+      "restartRequiredForPackageChange": true,
+      "updateAvailable": "3.18.1",
+      "recommendation": "keep-observe-update",
+      "note": "Default model provider depends on it; update only in an isolated pass."
+    },
+    {
+      "name": "dsh-arknights",
+      "version": "0.1.0",
+      "source": "github:DocJlm/dsh-arknights#path:/skins/pramanix-eyjafjalla@6419ea4",
+      "group": "UI/skin",
+      "runtimeStatus": "installed-disabled",
+      "sensitivity": "medium",
+      "restartRequiredForPackageChange": true,
+      "recommendation": "on-demand",
+      "note": "Present in the profile bundle list but excluded from the current boot entries by dshmarket state."
+    },
+    {
+      "name": "dsh-at-file",
+      "version": "0.6.1",
+      "source": "github:omdsh-dev/dsh-at-file@e0db46f",
+      "group": "workspace",
+      "runtimeStatus": "active-host-client",
+      "sensitivity": "medium",
+      "restartRequiredForPackageChange": true,
+      "recommendation": "keep",
+      "note": "Provides @path references; complementary to the visual explorer."
+    },
+    {
+      "name": "dsh-better-sidebar",
+      "version": "0.12.2",
+      "source": "npm:^0.12.2",
+      "group": "workspace/UI",
+      "runtimeStatus": "active-host-client",
+      "sensitivity": "high",
+      "restartRequiredForPackageChange": true,
+      "updateAvailable": "0.12.3",
+      "recommendation": "keep-patch-update-later",
+      "note": "Owns explorer/editor/terminal/git/browser and directly affects accepted layout behavior."
+    },
+    {
+      "name": "dsh-codex-tools",
+      "version": "1.0.1",
+      "source": "github:SPYQWER1/dsh-codex-tools@9519949",
+      "group": "tools",
+      "runtimeStatus": "active-host-tools",
+      "sensitivity": "high",
+      "restartRequiredForPackageChange": true,
+      "recommendation": "keep-pinned",
+      "note": "Accepted image_gen/image_vision/web_search bridge; commit is explicitly pinned."
+    },
+    {
+      "name": "dsh-context",
+      "version": "0.7.3",
+      "source": "npm:^0.7.3",
+      "group": "conversation/observability",
+      "runtimeStatus": "active-host-client",
+      "sensitivity": "medium",
+      "restartRequiredForPackageChange": true,
+      "updateAvailable": "0.10.1",
+      "recommendation": "keep-observe-update",
+      "note": "Implements the Context conversation tab; not a redundant built-in panel."
+    },
+    {
+      "name": "dsh-deep-whale",
+      "version": null,
+      "source": "github:Small-tailqwq/dsh-deep-whale@873f5c6",
+      "group": "dependency/meta",
+      "runtimeStatus": "dependency-only",
+      "sensitivity": "low",
+      "restartRequiredForPackageChange": true,
+      "recommendation": "remove-candidate-after-proof",
+      "note": "Declared dependency without a profile bundle, host entry, client entry, or registered tool."
+    },
+    {
+      "name": "dsh-desktop-ui-compat",
+      "version": "0.1.0",
+      "source": "link:E:/deepseek_harness/themes/desktop-ui-compat",
+      "group": "UI/core",
+      "runtimeStatus": "active-client-local-link",
+      "sensitivity": "medium",
+      "restartRequiredForPackageChange": false,
+      "recommendation": "keep",
+      "note": "Theme-neutral accepted UI compatibility layer; local source remains the single edit point."
+    },
+    {
+      "name": "dsh-find-plugin",
+      "version": "0.3.6",
+      "source": "npm:^0.3.6",
+      "group": "market/discovery",
+      "runtimeStatus": "active-host-tool",
+      "sensitivity": "medium",
+      "restartRequiredForPackageChange": true,
+      "recommendation": "on-demand",
+      "note": "Agent-driven GitHub discovery overlaps with dshmarket discovery, but not by tool name or UI surface."
+    },
+    {
+      "name": "dsh-maid-atelier-fix",
+      "version": "0.3.0",
+      "source": "link:E:/deepseek_harness/themes/maid-atelier-fix",
+      "group": "UI/skin-adapter",
+      "runtimeStatus": "active-client-local-link",
+      "sensitivity": "medium",
+      "restartRequiredForPackageChange": false,
+      "recommendation": "keep-conditional",
+      "note": "Maid-only visuals and character alignment; generic behavior belongs to desktop-ui-compat."
+    },
+    {
+      "name": "dsh-notification",
+      "version": "0.1.2",
+      "source": "github:omdsh-dev/dsh-notification@2399457",
+      "group": "system-support",
+      "runtimeStatus": "active-host-client",
+      "sensitivity": "low-medium",
+      "restartRequiredForPackageChange": true,
+      "recommendation": "keep",
+      "note": "Browser completion notifications; no tool collision."
+    },
+    {
+      "name": "dsh-open-in-vscode",
+      "version": "0.1.6",
+      "source": "github:omdsh-dev/dsh-open-in-vscode@8aed144",
+      "group": "workspace",
+      "runtimeStatus": "active-host-client",
+      "sensitivity": "medium",
+      "restartRequiredForPackageChange": true,
+      "recommendation": "on-demand",
+      "note": "External editor launcher; retain when the VS Code handoff is used."
+    },
+    {
+      "name": "dshmarket",
+      "version": "1.2.2",
+      "source": "npm:^1.2.2",
+      "group": "market/management",
+      "runtimeStatus": "active-host-client",
+      "sensitivity": "high",
+      "restartRequiredForPackageChange": true,
+      "updateAvailable": "1.10.1",
+      "recommendation": "keep-as-management-base-update-isolated",
+      "note": "Preferred Phase 3 management base; largest version gap and must not be upgraded together with other plugins."
+    },
+    {
+      "name": "whale-girl",
+      "version": "0.1.0",
+      "source": "github:vlln/whale-girl@d820329",
+      "group": "desktop-pet",
+      "runtimeStatus": "active-host-client",
+      "sensitivity": "medium-high",
+      "restartRequiredForPackageChange": true,
+      "recommendation": "keep-observe",
+      "note": "Useful pet state surface, but visually overlaps with character skins and needs theme-switch regression checks."
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+﻿PROBE=C:\Users\19739\AppData\Local\Temp\dsh-phase3-clean-probe-20260817020646313
+ROLLBACK_COMMAND=powershell.exe -NoProfile -ExecutionPolicy Bypass -File <probe>\research\plugin-management\operation2-plugin-inventory-audit\rollback.ps1 -TargetRoot <probe>
+OUTPUT=RESTORED_STATE=C:\Users\19739\AppData\Local\Temp\dsh-phase3-clean-probe-20260817020646313\.agent\STATE.json
+OUTPUT=REMOVED_OPERATION=C:\Users\19739\AppData\Local\Temp\dsh-phase3-clean-probe-20260817020646313\research\plugin-management\operation2-plugin-inventory-audit
+OUTPUT=ROLLBACK_OK=true
+ROLLBACK_EXIT=0
+ROLLBACK_STATE_MATCH_EXIT=0
+OPERATION_REMOVED=True

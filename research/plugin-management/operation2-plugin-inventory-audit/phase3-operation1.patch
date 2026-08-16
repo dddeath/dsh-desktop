@@ -1,0 +1,1211 @@
+diff --git a/.agent/STATE.json b/.agent/STATE.json
+index b378892..7076b2b 100644
+--- a/.agent/STATE.json
++++ b/.agent/STATE.json
+@@ -1,19 +1,29 @@
+ {
+   "schema_version": 1,
+-  "updated_at": "2026-08-17T01:11:37+08:00",
+-  "status": "in_progress",
++  "updated_at": "2026-08-17T02:04:03+08:00",
++  "status": "awaiting_user_validation",
+   "current_phase": "phase3",
+-  "latest_result": "Phase 2 is complete with retain-current accepted at manual gate F; the verified dsh-codex-tools 1.0.1 implementation and exact recovery snapshot are retained.",
+-  "next_action": "Phase 3 operation 1: analyze the current plugin inventory, responsibilities, overlap, load/update risks, and usage recommendations for manual gate G.",
++  "latest_result": "Phase 3 operation 1 completed: audited 15 profile dependencies, 49 runtime boot entries and 5 unique tools; classified active, installed-disabled, dependency-only and local-link states; no package changes were applied.",
++  "next_action": "Manual gate G: user confirms plugin classification, overlap decisions and usage recommendations before Phase 3 operation 2 management-structure design.",
+   "blockers": [],
+   "state_dir": "E:\\deepseek_harness\\.agent",
+   "last_verification": {
+-    "kind": "internal_image_base64_publication",
+-    "phase": "P2-operation7-internal-publication",
++    "kind": "phase3_plugin_inventory_audit",
++    "phase": "phase3-operation1",
+     "passed": true,
+-    "manual_gate_status": "pending",
+-    "completed_at": "2026-08-16T16:01:58.061Z",
+-    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation7-auth-precedence-fix\\verification.md"
++    "manual_gate_status": "awaiting_user_validation",
++    "completed_at": "2026-08-17T02:04:03+08:00",
++    "evidence": "E:\\deepseek_harness\\research\\plugin-management\\operation2-plugin-inventory-audit\\verification.md",
++    "outputs": {
++      "dependencies": 15,
++      "boot_entries": 49,
++      "tools": 5,
++      "unique_tools": 5,
++      "home_http": 200,
++      "tools_http": 200,
++      "patch_apply_exit": 0,
++      "rollback_exit": 0
++    }
+   },
+   "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
+   "phase2_baseline_verification": {
+@@ -491,12 +501,28 @@
+     "recovery_snapshot_sha256": "b32dc06d8d64aebe6bcf02e7899215b51c5e4112034f289a1051c79fb15583d7"
+   },
+   "phase3_execution": {
+-    "status": "in_progress",
++    "status": "awaiting_manual_gate_g",
+     "started_at": "2026-08-17T01:11:37+08:00",
+     "rollback_point": "4c7244ed0779804cf81cab5a8c4618f8126550c4",
+     "execution_plan": "E:\\deepseek_harness\\research\\plugin-management\\phase3-execution-plan.md",
+     "current_operation": "operation1-plugin-structure-analysis",
+     "manual_gate": "G",
+-    "manual_gate_status": "pending"
++    "manual_gate_status": "awaiting_user_validation",
++    "operation1": {
++      "status": "completed_awaiting_gate_g",
++      "completed_at": "2026-08-17T02:00:38+08:00",
++      "report": "E:\\deepseek_harness\\research\\plugin-management\\operation2-plugin-inventory-audit\\plugin-inventory-analysis.md",
++      "summary": "E:\\deepseek_harness\\research\\plugin-management\\operation2-plugin-inventory-audit\\inventory-summary.json",
++      "verification": "E:\\deepseek_harness\\research\\plugin-management\\operation2-plugin-inventory-audit\\verify.ps1",
++      "rollback": "E:\\deepseek_harness\\research\\plugin-management\\operation2-plugin-inventory-audit\\rollback.ps1",
++      "profile_dependencies": 15,
++      "runtime_boot_entries": 49,
++      "registered_tools": 5,
++      "tool_name_collisions": 0,
++      "profile_changed_after_runtime_start": true,
++      "package_changes_applied": false,
++      "verified_at": "2026-08-17T02:04:03+08:00",
++      "verification_passed": true
++    }
+   }
+ }
+diff --git a/research/plugin-management/operation2-plugin-inventory-audit/check-updates.mjs b/research/plugin-management/operation2-plugin-inventory-audit/check-updates.mjs
+new file mode 100644
+index 0000000..f752b8a
+--- /dev/null
++++ b/research/plugin-management/operation2-plugin-inventory-audit/check-updates.mjs
+@@ -0,0 +1,32 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import { spawnSync } from 'node:child_process';
++
++const output = process.argv[2] || path.resolve('research/plugin-management/operation2-plugin-inventory-audit/evidence/update-check.txt');
++const node = 'C:/Program Files/nodejs/node.exe';
++const npmCli = 'C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js';
++const packages = ['@liustack/modlens', 'dsh-better-sidebar', 'dsh-context', 'dsh-find-plugin', 'dshmarket'];
++const repositories = [
++  'Small-tailqwq/dsh-deep-whale',
++  'omdsh-dev/dsh-at-file',
++  'omdsh-dev/dsh-notification',
++  'omdsh-dev/dsh-open-in-vscode',
++  'vlln/whale-girl',
++  'DocJlm/dsh-arknights',
++  'SPYQWER1/dsh-codex-tools',
++];
++
++const lines = [`CHECKED_AT=${new Date().toISOString()}`];
++for (const name of packages) {
++  const result = spawnSync(node, [npmCli, 'view', name, 'version', 'dist-tags', '--json'], { encoding: 'utf8' });
++  lines.push(`---NPM ${name}---`, (result.stdout || '').trim(), (result.stderr || result.error?.message || '').trim(), `EXIT=${result.status}`);
++  if (result.status !== 0) process.exitCode = result.status || 1;
++}
++for (const repository of repositories) {
++  const result = spawnSync('git', ['ls-remote', `https://github.com/${repository}.git`, 'HEAD'], { encoding: 'utf8' });
++  lines.push(`---GIT ${repository}---`, (result.stdout || '').trim(), (result.stderr || result.error?.message || '').trim(), `EXIT=${result.status}`);
++  if (result.status !== 0) process.exitCode = result.status || 1;
++}
++
++fs.writeFileSync(output, lines.filter((line) => line !== '').join('\n') + '\n', 'utf8');
++console.log(fs.readFileSync(output, 'utf8'));
+diff --git a/research/plugin-management/operation2-plugin-inventory-audit/collect-inventory.mjs b/research/plugin-management/operation2-plugin-inventory-audit/collect-inventory.mjs
+new file mode 100644
+index 0000000..48f43c1
+--- /dev/null
++++ b/research/plugin-management/operation2-plugin-inventory-audit/collect-inventory.mjs
+@@ -0,0 +1,182 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import crypto from 'node:crypto';
++import { createRequire } from 'node:module';
++
++const require = createRequire(import.meta.url);
++const YAML = require('C:/Users/19739/AppData/Roaming/npm/node_modules/@deepseek-ai/dsh/node_modules/yaml');
++const profileRoot = process.argv[2] || 'C:/Users/19739/.dsh/profiles/web';
++const outputRoot = process.argv[3] || path.resolve('research/plugin-management/operation2-plugin-inventory-audit/evidence');
++
++fs.mkdirSync(outputRoot, { recursive: true });
++
++function sha256File(file) {
++  return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex').toUpperCase();
++}
++
++function jsonFile(file) {
++  return JSON.parse(fs.readFileSync(file, 'utf8'));
++}
++
++function repositoryValue(repository) {
++  if (!repository) return null;
++  if (typeof repository === 'string') return repository;
++  return repository.url || null;
++}
++
++function optionalFileInfo(root, relative) {
++  if (!relative || typeof relative !== 'string') return null;
++  const clean = relative.replace(/^\.\//, '');
++  const file = path.resolve(root, clean);
++  if (!fs.existsSync(file) || !fs.statSync(file).isFile()) return null;
++  const text = fs.readFileSync(file, 'utf8');
++  return {
++    relativePath: clean,
++    absolutePath: file,
++    bytes: fs.statSync(file).size,
++    sha256: sha256File(file),
++    preview: text.slice(0, 1200),
++  };
++}
++
++function entryCandidate(manifest) {
++  if (typeof manifest.main === 'string') return manifest.main;
++  const dot = manifest.exports?.['.'];
++  if (typeof dot === 'string') return dot;
++  if (dot && typeof dot.import === 'string') return dot.import;
++  return 'lib/index.js';
++}
++
++function clientCandidate(manifest) {
++  const client = manifest.exports?.['./client'];
++  if (typeof client === 'string') return client;
++  if (client && typeof client.import === 'string') return client.import;
++  return 'lib/client.js';
++}
++
++function parseStaticInject(entry) {
++  if (!entry?.absolutePath) return [];
++  const text = fs.readFileSync(entry.absolutePath, 'utf8');
++  const match = text.match(/(?:export\s+)?const\s+inject\s*=\s*(\[[\s\S]*?\])/);
++  if (!match) return [];
++  try {
++    return JSON.parse(match[1].replace(/'/g, '"'));
++  } catch {
++    return [];
++  }
++}
++
++function extractBoot(html) {
++  const marker = 'window.__DSH_BOOT__ = ';
++  const start = html.indexOf(marker);
++  if (start < 0) throw new Error('DSH boot marker not found');
++  const jsonStart = start + marker.length;
++  const end = html.indexOf('</script>', jsonStart);
++  if (end < 0) throw new Error('DSH boot terminator not found');
++  return JSON.parse(html.slice(jsonStart, end));
++}
++
++const profilePackagePath = path.join(profileRoot, 'package.json');
++const lockPath = path.join(profileRoot, 'pnpm-lock.yaml');
++const cordisPath = path.join(profileRoot, 'cordis.yml');
++const cordisPatchPath = path.join(profileRoot, 'cordis.patch.yml');
++const marketStatePath = path.join(profileRoot, '.dsh-market', 'state.json');
++const marketHotRoot = path.join(profileRoot, '.dsh-market');
++const profile = jsonFile(profilePackagePath);
++const lock = YAML.parse(fs.readFileSync(lockPath, 'utf8'));
++const importer = lock.importers?.['.']?.dependencies || {};
++const bundles = profile.dsh?.profile?.bundles || [];
++const dependencies = [];
++
++for (const [name, declared] of Object.entries(profile.dependencies || {})) {
++  const installPath = path.join(profileRoot, 'node_modules', ...name.split('/'));
++  const realPath = fs.realpathSync.native(installPath);
++  const manifestPath = path.join(realPath, 'package.json');
++  const manifest = jsonFile(manifestPath);
++  const entry = optionalFileInfo(realPath, entryCandidate(manifest));
++  const client = optionalFileInfo(realPath, clientCandidate(manifest));
++  const patchFile = optionalFileInfo(realPath, manifest.dsh?.bundle?.patch);
++  const lockEntry = importer[name] || {};
++  dependencies.push({
++    name,
++    declared,
++    lockSpecifier: lockEntry.specifier || null,
++    lockResolution: lockEntry.version || null,
++    installedVersion: manifest.version || null,
++    description: manifest.description || null,
++    license: manifest.license || null,
++    repository: repositoryValue(manifest.repository),
++    homepage: manifest.homepage || null,
++    installPath,
++    realPath,
++    linked: path.resolve(installPath).toLowerCase() !== path.resolve(realPath).toLowerCase(),
++    profileBundleIndex: bundles.indexOf(name),
++    profileBundleEnabled: bundles.includes(name),
++    main: manifest.main || null,
++    exports: manifest.exports || null,
++    dsh: manifest.dsh || null,
++    scripts: manifest.scripts || null,
++    manifestSha256: sha256File(manifestPath),
++    entry: entry ? { ...entry, staticInject: parseStaticInject(entry) } : null,
++    client,
++    patch: patchFile,
++  });
++}
++
++const homeResponse = await fetch('http://127.0.0.1:3080/');
++const html = await homeResponse.text();
++const boot = extractBoot(html);
++const toolResponse = await fetch('http://127.0.0.1:3080/__dsh-desktop-ui-compat/agent-tools');
++const toolCatalog = await toolResponse.json();
++
++const snapshot = {
++  schemaVersion: 1,
++  generatedAt: new Date().toISOString(),
++  profileRoot,
++  profilePackage: {
++    path: profilePackagePath,
++    sha256: sha256File(profilePackagePath),
++  },
++  lockfile: {
++    path: lockPath,
++    sha256: sha256File(lockPath),
++  },
++  profileOverlays: {
++    cordis: optionalFileInfo(profileRoot, 'cordis.yml'),
++    cordisPatch: optionalFileInfo(profileRoot, 'cordis.patch.yml'),
++    marketState: fs.existsSync(marketStatePath) ? jsonFile(marketStatePath) : null,
++    marketHotLayers: fs.existsSync(marketHotRoot)
++      ? fs.readdirSync(marketHotRoot)
++          .filter((name) => /^hot-.*\.ya?ml$/i.test(name))
++          .sort()
++          .map((name) => optionalFileInfo(marketHotRoot, name))
++      : [],
++  },
++  bundleOrder: bundles.map((name, index) => ({ index, name, kind: name.startsWith('@deepseek-ai/') ? 'official' : 'profile' })),
++  dependencies,
++  runtime: {
++    home: { status: homeResponse.status, contentType: homeResponse.headers.get('content-type'), bytes: Buffer.byteLength(html) },
++    bootRevision: boot.rev,
++    bootEntries: boot.entries,
++    toolRoute: { status: toolResponse.status, contentType: toolResponse.headers.get('content-type') },
++    toolRevision: toolCatalog.revision,
++    tools: toolCatalog.tools,
++  },
++};
++
++fs.copyFileSync(profilePackagePath, path.join(outputRoot, 'profile-package.json'));
++fs.copyFileSync(lockPath, path.join(outputRoot, 'pnpm-lock.yaml'));
++if (fs.existsSync(cordisPath)) fs.copyFileSync(cordisPath, path.join(outputRoot, 'profile-cordis.yml'));
++if (fs.existsSync(cordisPatchPath)) fs.copyFileSync(cordisPatchPath, path.join(outputRoot, 'profile-cordis.patch.yml'));
++if (fs.existsSync(marketStatePath)) fs.copyFileSync(marketStatePath, path.join(outputRoot, 'market-state.json'));
++fs.writeFileSync(path.join(outputRoot, 'boot.html'), html, 'utf8');
++fs.writeFileSync(path.join(outputRoot, 'agent-tools.json'), JSON.stringify(toolCatalog, null, 2) + '\n', 'utf8');
++fs.writeFileSync(path.join(outputRoot, 'inventory.json'), JSON.stringify(snapshot, null, 2) + '\n', 'utf8');
++
++console.log(`PROFILE_DEPENDENCIES=${dependencies.length}`);
++console.log(`PROFILE_BUNDLES=${bundles.length}`);
++console.log(`BOOT_ENTRIES=${boot.entries.length}`);
++console.log(`REGISTERED_TOOLS=${toolCatalog.tools.length}`);
++console.log(`HOME_STATUS=${homeResponse.status}`);
++console.log(`TOOLS_STATUS=${toolResponse.status}`);
++console.log(`INVENTORY=${path.join(outputRoot, 'inventory.json')}`);
+diff --git a/research/plugin-management/operation2-plugin-inventory-audit/inventory-summary.json b/research/plugin-management/operation2-plugin-inventory-audit/inventory-summary.json
+new file mode 100644
+index 0000000..b689274
+--- /dev/null
++++ b/research/plugin-management/operation2-plugin-inventory-audit/inventory-summary.json
+@@ -0,0 +1,194 @@
++{
++  "schemaVersion": 1,
++  "snapshotAt": "2026-08-17T01:55:19+08:00",
++  "profile": "web",
++  "counts": {
++    "declaredDependencies": 15,
++    "profileBundles": 16,
++    "communityBundleRows": 14,
++    "runtimeBootEntries": 49,
++    "registeredTools": 5,
++    "installedDisabled": 1,
++    "dependencyOnly": 1,
++    "localLinks": 2
++  },
++  "runtime": {
++    "homeStatus": 200,
++    "toolsStatus": 200,
++    "profileNewerThanProcess": true,
++    "disabledSkins": ["dsh-arknights"],
++    "toolNames": ["find_dsh_plugin", "modlens_read_image", "image_gen", "image_vision", "web_search"],
++    "toolNameCollisions": []
++  },
++  "plugins": [
++    {
++      "name": "@dsh-external/dsh-client-ui-skin-maid-atelier",
++      "version": "0.0.1",
++      "source": "github:Small-tailqwq/dsh-deep-whale#path:/maid-atelier@cdb4da4",
++      "group": "UI/skin",
++      "runtimeStatus": "active-client",
++      "sensitivity": "medium",
++      "restartRequiredForPackageChange": true,
++      "recommendation": "keep-active",
++      "note": "Current visual skin; source commit differs from the root meta dependency and must be updated separately."
++    },
++    {
++      "name": "@liustack/modlens",
++      "version": "3.16.7",
++      "source": "npm:^3.16.7",
++      "group": "model/vision",
++      "runtimeStatus": "active-host-client-tool",
++      "sensitivity": "high",
++      "restartRequiredForPackageChange": true,
++      "updateAvailable": "3.18.1",
++      "recommendation": "keep-observe-update",
++      "note": "Default model provider depends on it; update only in an isolated pass."
++    },
++    {
++      "name": "dsh-arknights",
++      "version": "0.1.0",
++      "source": "github:DocJlm/dsh-arknights#path:/skins/pramanix-eyjafjalla@6419ea4",
++      "group": "UI/skin",
++      "runtimeStatus": "installed-disabled",
++      "sensitivity": "medium",
++      "restartRequiredForPackageChange": true,
++      "recommendation": "on-demand",
++      "note": "Present in the profile bundle list but excluded from the current boot entries by dshmarket state."
++    },
++    {
++      "name": "dsh-at-file",
++      "version": "0.6.1",
++      "source": "github:omdsh-dev/dsh-at-file@e0db46f",
++      "group": "workspace",
++      "runtimeStatus": "active-host-client",
++      "sensitivity": "medium",
++      "restartRequiredForPackageChange": true,
++      "recommendation": "keep",
++      "note": "Provides @path references; complementary to the visual explorer."
++    },
++    {
++      "name": "dsh-better-sidebar",
++      "version": "0.12.2",
++      "source": "npm:^0.12.2",
++      "group": "workspace/UI",
++      "runtimeStatus": "active-host-client",
++      "sensitivity": "high",
++      "restartRequiredForPackageChange": true,
++      "updateAvailable": "0.12.3",
++      "recommendation": "keep-patch-update-later",
++      "note": "Owns explorer/editor/terminal/git/browser and directly affects accepted layout behavior."
++    },
++    {
++      "name": "dsh-codex-tools",
++      "version": "1.0.1",
++      "source": "github:SPYQWER1/dsh-codex-tools@9519949",
++      "group": "tools",
++      "runtimeStatus": "active-host-tools",
++      "sensitivity": "high",
++      "restartRequiredForPackageChange": true,
++      "recommendation": "keep-pinned",
++      "note": "Accepted image_gen/image_vision/web_search bridge; commit is explicitly pinned."
++    },
++    {
++      "name": "dsh-context",
++      "version": "0.7.3",
++      "source": "npm:^0.7.3",
++      "group": "conversation/observability",
++      "runtimeStatus": "active-host-client",
++      "sensitivity": "medium",
++      "restartRequiredForPackageChange": true,
++      "updateAvailable": "0.10.1",
++      "recommendation": "keep-observe-update",
++      "note": "Implements the Context conversation tab; not a redundant built-in panel."
++    },
++    {
++      "name": "dsh-deep-whale",
++      "version": null,
++      "source": "github:Small-tailqwq/dsh-deep-whale@873f5c6",
++      "group": "dependency/meta",
++      "runtimeStatus": "dependency-only",
++      "sensitivity": "low",
++      "restartRequiredForPackageChange": true,
++      "recommendation": "remove-candidate-after-proof",
++      "note": "Declared dependency without a profile bundle, host entry, client entry, or registered tool."
++    },
++    {
++      "name": "dsh-desktop-ui-compat",
++      "version": "0.1.0",
++      "source": "link:E:/deepseek_harness/themes/desktop-ui-compat",
++      "group": "UI/core",
++      "runtimeStatus": "active-client-local-link",
++      "sensitivity": "medium",
++      "restartRequiredForPackageChange": false,
++      "recommendation": "keep",
++      "note": "Theme-neutral accepted UI compatibility layer; local source remains the single edit point."
++    },
++    {
++      "name": "dsh-find-plugin",
++      "version": "0.3.6",
++      "source": "npm:^0.3.6",
++      "group": "market/discovery",
++      "runtimeStatus": "active-host-tool",
++      "sensitivity": "medium",
++      "restartRequiredForPackageChange": true,
++      "recommendation": "on-demand",
++      "note": "Agent-driven GitHub discovery overlaps with dshmarket discovery, but not by tool name or UI surface."
++    },
++    {
++      "name": "dsh-maid-atelier-fix",
++      "version": "0.3.0",
++      "source": "link:E:/deepseek_harness/themes/maid-atelier-fix",
++      "group": "UI/skin-adapter",
++      "runtimeStatus": "active-client-local-link",
++      "sensitivity": "medium",
++      "restartRequiredForPackageChange": false,
++      "recommendation": "keep-conditional",
++      "note": "Maid-only visuals and character alignment; generic behavior belongs to desktop-ui-compat."
++    },
++    {
++      "name": "dsh-notification",
++      "version": "0.1.2",
++      "source": "github:omdsh-dev/dsh-notification@2399457",
++      "group": "system-support",
++      "runtimeStatus": "active-host-client",
++      "sensitivity": "low-medium",
++      "restartRequiredForPackageChange": true,
++      "recommendation": "keep",
++      "note": "Browser completion notifications; no tool collision."
++    },
++    {
++      "name": "dsh-open-in-vscode",
++      "version": "0.1.6",
++      "source": "github:omdsh-dev/dsh-open-in-vscode@8aed144",
++      "group": "workspace",
++      "runtimeStatus": "active-host-client",
++      "sensitivity": "medium",
++      "restartRequiredForPackageChange": true,
++      "recommendation": "on-demand",
++      "note": "External editor launcher; retain when the VS Code handoff is used."
++    },
++    {
++      "name": "dshmarket",
++      "version": "1.2.2",
++      "source": "npm:^1.2.2",
++      "group": "market/management",
++      "runtimeStatus": "active-host-client",
++      "sensitivity": "high",
++      "restartRequiredForPackageChange": true,
++      "updateAvailable": "1.10.1",
++      "recommendation": "keep-as-management-base-update-isolated",
++      "note": "Preferred Phase 3 management base; largest version gap and must not be upgraded together with other plugins."
++    },
++    {
++      "name": "whale-girl",
++      "version": "0.1.0",
++      "source": "github:vlln/whale-girl@d820329",
++      "group": "desktop-pet",
++      "runtimeStatus": "active-host-client",
++      "sensitivity": "medium-high",
++      "restartRequiredForPackageChange": true,
++      "recommendation": "keep-observe",
++      "note": "Useful pet state surface, but visually overlaps with character skins and needs theme-switch regression checks."
++    }
++  ]
++}
+diff --git a/research/plugin-management/operation2-plugin-inventory-audit/original/STATE.json b/research/plugin-management/operation2-plugin-inventory-audit/original/STATE.json
+new file mode 100644
+index 0000000..b378892
+--- /dev/null
++++ b/research/plugin-management/operation2-plugin-inventory-audit/original/STATE.json
+@@ -0,0 +1,502 @@
++{
++  "schema_version": 1,
++  "updated_at": "2026-08-17T01:11:37+08:00",
++  "status": "in_progress",
++  "current_phase": "phase3",
++  "latest_result": "Phase 2 is complete with retain-current accepted at manual gate F; the verified dsh-codex-tools 1.0.1 implementation and exact recovery snapshot are retained.",
++  "next_action": "Phase 3 operation 1: analyze the current plugin inventory, responsibilities, overlap, load/update risks, and usage recommendations for manual gate G.",
++  "blockers": [],
++  "state_dir": "E:\\deepseek_harness\\.agent",
++  "last_verification": {
++    "kind": "internal_image_base64_publication",
++    "phase": "P2-operation7-internal-publication",
++    "passed": true,
++    "manual_gate_status": "pending",
++    "completed_at": "2026-08-16T16:01:58.061Z",
++    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation7-auth-precedence-fix\\verification.md"
++  },
++  "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
++  "phase2_baseline_verification": {
++    "schema_version": 1,
++    "kind": "baseline_verification",
++    "started_at": "20260816T122745Z",
++    "completed_at": "2026-08-16T12:27:47+00:00",
++    "passed": true,
++    "phase": "P2-baseline",
++    "profile": "default",
++    "records": [
++      {
++        "index": 1,
++        "command": "powershell.exe -NoProfile -Command \"& 'C:\\Program Files\\nodejs\\node.exe' --check 'desktop\\main.js'\"",
++        "cwd": "E:\\deepseek_harness",
++        "source_mode": "local",
++        "host": null,
++        "exit_status": 0,
++        "duration_seconds": 0.375,
++        "timed_out": false,
++        "stdout_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\01-stdout.log",
++        "stderr_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\01-stderr.log"
++      },
++      {
++        "index": 2,
++        "command": "powershell.exe -NoProfile -Command \"& 'C:\\Program Files\\nodejs\\node.exe' --check 'themes\\maid-atelier-fix\\lib\\client.js'\"",
++        "cwd": "E:\\deepseek_harness",
++        "source_mode": "local",
++        "host": null,
++        "exit_status": 0,
++        "duration_seconds": 0.515,
++        "timed_out": false,
++        "stdout_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\02-stdout.log",
++        "stderr_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\02-stderr.log"
++      },
++      {
++        "index": 3,
++        "command": "powershell.exe -NoProfile -Command \"& 'C:\\Program Files\\nodejs\\node.exe' --check 'research\\dom-probe\\verify-runtime-clarity-sidebar-sync.cjs'\"",
++        "cwd": "E:\\deepseek_harness",
++        "source_mode": "local",
++        "host": null,
++        "exit_status": 0,
++        "duration_seconds": 0.453,
++        "timed_out": false,
++        "stdout_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\03-stdout.log",
++        "stderr_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\03-stderr.log"
++      },
++      {
++        "index": 4,
++        "command": "powershell.exe -NoProfile -Command \"$r=Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:3080/' -TimeoutSec 10; Write-Output ('HTTP_STATUS=' + [int]$r.StatusCode); if([int]$r.StatusCode -ne 200){exit 1}\"",
++        "cwd": "E:\\deepseek_harness",
++        "source_mode": "local",
++        "host": null,
++        "exit_status": 0,
++        "duration_seconds": 0.907,
++        "timed_out": false,
++        "stdout_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\04-stdout.log",
++        "stderr_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\04-stderr.log"
++      }
++    ],
++    "evidence_dir": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify"
++  },
++  "phase1_final_verification": {
++    "kind": "ui_regression_verification",
++    "phase": "P1",
++    "passed": true,
++    "completed_at": "2026-08-16T12:46:54+00:00",
++    "evidence_dir": "E:\\deepseek_harness\\research\\ui-audit\\phase1-regression-pet-composer"
++  },
++  "phase2_plan": "E:\\deepseek_harness\\research\\phase2-codex-media\\phase2-execution-plan.md",
++  "validation_mode": "minimal machine gates plus user approval at each functional checkpoint",
++  "phase2_operation1_report": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation1-candidate-source-audit.md",
++  "phase2_operation1_snapshot": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation1-source-snapshot.json",
++  "phase2_candidate": {
++    "name": "dsh-codex-tools",
++    "repository": "https://github.com/SPYQWER1/dsh-codex-tools",
++    "head": "9519949dd340ff07a7ef8182692704d2487ce690",
++    "manual_gate": "A",
++    "manual_gate_status": "accepted",
++    "installed": true,
++    "version": "1.0.1"
++  },
++  "phase2_operation2": {
++    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800",
++    "profile": "web",
++    "package": "dsh-codex-tools",
++    "version": "1.0.1",
++    "source_head": "9519949dd340ff07a7ef8182692704d2487ce690",
++    "install_exit": 0,
++    "plugin_count_before": 13,
++    "plugin_count_after": 14,
++    "registered_tools": [
++      "image_gen",
++      "image_vision",
++      "web_search"
++    ],
++    "http_status": 200,
++    "machine_gate_passed": true,
++    "runtime_reload_confirmed": true,
++    "manual_gate": "B",
++    "manual_gate_status": "accepted",
++    "verification_record": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\verification-install.md",
++    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\rollback.ps1",
++    "live_pid": 43744,
++    "restart_recovery": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\verification-restart.md"
++  },
++  "phase2_restart_recovery": {
++    "reported_error": "EADDRINUSE 127.0.0.1:3080",
++    "old_pid": 19300,
++    "new_pid": 43744,
++    "http_status": 200,
++    "source_file": "E:\\deepseek_harness\\desktop\\main.js",
++    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\verification-restart.md",
++    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\rollback.ps1",
++    "passed": true
++  },
++  "phase2_operation3": {
++    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation3-agent-tools-ui",
++    "theme": "dsh-maid-atelier-fix",
++    "version": "0.2.0",
++    "settings_scroll_fixed": true,
++    "agent_tools_page_added": true,
++    "registered_tools": [
++      "image_gen",
++      "image_vision",
++      "web_search"
++    ],
++    "http_status": 200,
++    "machine_gate_passed": true,
++    "manual_gate": "C",
++    "manual_gate_status": "accepted",
++    "verification_record": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation3-agent-tools-ui\\verification-ui.md",
++    "acceptance_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation3-agent-tools-ui\\acceptance-agent-tools.png",
++    "patch": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation3-agent-tools-ui\\change.patch",
++    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation3-agent-tools-ui\\rollback.ps1"
++  },
++  "phase2_operation4": {
++    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters",
++    "theme": "dsh-maid-atelier-fix",
++    "version": "0.2.1",
++    "changed_field": "right character offset now follows --dsh-sidebar-width",
++    "machine_gate_passed": true,
++    "manual_gate": "D",
++    "manual_gate_status": "accepted",
++    "verification_record": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\verification-ui.md",
++    "acceptance_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\acceptance-responsive-character.png",
++    "patch": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\change.patch",
++    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\rollback.ps1"
++  },
++  "phase2_operation5": {
++    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync",
++    "theme": "dsh-maid-atelier-fix",
++    "version": "0.2.2",
++    "changed_field": "left character translate now follows --dsh-left-sidebar-width",
++    "machine_gate_passed": true,
++    "manual_gate": "E",
++    "manual_gate_status": "accepted",
++    "verification_record": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\verification-ui.md",
++    "acceptance_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\acceptance-left-character.png",
++    "patch": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\change.patch",
++    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\rollback.ps1"
++  },
++  "phase2_oauth_operation": {
++    "phase": "P2-operation3",
++    "auth_method": "ChatGPT",
++    "cli_status": "Logged in using ChatGPT",
++    "login_status_exit": 0,
++    "api_key_environment_present": false,
++    "explicit_token_environment_present": false,
++    "token_content_recorded": false,
++    "machine_gate_passed": true,
++    "manual_gate": "C",
++    "manual_gate_status": "accepted_by_execution_confirmation",
++    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation3-4-oauth-vision\\evidence\\auth-status.txt"
++  },
++  "phase2_vision_operation": {
++    "phase": "P2-operation4",
++    "tool": "image_vision",
++    "model": "gpt-5.5",
++    "input_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\acceptance-left-character.png",
++    "input_sha256": "a28e6ca1a5fbee9fdf32ce2c7407b25356981f46d8207c13ade0ec137824e29a",
++    "call_exit": 0,
++    "response_parseable": true,
++    "machine_gate_passed": true,
++    "manual_gate": "D",
++    "manual_gate_status": "accepted",
++    "result": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation3-4-oauth-vision\\evidence\\vision-result.json"
++  },
++  "phase2_image_gen_operation": {
++    "phase": "P2-operation5",
++    "tool": "image_gen",
++    "model": "gpt-5.5",
++    "prompt_file": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-image-gen\\prompt.txt",
++    "requested_size": "1024x1024",
++    "actual_size": "1254x1254",
++    "size_match": false,
++    "output_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-image-gen\\generated\\dsh-maid-whale.png",
++    "output_sha256": "ea4c5eb4c8d80d316b97b8ae6bc5d0ca5414b1da4f8790c44e576371d4c88577",
++    "bytes": 2375371,
++    "call_exit": 0,
++    "decode_passed": true,
++    "machine_gate_passed": true,
++    "manual_gate": "E",
++    "manual_gate_status": "accepted",
++    "result": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-image-gen\\evidence\\result.json"
++  },
++  "phase2_internal_image_gen_fix": {
++    "phase": "P2-operation5-internal-fix",
++    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix",
++    "reported_error": "backend returned no parseable result",
++    "root_causes": [
++      "desktop child PATH resolved Windows System32 bash before Git Bash and did not guarantee node",
++      "JSON-quoted Windows backslashes in the script path were consumed by the bash command layer"
++    ],
++    "changed_fields": [
++      "desktop main buildDshChildEnv prepends Git Bash and Node directories on Windows",
++      "installed dsh-codex-tools shellScriptPath converts script paths to forward slashes before shell.resolve"
++    ],
++    "installed_plugin_path": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-codex-tools\\tools.js",
++    "plugin_version": "1.0.1",
++    "live_pid": 40492,
++    "http_status": 200,
++    "zero_quota_probe": {
++      "backend": "chatgpt-subscription",
++      "ok": false,
++      "error": "invalid_path",
++      "response_parseable": true,
++      "tool_seconds": 0.7
++    },
++    "real_generation": {
++      "backend": "chatgpt-subscription",
++      "ok": true,
++      "model": "gpt-5.5",
++      "file_written": true,
++      "output_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix\\generated\\internal-dsh-blue-whale-app-icon.png",
++      "bytes": 1637568,
++      "actual_size": "1254x1254",
++      "sha256": "a65d0ad66224590e0a7fd14ea1228ed8a8c27c940a3685a7d0fd081c787a40f8"
++    },
++    "machine_gate_passed": true,
++    "manual_gate": "E-internal",
++    "manual_gate_status": "superseded_by_operation7",
++    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix\\verification.md",
++    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix\\rollback.ps1"
++  },
++  "phase2_composer_permission_sync": {
++    "phase": "P2-UI-composer-permission-sync",
++    "operation_dir": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync",
++    "theme": "dsh-maid-atelier-fix",
++    "version": "0.2.3",
++    "changed_field": "permission control is always icon-only, independent of right workbench sidebar state",
++    "baseline": {
++      "open": {
++        "width": 38,
++        "label_display": "none"
++      },
++      "collapsed": {
++        "width": 121.91667175292969,
++        "label_display": "block"
++      }
++    },
++    "modified": {
++      "open": {
++        "width": 38,
++        "height": 36,
++        "label_display": "none",
++        "padding_inline": "0px"
++      },
++      "collapsed": {
++        "width": 38,
++        "height": 36,
++        "label_display": "none",
++        "padding_inline": "0px"
++      }
++    },
++    "machine_gate_passed": true,
++    "manual_gate": "composer-permission-sidebar-sync",
++    "manual_gate_status": "pending",
++    "acceptance_open": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\evidence\\acceptance-open-sidebar.jpg",
++    "acceptance_collapsed": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\evidence\\acceptance-collapsed-sidebar.jpg",
++    "verification": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\verification.md",
++    "rollback": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\rollback.ps1"
++  },
++  "phase2_image_workspace_output_fix": {
++    "phase": "P2-operation5-workspace-output-fix",
++    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-workspace-output-fix",
++    "plugin": "dsh-codex-tools",
++    "version": "1.0.1",
++    "root_cause": "plugin helpers resolved relative paths from the DSH service process cwd instead of exec.agent.session.header.cwd",
++    "changed_fields": [
++      "tools.js forwards exec.agent.session.header.cwd through DSH_WORKSPACE_ROOT for image_gen and image_vision",
++      "codex-common.mjs resolves and validates paths against the explicit workspace root",
++      "codex-imagegen.mjs returns outputPath, absolutePath, and workspaceRoot"
++    ],
++    "session_workspace": "E:\\deepseek_workspace\\pro1",
++    "recovered_image": "E:\\deepseek_workspace\\pro1\\output\\imagegen\\1786892171127.png",
++    "recovered_sha256": "9a0fdff8892c73c49b5e694d9b737826bc7b06ee5ed051ec624f112c3fb4f454",
++    "recovered_bytes": 2470979,
++    "live_pid": 39204,
++    "http_status": 200,
++    "workspace_binding_fixture_passed": true,
++    "child_preflight": {
++      "ok": false,
++      "error": "output_exists",
++      "exit_status": 1,
++      "backend_contacted": false
++    },
++    "live_generation_attempt": {
++      "ok": false,
++      "error": "backend_unavailable",
++      "retry_count": 0,
++      "file_written": false
++    },
++    "machine_gate_passed": true,
++    "manual_gate": "image-workspace-output",
++    "manual_gate_status": "accepted_by_followup_use",
++    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-workspace-output-fix\\verification.md",
++    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-workspace-output-fix\\rollback.ps1",
++    "acceptance_evidence": "User selected E:\\deepseek_workspace\\pro1\\output\\imagegen\\1786892171127.png as the desktop icon."
++  },
++  "phase2_image_backend_recovery": {
++    "phase": "P2-operation6-backend-recovery",
++    "reported_result": {
++      "backend": "chatgpt-subscription",
++      "ok": false,
++      "error": "backend_unavailable"
++    },
++    "diagnosis": "transient backend interval; authentication and workspace binding remained valid",
++    "successful_result": {
++      "backend": "chatgpt-subscription",
++      "ok": true,
++      "outputPath": "output/imagegen/backend-recovery-20260816-233610.png",
++      "absolutePath": "E:\\deepseek_workspace\\pro1\\output\\imagegen\\backend-recovery-20260816-233610.png",
++      "workspaceRoot": "E:\\deepseek_workspace\\pro1",
++      "bytes": 790464,
++      "width": 1254,
++      "height": 1254,
++      "sha256": "47c72fa3efb62e2fe3bcef4eb5cbb32c9882ed5f13a3673c3556a187f7eb745e",
++      "model": "gpt-5.5"
++    },
++    "installed_code_changed": false,
++    "machine_gate_passed": true,
++    "manual_gate": "image-backend-recovery",
++    "manual_gate_status": "accepted_by_followup_use",
++    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation6-backend-recovery\\verification.md",
++    "acceptance_evidence": "User selected E:\\deepseek_workspace\\pro1\\output\\imagegen\\1786892171127.png as the desktop icon."
++  },
++  "phase2_internal_image_publication_fix": {
++    "phase": "P2-operation7-internal-publication",
++    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation7-auth-precedence-fix",
++    "plugin": "dsh-codex-tools",
++    "version": "1.0.1",
++    "reported_error": "backend_unavailable",
++    "root_causes": [
++      "the tool wrapper collapsed post-generation file publication errors into backend_unavailable",
++      "the DSH shell sandbox denied the image child process from opening both the session workspace and system temporary paths",
++      "DSH credential injection could override the current Codex auth file"
++    ],
++    "changed_fields": [
++      "Codex auth file is preferred for DSH tool calls while DSH credentials remain fallback",
++      "backend failures preserve typed error, safe detail, auth source, and auth path",
++      "image bytes return through a 32 MiB bounded stdout channel instead of child-process file writes",
++      "the in-process plugin host validates, decodes, and atomically creates the final workspace file"
++    ],
++    "transfer_mode": "stdout-base64",
++    "stdout_max_bytes": 33554432,
++    "decoded_max_bytes": 25165824,
++    "live_result": {
++      "backend": "chatgpt-subscription",
++      "ok": true,
++      "outputPath": "output/imagegen/base64-publication-live.png",
++      "absolutePath": "E:\\deepseek_workspace\\pro1\\output\\imagegen\\base64-publication-live.png",
++      "workspaceRoot": "E:\\deepseek_workspace\\pro1",
++      "bytes": 990149,
++      "width": 1254,
++      "height": 1254,
++      "sha256": "031a8bb0cfb6a06f9b6f50e54c3f97ea802a883dc3e13a2b17159410e6a89e3d",
++      "model": "gpt-5.5",
++      "fileWritten": true
++    },
++    "live_pid": 38708,
++    "http_status": 200,
++    "machine_gate_passed": true,
++    "manual_gate": "internal-image-publication",
++    "manual_gate_status": "accepted_by_followup_use",
++    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation7-auth-precedence-fix\\verification.md",
++    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation7-auth-precedence-fix\\rollback.ps1",
++    "acceptance_evidence": "User selected E:\\deepseek_workspace\\pro1\\output\\imagegen\\1786892171127.png as the desktop icon."
++  },
++  "phase2_desktop_icon_update": {
++    "phase": "P2-operation8-desktop-icon",
++    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation8-desktop-icon-update",
++    "source": "E:\\deepseek_workspace\\pro1\\output\\imagegen\\1786892171127.png",
++    "source_sha256": "9a0fdff8892c73c49b5e694d9b737826bc7b06ee5ed051ec624f112c3fb4f454",
++    "source_size": "1254x1254",
++    "changed_fields": [
++      "desktop/assets/icon.png -> transparent RGBA 256x256 runtime icon",
++      "desktop/assets/icon.ico -> Windows ICO frames 16,24,32,48,64,128,256",
++      "electron-builder portable and NSIS packages rebuilt",
++      "dist-status runtime rebuilt and relaunched"
++    ],
++    "asset_hashes": {
++      "icon.png": "408b1d493f8faad7651b784340c11c85a3d703c006efadfec7bee433ce5227db",
++      "icon.ico": "c8373cffbc401eb3853414afba3e0baa8dd699301bb5ab53540ea2231f5334ac"
++    },
++    "build_outputs": [
++      "E:\\deepseek_harness\\desktop\\dist\\DeepSeek-Harness-Desktop-0.1.0-portable.exe",
++      "E:\\deepseek_harness\\desktop\\dist\\DeepSeek-Harness-Desktop-Setup-0.1.0.exe",
++      "E:\\deepseek_harness\\desktop\\dist-status\\DeepSeek-Harness-Desktop-0.1.0-portable.exe",
++      "E:\\deepseek_harness\\desktop\\dist-status\\win-unpacked\\DeepSeek Harness Desktop.exe"
++    ],
++    "package_build_exit": 0,
++    "runtime_build_exit": 0,
++    "embedded_icon_pixel_match_32": true,
++    "runtime_window_title": "深海女仆工坊 · DeepSeek Harness",
++    "runtime_http_status": 200,
++    "machine_gate_passed": true,
++    "manual_gate": "desktop-icon-visual",
++    "manual_gate_status": "accepted",
++    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation8-desktop-icon-update\\verification.md",
++    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation8-desktop-icon-update\\rollback.ps1",
++    "accepted_at": "2026-08-17T01:03:16+08:00"
++  },
++  "phase2_operation6_final": {
++    "phase": "P2-operation6-persistence-recovery",
++    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final",
++    "plugin": "dsh-codex-tools",
++    "version": "1.0.1",
++    "persistence_checks": {
++      "profile_manifest_match": true,
++      "plugin_snapshot_files": 11,
++      "tool_sources": [
++        "image_gen",
++        "image_vision",
++        "web_search"
++      ],
++      "profile_api_key_reference_count": 0,
++      "codex_auth_fields_present": true,
++      "auth_values_recorded": false,
++      "generated_output_persisted": true,
++      "desktop_process_running": true,
++      "http_status": 200
++    },
++    "snapshot_zip": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\artifacts\\current-profile-plugin-snapshot.zip",
++    "snapshot_sha256": "b32dc06d8d64aebe6bcf02e7899215b51c5e4112034f289a1051c79fb15583d7",
++    "uninstall": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\uninstall-current.ps1",
++    "restore": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\restore-current.ps1",
++    "recommended_decision": "retain-current",
++    "machine_gate_passed": true,
++    "manual_gate": "F",
++    "manual_gate_status": "accepted",
++    "decision_options": [
++      "retain-current",
++      "execute-uninstall-and-restore"
++    ],
++    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\verification.md",
++    "decision": "retain-current",
++    "accepted_at": "2026-08-17T01:11:37+08:00"
++  },
++  "phase2_completion": {
++    "status": "completed",
++    "decision": "retain-current",
++    "completed_at": "2026-08-17T01:11:37+08:00",
++    "completion_commit": "4c7244ed0779804cf81cab5a8c4618f8126550c4",
++    "completion_evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\verification.md",
++    "plugin": "dsh-codex-tools@1.0.1",
++    "manual_gates": [
++      "A",
++      "B",
++      "C",
++      "D",
++      "E",
++      "F"
++    ],
++    "recovery_snapshot_sha256": "b32dc06d8d64aebe6bcf02e7899215b51c5e4112034f289a1051c79fb15583d7"
++  },
++  "phase3_execution": {
++    "status": "in_progress",
++    "started_at": "2026-08-17T01:11:37+08:00",
++    "rollback_point": "4c7244ed0779804cf81cab5a8c4618f8126550c4",
++    "execution_plan": "E:\\deepseek_harness\\research\\plugin-management\\phase3-execution-plan.md",
++    "current_operation": "operation1-plugin-structure-analysis",
++    "manual_gate": "G",
++    "manual_gate_status": "pending"
++  }
++}
+diff --git a/research/plugin-management/operation2-plugin-inventory-audit/plugin-inventory-analysis.md b/research/plugin-management/operation2-plugin-inventory-audit/plugin-inventory-analysis.md
+new file mode 100644
+index 0000000..7486d9a
+--- /dev/null
++++ b/research/plugin-management/operation2-plugin-inventory-audit/plugin-inventory-analysis.md
+@@ -0,0 +1,99 @@
++# 阶段 3 / 操作 1：当前插件结构分析
++
++状态：**待人工验收 G**
++
++快照对象：`C:\Users\19739\.dsh\profiles\web`
++
++快照时间：2026-08-17 01:55（Asia/Shanghai）
++
++## 1. 结论先行
++
++- 当前 profile 声明 **15 个依赖**，profile 顺序中有 **16 个 bundle**（含 2 个官方基础 bundle），运行页返回 **49 个前端启动项**，工具服务返回 **5 个工具**。
++- 当前运行健康：主页 HTTP `200`、工具清单 HTTP `200`；5 个工具名唯一，没有同名覆盖。
++- 状态必须分开看：`dsh-arknights` 是“已安装但已禁用”，`dsh-deep-whale` 是“仅依赖、未装载”，其余 13 个依赖均有当前运行证据。
++- 推荐保留当前主链路：`dsh-codex-tools@1.0.1`、`dsh-desktop-ui-compat`、Maid 主题适配、`dsh-context`、`dsh-better-sidebar`、`dsh-at-file`、`dshmarket`。
++- 本操作只做盘点，不更新、不启停、不重启。当前 profile 文件晚于 DSH 进程启动时间，若现在重启会一次性吸收未运行过的 profile 状态；应留到后续受控操作。
++
++## 2. 状态口径
++
++| 状态 | 判据 |
++|---|---|
++| 运行中 | 前端 boot entry、已注册工具或明确的 host bundle 行为至少命中一项 |
++| 已安装但禁用 | 依赖和 bundle 均存在，但市场禁用状态排除当前 boot entry |
++| 仅依赖 | `package.json` 有声明，但不在 profile bundle、boot entry 与工具清单中 |
++| 本地链接 | profile 直接链接仓库内目录，修改源目录即可成为下次加载内容 |
++
++`dsh.profile.bundles` 是加载顺序，不是运行状态清单；市场禁用层还能在其上排除皮肤。DSH 官方仓库与本地安装说明均把 profile 依赖、bundle 顺序和 overlay 分为不同层，包集合变化需要重启进程。参考：[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)。
++
++## 3. 插件逐项建议
++
++| 插件 | 当前状态 | 职责 | 敏感能力/影响面 | 更新情况 | 建议 |
++|---|---|---|---|---|---|
++| `@dsh-external/dsh-client-ui-skin-maid-atelier@0.0.1` | 运行中/前端 | Maid 皮肤 | DOM/CSS/大图资源 | 子路径锁在 `cdb4da4`，与根仓库 HEAD 不同 | **保留启用**；皮肤单独更新 |
++| `@liustack/modlens@3.16.7` | 运行中/前后端/工具 | 模型、视觉桥 | tools/agents/attachments/LLM、子进程与临时图片 | npm `3.18.1` | **保留并观察更新**；默认模型依赖它，隔离升级 |
++| `dsh-arknights@0.1.0` | 已安装但禁用 | 备选皮肤 | DOM/CSS/大图资源 | Git HEAD 与锁定提交一致 | **按需启用**；同一时刻只启用一个主皮肤 |
++| `dsh-at-file@0.6.1` | 运行中/前后端 | `@path` 工作区引用 | 路径搜索与工作区读取 | Git HEAD 一致 | **保留** |
++| `dsh-better-sidebar@0.12.2` | 运行中/前后端 | 右栏、文件、终端、Git、浏览器 | webServer/sessions/tools、文件与进程 | npm `0.12.3` | **保留**；补丁升级另开验证 |
++| `dsh-codex-tools@1.0.1` | 运行中/3 个工具 | Pro 订阅图像与搜索入口 | shell/credentials、网络、工作区写入 | 已显式锁定 `9519949`，与 HEAD 一致 | **保留并继续锁定** |
++| `dsh-context@0.7.3` | 运行中/前后端 | “上下文”会话页 | 会话上下文读取与统计 | npm `0.10.1` | **保留并观察更新**；不是重复页面 |
++| `dsh-deep-whale` | 仅依赖 | Maid 仓库根元包 | 当前无运行注入 | 根仓库 HEAD 与锁定一致 | **移除候选**；先证明子路径皮肤不依赖根元包 |
++| `dsh-desktop-ui-compat@0.1.0` | 运行中/本地链接 | 跨主题 UI 核心 | DOM/CSS、设置页与工具目录读取 | 仓库内维护 | **保留**；作为统一 UI 修改入口 |
++| `dsh-find-plugin@0.3.6` | 运行中/工具 | Agent 内插件发现 | 外部 GitHub 搜索 | npm 已最新 | **按需启用** |
++| `dsh-maid-atelier-fix@0.3.0` | 运行中/本地链接 | Maid 外观与人物定位 | DOM/CSS | 仓库内维护 | **条件保留**；只在 Maid 启用时生效 |
++| `dsh-notification@0.1.2` | 运行中/前后端 | 浏览器完成通知 | Notification API、设置读取 | Git HEAD 一致 | **保留** |
++| `dsh-open-in-vscode@0.1.6` | 运行中/前后端 | 外部编辑器跳转 | 启动外部进程 | Git HEAD 一致 | **按需启用** |
++| `dshmarket@1.2.2` | 运行中/前后端 | 市场、安装、卸载、皮肤状态 | 包管理、loader、配置变更 | npm `1.10.1` | **保留为管理底座**；版本跨度最大，单独升级 |
++| `whale-girl@0.1.0` | 运行中/前后端 | 桌宠与状态账本 | jobs/agents/sessions/settings/webServer | Git HEAD 一致 | **保留并观察**；每次换主题复测透明度/定位 |
++
++> “敏感能力”表示插件注入或实际代码触达的服务面，不等同于操作系统权限授予。
++
++## 4. 职责重叠与冲突判断
++
++| 组合 | 判断 | 管理规则 |
++|---|---|---|
++| `modlens_read_image` / `image_vision` | 能力重叠但工具名不同；前者服务文本模型与绝对路径/URL，后者服务 Codex Pro 且约束工作区相对路径 | 两者保留，工具详情中解释选用条件 |
++| `dshmarket` / `dsh-find-plugin` | 都能发现插件；前者是 UI 安装管理，后者是 Agent 搜索工具 | 以 market 为管理入口，find-plugin 按需开放 |
++| `dsh-at-file` / better-sidebar 文件浏览 | 都触达工作区；前者是输入框路径引用，后者是可视浏览/编辑 | 互补，不合并 |
++| Maid / Arknights | 同属主皮肤，可能同时改写全局布局与背景 | 市场禁用状态作为唯一启用口径，同一时刻只开一个 |
++| `whale-girl` / 主题人物 | 都占用边缘视觉空间 | 桌宠独立保留，但皮肤切换必须人工看透明度、遮挡、拖拽 |
++| `dsh-context` / 官方会话页 | `dsh-context` 注册名为 `context` 的 conversation view，正是当前“上下文”页 | 归类为可观测插件，不标重复 |
++
++## 5. 加载、版本与重启风险
++
++1. **工具名冲突：无。** 当前工具为 `find_dsh_plugin`、`modlens_read_image`、`image_gen`、`image_vision`、`web_search`。
++2. **加载顺序：** `dsh-maid-atelier-fix` 声明注入 `dsh-desktop-ui-compat`，运行 boot 也显示适配器依赖核心；两个本地包仍按 profile bundle 顺序登记，后续管理页应同时展示“声明顺序”和“实际依赖”。
++3. **版本锁定：** `dsh-codex-tools` 已锁定完整提交；多数 Git 依赖只写仓库名，重新安装会跟随 HEAD；npm 依赖使用 `^`，lockfile 当前固定但更新动作会吸收兼容范围内版本。
++4. **来源偏移：** Maid 子路径在 `cdb4da4`，根元包在 `873f5c6`。这不是足够证据判定损坏，但说明二者不能作为同一版本整体更新。
++5. **重启：** 包添加、移除、版本变更和 bundle 结构变更统一标记“需要重启”；皮肤禁用状态可由市场层即时处理，但重启后仍需复核实际 boot entry。
++6. **当前进程漂移：** DSH 进程启动于 `01:33:55`，profile 最后修改于 `01:45:45`，因此本次盘点不执行重启或真实启停。
++
++## 6. 更新优先级
++
++| 优先级 | 对象 | 原因 | 操作 2/3 策略 |
++|---|---|---|---|
++| P0 保持 | `dsh-codex-tools@1.0.1`、两个本地 UI 包 | 已通过阶段 1/2 人工验收 | 固定显示版本与健康状态，不改行为 |
++| P1 管理底座 | `dshmarket 1.2.2 → 1.10.1` | 管理能力最相关，但版本跨度最大 | 先设计兼容层；升级单独立项 |
++| P1 布局补丁 | `dsh-better-sidebar 0.12.2 → 0.12.3` | 改动小但直接影响已验收布局 | 快照设置后单独验证 |
++| P2 能力更新 | `modlens 3.16.7 → 3.18.1` | 默认模型与视觉链路依赖 | 需模型调用、粘贴和图片读取回归 |
++| P2 可观测更新 | `dsh-context 0.7.3 → 0.10.1` | 跨多个次版本 | 需会话页、统计与长上下文回归 |
++| P3 清理 | `dsh-deep-whale` 根元包 | 当前仅依赖 | 隔离移除后验证 Maid 子路径仍可装载 |
++
++## 7. 操作 2 推荐输入（人工验收 G）
++
++建议按以下默认决策进入“管理结构方案”：
++
++1. **管理入口：** 复用“设置 → 插件”，以 `dshmarket` 服务作为包状态底座，不增加第二套包管理器。
++2. **状态模型：** 至少显示“运行中 / 已安装但禁用 / 仅依赖 / 本地链接 / 待重启”。
++3. **默认动作级别：** 查看与健康检查可直接执行；启停、更新、移除、恢复必须二次确认并明确是否重启。
++4. **默认清理候选：** 仅 `dsh-deep-whale` 根元包；本操作不实际移除。
++5. **默认更新策略：** 一个插件一次更新；禁止把 market、sidebar、modlens、context 合并升级。
++
++## 8. 证据
++
++- 结构化摘要：`inventory-summary.json`
++- 原始 profile/lock/boot/tool 快照：`evidence/`
++- 在线版本与 Git HEAD：`evidence/update-check.txt`
++- 运行时间漂移：`evidence/runtime-process.txt`
++- 快照哈希：`evidence/snapshot.sha256`
++- 官方项目：[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)
++- 社区来源：[dsh-deep-whale](https://github.com/Small-tailqwq/dsh-deep-whale)、[dsh-arknights](https://github.com/DocJlm/dsh-arknights)、[dsh-at-file](https://github.com/omdsh-dev/dsh-at-file)、[dsh-codex-tools](https://github.com/SPYQWER1/dsh-codex-tools)、[whale-girl](https://github.com/vlln/whale-girl)
+diff --git a/research/plugin-management/operation2-plugin-inventory-audit/rollback.ps1 b/research/plugin-management/operation2-plugin-inventory-audit/rollback.ps1
+new file mode 100644
+index 0000000..c30767c
+--- /dev/null
++++ b/research/plugin-management/operation2-plugin-inventory-audit/rollback.ps1
+@@ -0,0 +1,34 @@
++param(
++  [string]$TargetRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path,
++  [switch]$KeepOperationArtifacts
++)
++
++$ErrorActionPreference = 'Stop'
++$operationRelative = 'research\plugin-management\operation2-plugin-inventory-audit'
++$operationRoot = Join-Path $TargetRoot $operationRelative
++$originalState = Join-Path $operationRoot 'original\STATE.json'
++$targetState = Join-Path $TargetRoot '.agent\STATE.json'
++
++if (-not (Test-Path -LiteralPath $originalState)) {
++  throw "Missing rollback source: $originalState"
++}
++
++$resolvedRoot = [IO.Path]::GetFullPath($TargetRoot).TrimEnd('\')
++$resolvedState = [IO.Path]::GetFullPath($targetState)
++if (-not $resolvedState.StartsWith($resolvedRoot + '\', [StringComparison]::OrdinalIgnoreCase)) {
++  throw "Rollback target escaped workspace: $resolvedState"
++}
++
++Copy-Item -LiteralPath $originalState -Destination $targetState -Force
++Write-Output "RESTORED_STATE=$targetState"
++
++if (-not $KeepOperationArtifacts) {
++  $resolvedOperation = [IO.Path]::GetFullPath($operationRoot)
++  if (-not $resolvedOperation.StartsWith($resolvedRoot + '\', [StringComparison]::OrdinalIgnoreCase)) {
++    throw "Rollback artifact target escaped workspace: $resolvedOperation"
++  }
++  Remove-Item -LiteralPath $resolvedOperation -Recurse -Force
++  Write-Output "REMOVED_OPERATION=$resolvedOperation"
++}
++
++Write-Output 'ROLLBACK_OK=true'
+diff --git a/research/plugin-management/operation2-plugin-inventory-audit/verify.ps1 b/research/plugin-management/operation2-plugin-inventory-audit/verify.ps1
+new file mode 100644
+index 0000000..f0f64a7
+--- /dev/null
++++ b/research/plugin-management/operation2-plugin-inventory-audit/verify.ps1
+@@ -0,0 +1,52 @@
++param(
++  [string]$Node = 'C:\Program Files\nodejs\node.exe',
++  [string]$BaseUrl = 'http://127.0.0.1:3080'
++)
++
++$ErrorActionPreference = 'Stop'
++$root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
++$summaryPath = Join-Path $PSScriptRoot 'inventory-summary.json'
++$inventoryPath = Join-Path $PSScriptRoot 'evidence\inventory.json'
++$hashPath = Join-Path $PSScriptRoot 'evidence\snapshot.sha256'
++$reportPath = Join-Path $PSScriptRoot 'plugin-inventory-analysis.md'
++
++if (-not (Test-Path -LiteralPath $Node)) { throw "Node missing: $Node" }
++
++& $Node -e @'
++const fs = require('fs')
++const summary = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'))
++const inventory = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'))
++const tools = inventory.runtime.tools.map((tool) => tool.name)
++const unique = new Set(tools)
++if (summary.counts.declaredDependencies !== 15) throw new Error('dependency count')
++if (inventory.dependencies.length !== 15) throw new Error('inventory dependency count')
++if (summary.counts.runtimeBootEntries !== inventory.runtime.bootEntries.length) throw new Error('boot count')
++if (tools.length !== 5 || unique.size !== tools.length) throw new Error('tool names')
++if (!summary.runtime.disabledSkins.includes('dsh-arknights')) throw new Error('disabled skin')
++if (!summary.plugins.some((p) => p.name === 'dsh-deep-whale' && p.runtimeStatus === 'dependency-only')) throw new Error('meta dependency state')
++console.log(`JSON_OK=true DEPENDENCIES=${inventory.dependencies.length} BOOT_ENTRIES=${inventory.runtime.bootEntries.length} TOOLS=${tools.length} UNIQUE_TOOLS=${unique.size}`)
++'@ $summaryPath $inventoryPath
++if ($LASTEXITCODE -ne 0) { throw "JSON verification exited $LASTEXITCODE" }
++
++$report = Get-Content -LiteralPath $reportPath -Raw -Encoding UTF8
++$summary = Get-Content -LiteralPath $summaryPath -Raw -Encoding UTF8 | ConvertFrom-Json
++foreach ($plugin in $summary.plugins) {
++  if (-not $report.Contains($plugin.name)) { throw "Report missing plugin: $($plugin.name)" }
++}
++Write-Output "REPORT_OK=true PLUGINS=$($summary.plugins.Count)"
++
++$hashLines = Get-Content -LiteralPath $hashPath -Encoding UTF8
++foreach ($line in $hashLines) {
++  if (-not $line.Trim()) { continue }
++  $parts = $line -split '\s+', 2
++  $candidate = Join-Path $root ($parts[1] -replace '/', '\')
++  $actual = (Get-FileHash -Algorithm SHA256 -LiteralPath $candidate).Hash.ToLowerInvariant()
++  if ($actual -ne $parts[0]) { throw "Hash mismatch: $candidate" }
++}
++Write-Output "HASH_OK=true FILES=$($hashLines.Count)"
++
++$homeResponse = Invoke-WebRequest -UseBasicParsing -Uri "$BaseUrl/" -TimeoutSec 10
++$toolInventory = Invoke-WebRequest -UseBasicParsing -Uri "$BaseUrl/__dsh-desktop-ui-compat/agent-tools" -TimeoutSec 10
++if ($homeResponse.StatusCode -ne 200 -or $toolInventory.StatusCode -ne 200) { throw 'HTTP health' }
++Write-Output "HTTP_OK=true HOME=$($homeResponse.StatusCode) TOOLS=$($toolInventory.StatusCode)"
++Write-Output 'VERIFY_EXIT=0'

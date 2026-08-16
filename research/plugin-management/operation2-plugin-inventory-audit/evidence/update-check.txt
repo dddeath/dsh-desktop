@@ -1,0 +1,63 @@
+CHECKED_AT=2026-08-16T17:55:19.753Z
+---NPM @liustack/modlens---
+{
+  "version": "3.18.1",
+  "dist-tags": {
+    "latest": "3.18.1"
+  }
+}
+EXIT=0
+---NPM dsh-better-sidebar---
+{
+  "version": "0.12.3",
+  "dist-tags": {
+    "beta": "0.12.0-beta.1",
+    "latest": "0.12.3"
+  }
+}
+EXIT=0
+---NPM dsh-context---
+{
+  "version": "0.10.1",
+  "dist-tags": {
+    "latest": "0.10.1"
+  }
+}
+EXIT=0
+---NPM dsh-find-plugin---
+{
+  "version": "0.3.6",
+  "dist-tags": {
+    "latest": "0.3.6"
+  }
+}
+EXIT=0
+---NPM dshmarket---
+{
+  "version": "1.10.1",
+  "dist-tags": {
+    "latest": "1.10.1"
+  }
+}
+EXIT=0
+---GIT Small-tailqwq/dsh-deep-whale---
+873f5c6d7f52aa4e4283a5ffd5598229595184da	HEAD
+EXIT=0
+---GIT omdsh-dev/dsh-at-file---
+e0db46f643ceceed5a9001e1a643b08855672b0d	HEAD
+EXIT=0
+---GIT omdsh-dev/dsh-notification---
+2399457a1f96ed86f761f3bc771539d131eb684f	HEAD
+EXIT=0
+---GIT omdsh-dev/dsh-open-in-vscode---
+8aed144abdc158a332aa73bce42fc217d962f751	HEAD
+EXIT=0
+---GIT vlln/whale-girl---
+d8203296eb598cf616be76e0ebdd8eba51c7c54c	HEAD
+EXIT=0
+---GIT DocJlm/dsh-arknights---
+6419ea4d249945daa4bc05112b32ee868f5d2d6c	HEAD
+EXIT=0
+---GIT SPYQWER1/dsh-codex-tools---
+9519949dd340ff07a7ef8182692704d2487ce690	HEAD
+EXIT=0
