@@ -1,7 +1,7 @@
 {
   "name": "dsh-maid-atelier-fix",
-  "description": "Maid Atelier desktop UI fixes, responsive settings layout, runtime status, and a read-only Agent tool inventory.",
-  "version": "0.2.0",
+  "description": "Light-mode and chrome fixes for the maid-atelier (深海女仆工坊) skin: light sidebar/top bar, readable empty-state text, bordered view tabs, themed right sidebar.",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "main": "lib/index.js",
@@ -15,11 +15,7 @@
       "patch": "./cordis.patch.yml"
     },
     "client": {
-      "inject": [
-        "@deepseek-ai/dsh-client-runtime",
-        "@deepseek-ai/dsh-client-ui-settings",
-        "@deepseek-ai/dsh-client-ui-trajectory"
-      ],
+      "inject": [],
       "platform": "web"
     }
   }

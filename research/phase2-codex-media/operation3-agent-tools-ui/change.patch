@@ -1,0 +1,624 @@
+diff --git a/themes/maid-atelier-fix/lib/client.js b/themes/maid-atelier-fix/lib/client.js
+index 33b37ce..417df37 100644
+--- a/themes/maid-atelier-fix/lib/client.js
++++ b/themes/maid-atelier-fix/lib/client.js
+@@ -12,6 +12,15 @@ window.__ModuleLoader__.load({
+     var exports = module.exports;
+     Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
+ 
++    const React = require("react");
++    const {
++      createElement: h,
++      useEffect,
++      useMemo,
++      useState,
++      useSyncExternalStore,
++    } = React;
++
+     const CSS = `
+ /* ===== maid-atelier light-mode fixes ===== */
+ 
+@@ -380,7 +389,10 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-settings-center=
+ }
+ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-settings-center='enhanced'] > [data-dsh-settings-content='true'] {
+   width: auto !important;
++  height: 100% !important;
+   min-width: 0 !important;
++  min-height: 0 !important;
++  overflow: hidden !important;
+   background: rgba(246, 248, 252, 0.98) !important;
+ }
+ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-settings-center='enhanced'] [data-dsh-settings-header='true'] {
+@@ -453,9 +465,13 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-settings-center=
+   border-radius: 10px !important;
+ }
+ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-settings-center='enhanced'] [data-dsh-settings-options='true'] {
++  flex: 1 1 auto !important;
+   min-height: 0 !important;
+   padding: 16px 22px 28px !important;
+   background: rgba(246, 248, 252, 0.98) !important;
++  overflow-x: hidden !important;
++  overflow-y: auto !important;
++  overscroll-behavior: contain;
+   scrollbar-width: thin;
+ }
+ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-settings-center='enhanced'] [data-dsh-settings-options='true'] [class$='_row'],
+@@ -514,6 +530,210 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-settings-center=
+   }
+ }
+ 
++/* Agent tool inventory: a read-only view of the selected session's latest
++   model-visible catalog, including Code Mode tools declared in the SDK block. */
++body [data-dsh-agent-tools='true'] {
++  box-sizing: border-box;
++  width: 100%;
++  max-width: 780px;
++  color: var(--dsw-alias-label-primary);
++}
++body [data-dsh-agent-tools-header='true'] {
++  display: flex;
++  align-items: flex-start;
++  justify-content: space-between;
++  gap: 16px;
++  margin-bottom: 14px;
++}
++body [data-dsh-agent-tools-heading='true'] h2,
++body [data-dsh-agent-tools-heading='true'] p {
++  margin: 0;
++}
++body [data-dsh-agent-tools-heading='true'] h2 {
++  font-size: 18px;
++  line-height: 26px;
++}
++body [data-dsh-agent-tools-heading='true'] p {
++  margin-top: 3px;
++  color: var(--dsw-alias-label-tertiary);
++  font-size: 12px;
++  line-height: 18px;
++}
++body [data-dsh-agent-tools-refresh='true'] {
++  min-height: 34px;
++  padding: 0 12px;
++  border: 1px solid var(--dsw-alias-border-l2);
++  border-radius: 9px;
++  background: var(--dsw-alias-bg-layer-1);
++  color: var(--dsw-alias-label-secondary);
++  font: inherit;
++  font-size: 12px;
++  font-weight: 650;
++  cursor: pointer;
++}
++body [data-dsh-agent-tools-refresh='true']:hover {
++  background: var(--dsw-alias-interactive-bg-hover);
++  color: var(--dsw-alias-label-primary);
++}
++body [data-dsh-agent-tools-summary='true'] {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  gap: 7px;
++  margin-bottom: 12px;
++  padding: 10px 12px;
++  border: 1px solid var(--dsw-alias-border-l2);
++  border-radius: 11px;
++  background: var(--dsw-alias-bg-layer-1);
++  color: var(--dsw-alias-label-secondary);
++  font-size: 12px;
++  line-height: 18px;
++}
++body [data-dsh-agent-tools-dot='true'] {
++  width: 7px;
++  height: 7px;
++  border-radius: 999px;
++  background: var(--dsw-alias-state-success-primary);
++}
++body [data-dsh-agent-tools-pill='true'] {
++  display: inline-flex;
++  align-items: center;
++  min-height: 22px;
++  padding: 0 7px;
++  border-radius: 999px;
++  background: var(--dsw-alias-bg-module-platform);
++  color: var(--dsw-alias-label-secondary);
++  font-size: 11px;
++  font-weight: 650;
++}
++body [data-dsh-agent-tools-search='true'] {
++  display: block;
++  margin-bottom: 12px;
++}
++body [data-dsh-agent-tools-search='true'] input {
++  box-sizing: border-box;
++  width: 100%;
++  height: 38px;
++  padding: 0 12px;
++  border: 1px solid var(--dsw-alias-border-l2);
++  border-radius: 9px;
++  outline: none;
++  background: var(--dsw-alias-bg-layer-1);
++  color: var(--dsw-alias-label-primary);
++  font: inherit;
++  font-size: 13px;
++}
++body [data-dsh-agent-tools-search='true'] input:focus-visible {
++  border-color: var(--dsw-alias-state-business-primary);
++  box-shadow: 0 0 0 2px color-mix(in srgb, var(--dsw-alias-state-business-primary) 18%, transparent);
++}
++body [data-dsh-agent-tools-list='true'] {
++  display: grid;
++  grid-template-columns: repeat(2, minmax(0, 1fr));
++  align-items: start;
++  gap: 10px;
++  margin: 0;
++  padding: 0;
++  list-style: none;
++}
++body [data-dsh-agent-tool-card='true'] {
++  min-width: 0;
++  overflow: hidden;
++  border: 1px solid var(--dsw-alias-border-l2);
++  border-radius: 11px;
++  background: var(--dsw-alias-bg-layer-1);
++}
++body [data-dsh-agent-tool-card='true'][data-open='true'] {
++  border-color: var(--dsw-alias-border-l1);
++  box-shadow: var(--dsw-shadow-lv1);
++}
++body [data-dsh-agent-tool-toggle='true'] {
++  box-sizing: border-box;
++  width: 100%;
++  min-height: 82px;
++  padding: 12px 13px;
++  border: 0;
++  background: transparent;
++  color: inherit;
++  text-align: left;
++  cursor: pointer;
++}
++body [data-dsh-agent-tool-toggle='true']:hover {
++  background: var(--dsw-alias-interactive-bg-hover);
++}
++body [data-dsh-agent-tool-title='true'] {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 8px;
++}
++body [data-dsh-agent-tool-title='true'] code {
++  min-width: 0;
++  overflow: hidden;
++  color: var(--dsw-alias-label-primary);
++  font-size: 13px;
++  font-weight: 700;
++  text-overflow: ellipsis;
++  white-space: nowrap;
++}
++body [data-dsh-agent-tool-origin='true'] {
++  flex: none;
++  padding: 2px 6px;
++  border-radius: 5px;
++  background: color-mix(in srgb, var(--dsw-alias-state-business-primary) 10%, transparent);
++  color: var(--dsw-alias-state-business-primary);
++  font-size: 10px;
++  font-weight: 700;
++}
++body [data-dsh-agent-tool-description='true'] {
++  display: -webkit-box;
++  margin: 7px 0 0;
++  overflow: hidden;
++  color: var(--dsw-alias-label-tertiary);
++  font-size: 11px;
++  line-height: 17px;
++  -webkit-box-orient: vertical;
++  -webkit-line-clamp: 2;
++}
++body [data-dsh-agent-tool-details='true'] {
++  padding: 10px 13px 12px;
++  border-top: 1px solid var(--dsw-alias-border-l2);
++  background: var(--dsw-alias-bg-module-platform);
++}
++body [data-dsh-agent-tool-details='true'] p {
++  margin: 0;
++  color: var(--dsw-alias-label-secondary);
++  font-size: 11px;
++  line-height: 17px;
++}
++body [data-dsh-agent-tool-details='true'] pre {
++  max-height: 190px;
++  margin: 8px 0 0;
++  padding: 9px;
++  overflow: auto;
++  border: 1px solid var(--dsw-alias-border-l2);
++  border-radius: 7px;
++  background: var(--dsw-alias-bg-layer-1);
++  color: var(--dsw-alias-label-secondary);
++  font: 10px/16px var(--ds-font-family-code);
++  white-space: pre-wrap;
++}
++body [data-dsh-agent-tools-empty='true'] {
++  margin: 0;
++  padding: 18px;
++  border: 1px dashed var(--dsw-alias-border-l2);
++  border-radius: 11px;
++  color: var(--dsw-alias-label-tertiary);
++  background: var(--dsw-alias-bg-layer-1);
++  font-size: 12px;
++  line-height: 19px;
++}
++@media (max-width: 760px) {
++  body [data-dsh-agent-tools-list='true'] {
++    grid-template-columns: minmax(0, 1fr);
++  }
++}
++
+ /* Desktop runtime status: one compact source of truth in the title row. */
+ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-runtime-anchor='true'] {
+   position: relative !important;
+@@ -1428,7 +1648,7 @@ body[data-dsh-maid-atelier] :is(button, [role='button'], [role='tab'], textarea,
+           labelEn: "CORE",
+           subtitleZh: "\u57fa\u7840\u504f\u597d\u4e0e\u65b0\u4f1a\u8bdd\u9ed8\u8ba4\u503c",
+           subtitleEn: "Preferences and new-session defaults",
+-          items: ["\u901a\u7528\u8bbe\u7f6e", "\u6a21\u578b", "Agent \u9884\u8bbe", "General Settings", "Models", "Agent Presets"],
++          items: ["\u901a\u7528\u8bbe\u7f6e", "\u6a21\u578b", "Agent \u9884\u8bbe", "Agent \u5de5\u5177", "General Settings", "Models", "Agent Presets", "Agent Tools"],
+         },
+         {
+           key: "plugins",
+@@ -1468,12 +1688,15 @@ body[data-dsh-maid-atelier] :is(button, [role='button'], [role='tab'], textarea,
+         const activeText = normalizedText(activeButton);
+         const group = classifyButton(activeButton);
+         const zh = isChinese(activeText);
++        const agentTools = activeText === "Agent \u5de5\u5177" || activeText === "Agent Tools";
+         title.textContent = activeText;
+-        subtitle.textContent = zh ? group.subtitleZh : group.subtitleEn;
++        subtitle.textContent = agentTools
++          ? (zh ? "\u67e5\u770b\u5f53\u524d\u4f1a\u8bdd\u6700\u8fd1\u4e00\u6b21\u8bf7\u6c42\u53ef\u89c1\u7684\u5b8c\u6574\u5de5\u5177\u6e05\u5355" : "Tools visible to the selected session's latest request")
++          : (zh ? group.subtitleZh : group.subtitleEn);
+         effect.textContent = zh
+-          ? (group.key === "plugins" ? "\u63d2\u4ef6\u53d8\u66f4\u53ef\u80fd\u9700\u91cd\u542f" : "\u6309\u5404\u9879\u8bf4\u660e\u751f\u6548")
+-          : (group.key === "plugins" ? "Plugin changes may require restart" : "Applies as described per item");
+-        dialog.dataset.dshSettingsPage = group.key;
++          ? (agentTools ? "\u53ea\u8bfb \u00b7 \u6700\u8fd1\u8bf7\u6c42" : (group.key === "plugins" ? "\u63d2\u4ef6\u53d8\u66f4\u53ef\u80fd\u9700\u91cd\u542f" : "\u6309\u5404\u9879\u8bf4\u660e\u751f\u6548"))
++          : (agentTools ? "Read only \u00b7 latest request" : (group.key === "plugins" ? "Plugin changes may require restart" : "Applies as described per item"));
++        dialog.dataset.dshSettingsPage = agentTools ? "agent-tools" : group.key;
+       };
+ 
+       const enhanceDialog = (dialog) => {
+@@ -1576,6 +1799,257 @@ body[data-dsh-maid-atelier] :is(button, [role='button'], [role='tab'], textarea,
+       };
+     }
+ 
++    function cleanDocLine(line) {
++      return String(line || "").trim().replace(/^\/\*\*\s?/, "").replace(/^\*\s?/, "").replace(/\s?\*\/$/, "").trim();
++    }
++
++    function decodeToolKey(raw) {
++      if (!raw) return "";
++      if (raw.startsWith('"')) {
++        try { return JSON.parse(raw); } catch { return raw.slice(1, -1); }
++      }
++      if (raw.startsWith("'")) return raw.slice(1, -1).replace(/\\'/g, "'");
++      return raw;
++    }
++
++    function extractTypeScriptCodeTools(system) {
++      const marker = system.lastIndexOf("## Writing code for run_code");
++      const start = marker < 0 ? -1 : system.indexOf("interface ToolArgsMap {", marker);
++      if (start < 0) return [];
++      const end = system.indexOf("\n}", start);
++      if (end < 0) return [];
++      const tools = [];
++      const lines = system.slice(start, end).split(/\r?\n/).slice(1);
++      let comment = [];
++      let inComment = false;
++      for (const line of lines) {
++        if (/^\s{2}\/\*\*/.test(line)) {
++          inComment = true;
++          comment = [];
++        }
++        if (inComment) {
++          const cleaned = cleanDocLine(line);
++          if (cleaned) comment.push(cleaned);
++          if (line.includes("*/")) inComment = false;
++          continue;
++        }
++        const match = line.match(/^\s{2}((?:"(?:[^"\\]|\\.)*")|(?:'(?:[^'\\]|\\.)*')|(?:[A-Za-z_$][\w$]*))\s*:/);
++        if (!match) continue;
++        const name = decodeToolKey(match[1]);
++        if (!name || name === "run_code") continue;
++        tools.push({ name, description: comment.join(" ") || "Code Mode SDK tool", parameters: null, origin: "code" });
++        comment = [];
++      }
++      return tools;
++    }
++
++    function extractPythonCodeTools(system) {
++      const marker = system.lastIndexOf("## Writing code for run_code");
++      const start = marker < 0 ? -1 : system.indexOf("class Tools(Protocol):", marker);
++      const end = start < 0 ? -1 : system.indexOf("\ntools: Tools", start);
++      if (start < 0 || end < 0) return [];
++      const tools = [];
++      for (const line of system.slice(start, end).split(/\r?\n/).slice(1)) {
++        const method = line.match(/^\s{4}async def ([A-Za-z_$][\w$]*)\s*\(/);
++        const exotic = line.match(/^\s{4}# tools\[("(?:[^"\\]|\\.)*")\]\s*\(/);
++        const name = method ? method[1] : (exotic ? decodeToolKey(exotic[1]) : "");
++        if (!name || name === "run_code") continue;
++        tools.push({ name, description: "Code Mode SDK tool", parameters: null, origin: "code" });
++      }
++      return tools;
++    }
++
++    function extractCodeModeTools(system) {
++      if (typeof system !== "string" || !system.includes("## Writing code for run_code")) return [];
++      const tools = extractTypeScriptCodeTools(system);
++      return tools.length ? tools : extractPythonCodeTools(system);
++    }
++
++    function createAgentToolsStore(ctx) {
++      const listeners = new Set();
++      let listOff = null;
++      let sessionOff = null;
++      let boundSessionId = null;
++      let cached = null;
++      let runtimeStatus = "loading";
++      let runtimeTools = Object.freeze([]);
++      let runtimeRevision = null;
++      let runtimeRequest = null;
++      const currentBinding = () => {
++        const state = ctx.sessions.list.getSnapshot();
++        return state.current ? ctx.sessions.binding(state.current) : undefined;
++      };
++      const emit = () => {
++        cached = null;
++        listeners.forEach((listener) => listener());
++      };
++      const refreshRuntime = () => {
++        if (runtimeRequest) return runtimeRequest;
++        runtimeStatus = "loading";
++        emit();
++        runtimeRequest = fetch("/__maid-atelier-fix/agent-tools", { cache: "no-store" })
++          .then((response) => {
++            if (!response.ok) throw new Error(`agent tools endpoint returned ${response.status}`);
++            return response.json();
++          })
++          .then((payload) => {
++            const rows = Array.isArray(payload?.tools) ? payload.tools : [];
++            runtimeTools = Object.freeze(rows
++              .filter((tool) => tool && typeof tool.name === "string")
++              .map((tool) => ({
++                name: tool.name,
++                description: typeof tool.description === "string" ? tool.description : "",
++                parameters: tool.parameters || null,
++                origin: "runtime",
++              })));
++            runtimeRevision = Number.isFinite(payload?.revision) ? payload.revision : null;
++            runtimeStatus = "ready";
++          })
++          .catch(() => {
++            runtimeStatus = "error";
++          })
++          .finally(() => {
++            runtimeRequest = null;
++            emit();
++          });
++        return runtimeRequest;
++      };
++      const bindSession = () => {
++        const binding = currentBinding();
++        const nextId = binding?.session.sessionId || null;
++        if (nextId === boundSessionId) return;
++        if (sessionOff) sessionOff();
++        sessionOff = null;
++        boundSessionId = nextId;
++        if (binding) sessionOff = binding.session.subscribe(emit);
++      };
++      const getSnapshot = () => {
++        if (cached) return cached;
++        const list = ctx.sessions.list.getSnapshot();
++        const sessionId = list.current || null;
++        const binding = sessionId ? ctx.sessions.binding(sessionId) : undefined;
++        const title = sessionId ? (list.byId[sessionId]?.title || sessionId) : "";
++        const snapshot = binding?.session.getSnapshot();
++        const trajectory = snapshot?.views.get("trajectory");
++        const requests = trajectory?.requests || [];
++        let latest = null;
++        for (let index = requests.length - 1; index >= 0; index -= 1) {
++          const request = requests[index];
++          if (request?.purpose === "assistant" && request.prompt) {
++            latest = request;
++            break;
++          }
++        }
++        const directTools = latest ? (latest.prompt.tools || []).map((tool) => ({ name: tool.name, description: tool.description || "", parameters: tool.parameters || null, origin: "direct" })) : [];
++        const codeTools = latest ? extractCodeModeTools(latest.prompt.system || "") : [];
++        const byName = new Map();
++        runtimeTools.forEach((tool) => byName.set(tool.name, tool));
++        [...directTools, ...codeTools].forEach((tool) => byName.set(tool.name, tool));
++        const tools = Object.freeze(Array.from(byName.values()).sort((a, b) => a.name.localeCompare(b.name)));
++        const mode = latest ? (codeTools.length || directTools.some((tool) => tool.name === "run_code") ? "code" : "native") : "none";
++        const status = tools.length ? "ready" : (!binding ? "no-session" : "no-request");
++        cached = Object.freeze({
++          status,
++          sessionId,
++          title,
++          mode,
++          requestSeq: latest?.startSeq ?? null,
++          runtimeStatus,
++          runtimeRevision,
++          runtimeCount: runtimeTools.length,
++          visibleCount: directTools.length + codeTools.length,
++          tools,
++        });
++        return cached;
++      };
++      const subscribe = (listener) => {
++        listeners.add(listener);
++        if (listeners.size === 1) {
++          listOff = ctx.sessions.list.subscribe(() => { bindSession(); emit(); });
++          bindSession();
++          refreshRuntime();
++        }
++        return () => {
++          listeners.delete(listener);
++          if (listeners.size) return;
++          if (listOff) listOff();
++          if (sessionOff) sessionOff();
++          listOff = null;
++          sessionOff = null;
++          boundSessionId = null;
++        };
++      };
++      return { getSnapshot, subscribe, refresh: refreshRuntime };
++    }
++
++    function AgentToolsSection({ toolsStore }) {
++      const snapshot = useSyncExternalStore(toolsStore.subscribe, toolsStore.getSnapshot, toolsStore.getSnapshot);
++      const [query, setQuery] = useState("");
++      const [expanded, setExpanded] = useState(null);
++      const zh = /zh/i.test(document.documentElement.lang || navigator.language || "zh");
++      const normalized = query.trim().toLocaleLowerCase();
++      const filtered = useMemo(() => snapshot.tools.filter((tool) => !normalized || `${tool.name} ${tool.description}`.toLocaleLowerCase().includes(normalized)), [normalized, snapshot.tools]);
++      useEffect(() => {
++        if (expanded && !filtered.some((tool) => tool.name === expanded)) setExpanded(null);
++      }, [expanded, filtered]);
++      const emptyText = snapshot.status === "no-session"
++        ? (zh ? "\u5f53\u524d\u672a\u9009\u4e2d\u4f1a\u8bdd\u3002\u9009\u62e9\u4e00\u4e2a\u4f1a\u8bdd\u540e\u53ef\u67e5\u770b\u5176 Agent \u5de5\u5177\u3002" : "Select a session to inspect its Agent tools.")
++        : snapshot.status === "no-request"
++          ? (zh ? "\u5f53\u524d\u4f1a\u8bdd\u5c1a\u672a\u8bb0\u5f55\u6a21\u578b\u8bf7\u6c42\u3002\u53d1\u9001\u4e00\u6761\u6d88\u606f\u540e\u518d\u5237\u65b0\u3002" : "This session has no recorded model request yet. Send a message, then refresh.")
++          : (zh ? "\u6ca1\u6709\u5339\u914d\u7684\u5de5\u5177\u3002" : "No matching tools.");
++      return h("section", { "data-dsh-agent-tools": "true", "aria-label": zh ? "Agent \u5de5\u5177" : "Agent tools" },
++        h("div", { "data-dsh-agent-tools-header": "true" },
++          h("div", { "data-dsh-agent-tools-heading": "true" },
++            h("h2", null, zh ? "Agent \u5de5\u5177" : "Agent tools"),
++            h("p", null, zh ? "\u6700\u8fd1\u8bf7\u6c42\u53ef\u89c1\u5de5\u5177 + Harness \u8fd0\u884c\u65f6\u5df2\u6ce8\u518c\u5de5\u5177" : "Latest request-visible tools plus tools registered in the Harness runtime")
++          ),
++          h("button", { type: "button", "data-dsh-agent-tools-refresh": "true", onClick: toolsStore.refresh }, zh ? "\u5237\u65b0" : "Refresh")
++        ),
++        h("div", { "data-dsh-agent-tools-summary": "true" },
++          h("span", { "data-dsh-agent-tools-dot": "true", "aria-hidden": "true" }),
++          h("strong", null, snapshot.title || (zh ? "\u672a\u9009\u4e2d\u4f1a\u8bdd" : "No session selected")),
++          snapshot.status === "ready" ? h("span", { "data-dsh-agent-tools-pill": "true" }, `${snapshot.tools.length} ${zh ? "\u4e2a\u5de5\u5177" : "tools"}`) : null,
++          snapshot.visibleCount ? h("span", { "data-dsh-agent-tools-pill": "true" }, `${zh ? "\u6700\u8fd1\u8bf7\u6c42" : "Request"} ${snapshot.visibleCount}`) : null,
++          snapshot.runtimeStatus === "ready" ? h("span", { "data-dsh-agent-tools-pill": "true" }, `${zh ? "\u8fd0\u884c\u65f6" : "Runtime"} ${snapshot.runtimeCount}`) : null,
++          snapshot.status === "ready" ? h("span", { "data-dsh-agent-tools-pill": "true" }, snapshot.mode === "code" ? "Code Mode" : (zh ? "\u539f\u751f\u8c03\u7528" : "Native")) : null,
++          snapshot.requestSeq !== null ? h("span", { "data-dsh-agent-tools-pill": "true" }, `seq ${snapshot.requestSeq}`) : null
++        ),
++        snapshot.status === "ready" ? h("label", { "data-dsh-agent-tools-search": "true" }, h("input", {
++          type: "search", value: query, placeholder: zh ? "\u641c\u7d22\u5de5\u5177\u540d\u6216\u8bf4\u660e" : "Search tool name or description",
++          "aria-label": zh ? "\u641c\u7d22 Agent \u5de5\u5177" : "Search Agent tools", onChange: (event) => setQuery(event.currentTarget.value),
++        })) : null,
++        snapshot.status !== "ready" || !filtered.length
++          ? h("p", { "data-dsh-agent-tools-empty": "true" }, emptyText)
++          : h("ul", { "data-dsh-agent-tools-list": "true" }, filtered.map((tool) => {
++              const open = expanded === tool.name;
++              const detailsId = `dsh-agent-tool-${encodeURIComponent(tool.name)}`;
++              const description = tool.description || (zh ? "\u672a\u63d0\u4f9b\u5de5\u5177\u8bf4\u660e" : "No tool description provided");
++              return h("li", { key: tool.name, "data-dsh-agent-tool-card": "true", "data-open": open ? "true" : undefined },
++                h("button", { type: "button", "data-dsh-agent-tool-toggle": "true", "aria-expanded": open, "aria-controls": detailsId, onClick: () => setExpanded(open ? null : tool.name) },
++                    h("span", { "data-dsh-agent-tool-title": "true" }, h("code", { title: tool.name }, tool.name), h("span", { "data-dsh-agent-tool-origin": "true" }, tool.origin === "code" ? "Code Mode" : tool.origin === "runtime" ? (zh ? "\u8fd0\u884c\u65f6" : "Runtime") : (zh ? "\u76f4\u63a5" : "Direct"))),
++                  h("span", { "data-dsh-agent-tool-description": "true" }, description)
++                ),
++                open ? h("div", { id: detailsId, "data-dsh-agent-tool-details": "true" },
++                  h("p", null, tool.origin === "code" ? (zh ? "\u53c2\u6570\u7c7b\u578b\u6765\u81ea\u672c\u6b21\u8bf7\u6c42\u7684 Code Mode SDK \u58f0\u660e\u3002" : "Argument types come from this request's Code Mode SDK declaration.") : tool.origin === "runtime" ? (zh ? "Harness \u8fd0\u884c\u65f6\u5df2\u6ce8\u518c\uff1b\u4e0b\u4e00\u6b21\u6a21\u578b\u8bf7\u6c42\u4f1a\u6309\u5f53\u524d Agent \u9884\u8bbe\u4e0e\u9650\u5236\u51b3\u5b9a\u662f\u5426\u53ef\u89c1\u3002" : "Registered in the Harness runtime; the next request applies the Agent preset and restrictions.") : (zh ? "\u4ee5\u4e0b\u4e3a\u53d1\u9001\u7ed9\u6a21\u578b\u7684 JSON Schema\u3002" : "JSON Schema sent to the model.")),
++                  tool.parameters ? h("pre", null, JSON.stringify(tool.parameters, null, 2)) : null
++                ) : null
++              );
++            }))
++      );
++    }
++
++    function installAgentToolsSettings(ctx) {
++      if (!ctx?.slots || !ctx?.sessions) return;
++      const toolsStore = createAgentToolsStore(ctx);
++      ctx.slots.inject("settings.section", () => ctx.slots.register({
++        name: "settings.section",
++        id: "agent-tools",
++        order: 25,
++        label: () => /zh/i.test(document.documentElement.lang || navigator.language || "zh") ? "Agent \u5de5\u5177" : "Agent Tools",
++        inject: () => ({ toolsStore }),
++      }, AgentToolsSection));
++    }
++
+     function apply(ctx) {
+       if (typeof document === "undefined") return;
+       if (document.querySelector("style[data-plugin-css=" + JSON.stringify(TAG_ID) + "]")) return;
+@@ -1587,6 +2061,7 @@ body[data-dsh-maid-atelier] :is(button, [role='button'], [role='tab'], textarea,
+       document.head.appendChild(style);
+       const disposeResponsiveLayout = installResponsiveLayout();
+       const disposeComposerEnhancements = installComposerEnhancements();
++      installAgentToolsSettings(ctx);
+       const disposeSettingsEnhancements = installSettingsEnhancements();
+       const disposeDesktopStatusEnhancements = installDesktopStatusEnhancements();
+ 
+@@ -1603,6 +2078,8 @@ body[data-dsh-maid-atelier] :is(button, [role='button'], [role='tab'], textarea,
+       }
+     }
+ 
++    const inject = ["slots", "sessions"];
++    exports.inject = inject;
+     exports.apply = apply;
+     return module.exports;
+   }
+diff --git a/themes/maid-atelier-fix/lib/index.js b/themes/maid-atelier-fix/lib/index.js
+index 3a2cc49..93b5370 100644
+--- a/themes/maid-atelier-fix/lib/index.js
++++ b/themes/maid-atelier-fix/lib/index.js
+@@ -1,2 +1,30 @@
+-// Host loader entry — provides no host-side behavior (browser-only overlay).
+-export function apply() {}
++/** Host-side read-only catalog used by the Agent Tools settings page. */
++export const inject = ["tools", "webServer"];
++
++export function apply(ctx) {
++  let revision = 0;
++  const offChange = ctx.on("tools/change", () => {
++    revision += 1;
++  });
++  const offRoute = ctx.webServer.register({
++    kind: "exact",
++    path: "/__maid-atelier-fix/agent-tools",
++    handler(_req, res) {
++      const tools = ctx.tools.schemas().map((tool) => ({
++        name: tool.name,
++        description: tool.description,
++        parameters: tool.parameters,
++      }));
++      const body = JSON.stringify({ revision, tools });
++      res.statusCode = 200;
++      res.setHeader("Content-Type", "application/json; charset=utf-8");
++      res.setHeader("Cache-Control", "no-store");
++      res.setHeader("Content-Length", Buffer.byteLength(body));
++      res.end(body);
++    },
++  });
++  return () => {
++    offRoute();
++    offChange();
++  };
++}
+diff --git a/themes/maid-atelier-fix/package.json b/themes/maid-atelier-fix/package.json
+index b58a941..11f0707 100644
+--- a/themes/maid-atelier-fix/package.json
++++ b/themes/maid-atelier-fix/package.json
+@@ -1,7 +1,7 @@
+ {
+   "name": "dsh-maid-atelier-fix",
+-  "description": "Light-mode and chrome fixes for the maid-atelier (深海女仆工坊) skin: light sidebar/top bar, readable empty-state text, bordered view tabs, themed right sidebar.",
+-  "version": "0.1.0",
++  "description": "Maid Atelier desktop UI fixes, responsive settings layout, runtime status, and a read-only Agent tool inventory.",
++  "version": "0.2.0",
+   "private": true,
+   "type": "module",
+   "main": "lib/index.js",
+@@ -15,7 +15,11 @@
+       "patch": "./cordis.patch.yml"
+     },
+     "client": {
+-      "inject": [],
++      "inject": [
++        "@deepseek-ai/dsh-client-runtime",
++        "@deepseek-ai/dsh-client-ui-settings",
++        "@deepseek-ai/dsh-client-ui-trajectory"
++      ],
+       "platform": "web"
+     }
+   }
