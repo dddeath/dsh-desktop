@@ -1,7 +1,7 @@
 {
   "name": "dsh-maid-atelier-fix",
   "description": "Maid Atelier desktop UI fixes, responsive settings layout, runtime status, and a read-only Agent tool inventory.",
-  "version": "0.2.3",
+  "version": "0.2.2",
   "private": true,
   "type": "module",
   "main": "lib/index.js",

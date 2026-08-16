@@ -1084,14 +1084,16 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-composer-role] {
   border-radius: 10px !important;
 }
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-composer-role='permission'] {
-  flex: 0 0 38px !important;
-  width: 38px !important;
-  min-width: 38px !important;
-  max-width: 38px !important;
-  padding-inline: 0 !important;
+  width: auto !important;
+  max-width: 168px !important;
+  padding-inline: 10px !important;
 }
-body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-composer-role='permission'] :is([class*='_triggerLabel'], [class*='_chevron']) {
-  display: none !important;
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-composer-role='permission'] [class*='_triggerLabel'] {
+  display: inline-block !important;
+  max-width: 116px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
 }
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-composer-role='model'] {
   flex: 0 1 auto !important;

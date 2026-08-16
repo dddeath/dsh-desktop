@@ -1,0 +1,41 @@
+diff --git a/themes/maid-atelier-fix/lib/client.js b/themes/maid-atelier-fix/lib/client.js
+index 0575322..7e8f093 100644
+--- a/themes/maid-atelier-fix/lib/client.js
++++ b/themes/maid-atelier-fix/lib/client.js
+@@ -1084,16 +1084,14 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-composer-role] {
+   border-radius: 10px !important;
+ }
+ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-composer-role='permission'] {
+-  width: auto !important;
+-  max-width: 168px !important;
+-  padding-inline: 10px !important;
++  flex: 0 0 38px !important;
++  width: 38px !important;
++  min-width: 38px !important;
++  max-width: 38px !important;
++  padding-inline: 0 !important;
+ }
+-body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-composer-role='permission'] [class*='_triggerLabel'] {
+-  display: inline-block !important;
+-  max-width: 116px !important;
+-  overflow: hidden !important;
+-  text-overflow: ellipsis !important;
+-  white-space: nowrap !important;
++body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-composer-role='permission'] :is([class*='_triggerLabel'], [class*='_chevron']) {
++  display: none !important;
+ }
+ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-dsh-composer-role='model'] {
+   flex: 0 1 auto !important;
+diff --git a/themes/maid-atelier-fix/package.json b/themes/maid-atelier-fix/package.json
+index 8bdeea7..07f9914 100644
+--- a/themes/maid-atelier-fix/package.json
++++ b/themes/maid-atelier-fix/package.json
+@@ -1,7 +1,7 @@
+ {
+   "name": "dsh-maid-atelier-fix",
+   "description": "Maid Atelier desktop UI fixes, responsive settings layout, runtime status, and a read-only Agent tool inventory.",
+-  "version": "0.2.2",
++  "version": "0.2.3",
+   "private": true,
+   "type": "module",
+   "main": "lib/index.js",

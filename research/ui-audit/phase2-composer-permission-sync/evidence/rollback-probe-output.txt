@@ -1,0 +1,6 @@
+﻿ROLLBACK_ROLE=theme-client PATH=E:\deepseek_harness\research\ui-audit\phase2-composer-permission-sync\evidence\rollback-probe-20260816232332\theme\lib\client.js SHA256=6a6d42d1a8f95b6a59bf49ae2cadba925edfd311ba91bdaaf2dfda23744817fc
+ROLLBACK_ROLE=theme-package PATH=E:\deepseek_harness\research\ui-audit\phase2-composer-permission-sync\evidence\rollback-probe-20260816232332\theme\package.json SHA256=75b7d901895920aa611541a4bb84c2f8791d91070732c5ed27801c9b9b8ab90f
+ROLLBACK_ROLE=state PATH=E:\deepseek_harness\research\ui-audit\phase2-composer-permission-sync\evidence\rollback-probe-20260816232332\.agent\STATE.json SHA256=e3394215d1739c039820aedbb63b2d3fc5e343e11bb6458ec104e931b477a40a
+ROLLBACK_OK=true
+ROLLBACK_PROBE_EXIT=0
+ROLLBACK_PROBE_PATH=E:\deepseek_harness\research\ui-audit\phase2-composer-permission-sync\evidence\rollback-probe-20260816232332

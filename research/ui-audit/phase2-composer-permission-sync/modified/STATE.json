@@ -1,0 +1,303 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-08-16T15:08:17.513Z",
+  "status": "in_progress",
+  "current_phase": "P2",
+  "latest_result": "Composer permission control now stays icon-only at 38x36 px with zero inline padding in both open and collapsed right-sidebar states.",
+  "next_action": "User compares the saved open/collapsed acceptance images and confirms the permission button remains aligned; then continue the next accepted phase 2 item.",
+  "blockers": [
+    "manual_gate_e_internal_image_gen_fix_pending",
+    "manual_gate_composer_permission_sync_pending"
+  ],
+  "state_dir": "E:\\deepseek_harness\\.agent",
+  "last_verification": {
+    "kind": "composer_permission_sidebar_sync",
+    "phase": "P2-UI-composer-permission-sync",
+    "passed": true,
+    "manual_gate_status": "pending",
+    "completed_at": "2026-08-16T15:08:17.513Z",
+    "evidence": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\verification.md"
+  },
+  "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
+  "phase2_baseline_verification": {
+    "schema_version": 1,
+    "kind": "baseline_verification",
+    "started_at": "20260816T122745Z",
+    "completed_at": "2026-08-16T12:27:47+00:00",
+    "passed": true,
+    "phase": "P2-baseline",
+    "profile": "default",
+    "records": [
+      {
+        "index": 1,
+        "command": "powershell.exe -NoProfile -Command \"& 'C:\\Program Files\\nodejs\\node.exe' --check 'desktop\\main.js'\"",
+        "cwd": "E:\\deepseek_harness",
+        "source_mode": "local",
+        "host": null,
+        "exit_status": 0,
+        "duration_seconds": 0.375,
+        "timed_out": false,
+        "stdout_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\01-stdout.log",
+        "stderr_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\01-stderr.log"
+      },
+      {
+        "index": 2,
+        "command": "powershell.exe -NoProfile -Command \"& 'C:\\Program Files\\nodejs\\node.exe' --check 'themes\\maid-atelier-fix\\lib\\client.js'\"",
+        "cwd": "E:\\deepseek_harness",
+        "source_mode": "local",
+        "host": null,
+        "exit_status": 0,
+        "duration_seconds": 0.515,
+        "timed_out": false,
+        "stdout_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\02-stdout.log",
+        "stderr_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\02-stderr.log"
+      },
+      {
+        "index": 3,
+        "command": "powershell.exe -NoProfile -Command \"& 'C:\\Program Files\\nodejs\\node.exe' --check 'research\\dom-probe\\verify-runtime-clarity-sidebar-sync.cjs'\"",
+        "cwd": "E:\\deepseek_harness",
+        "source_mode": "local",
+        "host": null,
+        "exit_status": 0,
+        "duration_seconds": 0.453,
+        "timed_out": false,
+        "stdout_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\03-stdout.log",
+        "stderr_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\03-stderr.log"
+      },
+      {
+        "index": 4,
+        "command": "powershell.exe -NoProfile -Command \"$r=Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:3080/' -TimeoutSec 10; Write-Output ('HTTP_STATUS=' + [int]$r.StatusCode); if([int]$r.StatusCode -ne 200){exit 1}\"",
+        "cwd": "E:\\deepseek_harness",
+        "source_mode": "local",
+        "host": null,
+        "exit_status": 0,
+        "duration_seconds": 0.907,
+        "timed_out": false,
+        "stdout_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\04-stdout.log",
+        "stderr_path": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify\\04-stderr.log"
+      }
+    ],
+    "evidence_dir": "E:\\deepseek_harness\\.agent\\evidence\\20260816T122745Z-verify"
+  },
+  "phase1_final_verification": {
+    "kind": "ui_regression_verification",
+    "phase": "P1",
+    "passed": true,
+    "completed_at": "2026-08-16T12:46:54+00:00",
+    "evidence_dir": "E:\\deepseek_harness\\research\\ui-audit\\phase1-regression-pet-composer"
+  },
+  "phase2_plan": "E:\\deepseek_harness\\research\\phase2-codex-media\\phase2-execution-plan.md",
+  "validation_mode": "minimal machine gates plus user approval at each functional checkpoint",
+  "phase2_operation1_report": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation1-candidate-source-audit.md",
+  "phase2_operation1_snapshot": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation1-source-snapshot.json",
+  "phase2_candidate": {
+    "name": "dsh-codex-tools",
+    "repository": "https://github.com/SPYQWER1/dsh-codex-tools",
+    "head": "9519949dd340ff07a7ef8182692704d2487ce690",
+    "manual_gate": "A",
+    "manual_gate_status": "accepted",
+    "installed": true,
+    "version": "1.0.1"
+  },
+  "phase2_operation2": {
+    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800",
+    "profile": "web",
+    "package": "dsh-codex-tools",
+    "version": "1.0.1",
+    "source_head": "9519949dd340ff07a7ef8182692704d2487ce690",
+    "install_exit": 0,
+    "plugin_count_before": 13,
+    "plugin_count_after": 14,
+    "registered_tools": [
+      "image_gen",
+      "image_vision",
+      "web_search"
+    ],
+    "http_status": 200,
+    "machine_gate_passed": true,
+    "runtime_reload_confirmed": true,
+    "manual_gate": "B",
+    "manual_gate_status": "accepted",
+    "verification_record": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\verification-install.md",
+    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-install-20260816T211146+0800\\rollback.ps1",
+    "live_pid": 43744,
+    "restart_recovery": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\verification-restart.md"
+  },
+  "phase2_restart_recovery": {
+    "reported_error": "EADDRINUSE 127.0.0.1:3080",
+    "old_pid": 19300,
+    "new_pid": 43744,
+    "http_status": 200,
+    "source_file": "E:\\deepseek_harness\\desktop\\main.js",
+    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\verification-restart.md",
+    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation2-restart-recovery\\rollback.ps1",
+    "passed": true
+  },
+  "phase2_operation3": {
+    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation3-agent-tools-ui",
+    "theme": "dsh-maid-atelier-fix",
+    "version": "0.2.0",
+    "settings_scroll_fixed": true,
+    "agent_tools_page_added": true,
+    "registered_tools": [
+      "image_gen",
+      "image_vision",
+      "web_search"
+    ],
+    "http_status": 200,
+    "machine_gate_passed": true,
+    "manual_gate": "C",
+    "manual_gate_status": "accepted",
+    "verification_record": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation3-agent-tools-ui\\verification-ui.md",
+    "acceptance_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation3-agent-tools-ui\\acceptance-agent-tools.png",
+    "patch": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation3-agent-tools-ui\\change.patch",
+    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation3-agent-tools-ui\\rollback.ps1"
+  },
+  "phase2_operation4": {
+    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters",
+    "theme": "dsh-maid-atelier-fix",
+    "version": "0.2.1",
+    "changed_field": "right character offset now follows --dsh-sidebar-width",
+    "machine_gate_passed": true,
+    "manual_gate": "D",
+    "manual_gate_status": "accepted",
+    "verification_record": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\verification-ui.md",
+    "acceptance_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\acceptance-responsive-character.png",
+    "patch": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\change.patch",
+    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation4-responsive-characters\\rollback.ps1"
+  },
+  "phase2_operation5": {
+    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync",
+    "theme": "dsh-maid-atelier-fix",
+    "version": "0.2.2",
+    "changed_field": "left character translate now follows --dsh-left-sidebar-width",
+    "machine_gate_passed": true,
+    "manual_gate": "E",
+    "manual_gate_status": "accepted",
+    "verification_record": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\verification-ui.md",
+    "acceptance_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\acceptance-left-character.png",
+    "patch": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\change.patch",
+    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\rollback.ps1"
+  },
+  "phase2_oauth_operation": {
+    "phase": "P2-operation3",
+    "auth_method": "ChatGPT",
+    "cli_status": "Logged in using ChatGPT",
+    "login_status_exit": 0,
+    "api_key_environment_present": false,
+    "explicit_token_environment_present": false,
+    "token_content_recorded": false,
+    "machine_gate_passed": true,
+    "manual_gate": "C",
+    "manual_gate_status": "accepted_by_execution_confirmation",
+    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation3-4-oauth-vision\\evidence\\auth-status.txt"
+  },
+  "phase2_vision_operation": {
+    "phase": "P2-operation4",
+    "tool": "image_vision",
+    "model": "gpt-5.5",
+    "input_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\acceptance-left-character.png",
+    "input_sha256": "a28e6ca1a5fbee9fdf32ce2c7407b25356981f46d8207c13ade0ec137824e29a",
+    "call_exit": 0,
+    "response_parseable": true,
+    "machine_gate_passed": true,
+    "manual_gate": "D",
+    "manual_gate_status": "accepted",
+    "result": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation3-4-oauth-vision\\evidence\\vision-result.json"
+  },
+  "phase2_image_gen_operation": {
+    "phase": "P2-operation5",
+    "tool": "image_gen",
+    "model": "gpt-5.5",
+    "prompt_file": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-image-gen\\prompt.txt",
+    "requested_size": "1024x1024",
+    "actual_size": "1254x1254",
+    "size_match": false,
+    "output_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-image-gen\\generated\\dsh-maid-whale.png",
+    "output_sha256": "ea4c5eb4c8d80d316b97b8ae6bc5d0ca5414b1da4f8790c44e576371d4c88577",
+    "bytes": 2375371,
+    "call_exit": 0,
+    "decode_passed": true,
+    "machine_gate_passed": true,
+    "manual_gate": "E",
+    "manual_gate_status": "accepted",
+    "result": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-image-gen\\evidence\\result.json"
+  },
+  "phase2_internal_image_gen_fix": {
+    "phase": "P2-operation5-internal-fix",
+    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix",
+    "reported_error": "backend returned no parseable result",
+    "root_causes": [
+      "desktop child PATH resolved Windows System32 bash before Git Bash and did not guarantee node",
+      "JSON-quoted Windows backslashes in the script path were consumed by the bash command layer"
+    ],
+    "changed_fields": [
+      "desktop main buildDshChildEnv prepends Git Bash and Node directories on Windows",
+      "installed dsh-codex-tools shellScriptPath converts script paths to forward slashes before shell.resolve"
+    ],
+    "installed_plugin_path": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dsh-codex-tools\\tools.js",
+    "plugin_version": "1.0.1",
+    "live_pid": 40492,
+    "http_status": 200,
+    "zero_quota_probe": {
+      "backend": "chatgpt-subscription",
+      "ok": false,
+      "error": "invalid_path",
+      "response_parseable": true,
+      "tool_seconds": 0.7
+    },
+    "real_generation": {
+      "backend": "chatgpt-subscription",
+      "ok": true,
+      "model": "gpt-5.5",
+      "file_written": true,
+      "output_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix\\generated\\internal-dsh-blue-whale-app-icon.png",
+      "bytes": 1637568,
+      "actual_size": "1254x1254",
+      "sha256": "a65d0ad66224590e0a7fd14ea1228ed8a8c27c940a3685a7d0fd081c787a40f8"
+    },
+    "machine_gate_passed": true,
+    "manual_gate": "E-internal",
+    "manual_gate_status": "pending",
+    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix\\verification.md",
+    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-internal-call-fix\\rollback.ps1"
+  },
+  "phase2_composer_permission_sync": {
+    "phase": "P2-UI-composer-permission-sync",
+    "operation_dir": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync",
+    "theme": "dsh-maid-atelier-fix",
+    "version": "0.2.3",
+    "changed_field": "permission control is always icon-only, independent of right workbench sidebar state",
+    "baseline": {
+      "open": {
+        "width": 38,
+        "label_display": "none"
+      },
+      "collapsed": {
+        "width": 121.91667175292969,
+        "label_display": "block"
+      }
+    },
+    "modified": {
+      "open": {
+        "width": 38,
+        "height": 36,
+        "label_display": "none",
+        "padding_inline": "0px"
+      },
+      "collapsed": {
+        "width": 38,
+        "height": 36,
+        "label_display": "none",
+        "padding_inline": "0px"
+      }
+    },
+    "machine_gate_passed": true,
+    "manual_gate": "composer-permission-sidebar-sync",
+    "manual_gate_status": "pending",
+    "acceptance_open": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\evidence\\acceptance-open-sidebar.jpg",
+    "acceptance_collapsed": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\evidence\\acceptance-collapsed-sidebar.jpg",
+    "verification": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\verification.md",
+    "rollback": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\rollback.ps1"
+  }
+}

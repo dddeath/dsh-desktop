@@ -1,0 +1,46 @@
+﻿{
+    "baseline":  {
+                     "open":  {
+                                  "workbench":  "open",
+                                  "compact":  "true",
+                                  "button_width":  38,
+                                  "button_height":  36,
+                                  "min_width":  "38px",
+                                  "max_width":  "38px",
+                                  "padding_inline":  "0px",
+                                  "label_display":  "none"
+                              },
+                     "collapsed":  {
+                                       "workbench":  "closed",
+                                       "compact":  "false",
+                                       "button_width":  121.91667175292969,
+                                       "button_height":  36,
+                                       "min_width":  "38px",
+                                       "max_width":  "168px",
+                                       "padding_inline":  "10px",
+                                       "label_display":  "block"
+                                   }
+                 },
+    "modified":  {
+                     "open":  {
+                                  "workbench":  "open",
+                                  "compact":  "true",
+                                  "button_width":  38,
+                                  "button_height":  36,
+                                  "min_width":  "38px",
+                                  "max_width":  "38px",
+                                  "padding_inline":  "0px",
+                                  "label_display":  "none"
+                              },
+                     "collapsed":  {
+                                       "workbench":  "closed",
+                                       "compact":  "false",
+                                       "button_width":  38,
+                                       "button_height":  36,
+                                       "min_width":  "38px",
+                                       "max_width":  "38px",
+                                       "padding_inline":  "0px",
+                                       "label_display":  "none"
+                                   }
+                 }
+}
