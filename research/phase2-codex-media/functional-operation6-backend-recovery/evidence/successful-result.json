@@ -1,0 +1,12 @@
+﻿{
+    "backend":  "chatgpt-subscription",
+    "ok":  true,
+    "outputPath":  "output/imagegen/backend-recovery-20260816-233610.png",
+    "absolutePath":  "E:\\deepseek_workspace\\pro1\\output\\imagegen\\backend-recovery-20260816-233610.png",
+    "workspaceRoot":  "E:\\deepseek_workspace\\pro1",
+    "bytes":  790464,
+    "width":  1254,
+    "height":  1254,
+    "sha256":  "47c72fa3efb62e2fe3bcef4eb5cbb32c9882ed5f13a3673c3556a187f7eb745e",
+    "model":  "gpt-5.5"
+}

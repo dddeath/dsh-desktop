@@ -1,0 +1,9 @@
+﻿RESULT_OK=True
+OUTPUT_PATH=E:\deepseek_workspace\pro1\output\imagegen\backend-recovery-20260816-233610.png
+WORKSPACE_ROOT=E:\deepseek_workspace\pro1
+BYTES=790464
+WIDTH=1254
+HEIGHT=1254
+SHA256=47c72fa3efb62e2fe3bcef4eb5cbb32c9882ed5f13a3673c3556a187f7eb745e
+HTTP_STATUS=200
+VERIFY_OK=True
