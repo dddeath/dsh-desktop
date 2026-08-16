@@ -1,0 +1,24 @@
+﻿MODIFIED_ROLE=tools SHA256=56644ae1a8a872dd10b0425cf237ea63a9d42c3d8dc814be6693927f2e1ba896
+MODIFIED_ROLE=codex-common SHA256=6fc5b0594e44bc79aa2df53a91956d257adf03085c3b1e953b82e746a189a9ec
+MODIFIED_ROLE=codex-imagegen SHA256=94a08a6875eb2a272e3ddf69c64cd246894285ec93be0cc1bdf8619f0fc4478b
+NODE_CHECK_TOOLS_EXIT=0
+NODE_CHECK_COMMON_EXIT=0
+NODE_CHECK_IMAGEGEN_EXIT=0
+NODE_CHECK_VISION_EXIT=0
+SESSION_WORKSPACE=E:\deepseek_workspace\pro1
+RESOLVED_OUTPUT=E:\deepseek_workspace\pro1\output\imagegen\future.png
+CHILD_WORKSPACE_ENV=E:\deepseek_workspace\pro1
+CHILD_COMMAND=node "C:/Users/19739/.dsh/profiles/web/node_modules/dsh-codex-tools/scripts/codex-imagegen.mjs"
+PARSED_RESULT={"backend":"chatgpt-subscription","ok":false,"error":"invalid_path"}
+WORKSPACE_BINDING_TEST=true
+FIXTURE_EXIT=0
+CHILD_PREFLIGHT={"ok":false,"error":"output_exists"}
+CHILD_PREFLIGHT_EXIT=1
+SESSION_PROBE_EXISTS=True
+SERVICE_PROBE_EXISTS=False
+RECOVERED_PATH=E:\deepseek_workspace\pro1\output\imagegen\1786892171127.png
+RECOVERED_BYTES=2470979
+RECOVERED_SHA256=9a0fdff8892c73c49b5e694d9b737826bc7b06ee5ed051ec624f112c3fb4f454
+HTTP_STATUS=200
+VERIFY_OK=true
+VERIFY_SCRIPT_EXIT=0

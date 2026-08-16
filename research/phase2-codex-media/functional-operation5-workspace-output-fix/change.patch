@@ -1,0 +1,274 @@
+diff --git a/tools.js b/tools.js
+index 986e905..1fa3459 100644
+--- a/tools.js
++++ b/tools.js
+@@ -8,6 +8,7 @@
+ // import.meta.url, so the package works from any install location.
+ import { fileURLToPath } from 'node:url'
+ import { join } from 'node:path'
++import { stat } from 'node:fs/promises'
+ import { resolveWorkspacePath } from './scripts/codex-common.mjs'
+ 
+ const SCRIPTS_DIR = join(fileURLToPath(new URL('.', import.meta.url)), 'scripts')
+@@ -72,15 +73,21 @@ export function installImageTools(define, deps, register) {
+     if (refresh && refresh.value) env.CODEX_REFRESH_TOKEN = refresh.value
+     return env
+   }
++  const workspaceRootFor = (exec) => {
++    const value = exec?.agent?.session?.header?.cwd
++    return typeof value === 'string' && value.trim() ? value.trim() : undefined
++  }
+ 
+-  const runCodexBackend = async ({ prompt, out, size, format, model, signal }) => {
+-    const env = await codexEnv({
++  const runCodexBackend = async ({ prompt, out, size, format, model, workspaceRoot, signal }) => {
++    const envInput = {
+       CG_PROMPT: prompt,
+       CG_OUT: out,
+       CG_FORMAT: format,
+       CG_SIZE: size === undefined ? 'auto' : size,
+       CG_MODEL: model === undefined ? 'gpt-5.5' : model,
+-    })
++    }
++    if (workspaceRoot) envInput.DSH_WORKSPACE_ROOT = workspaceRoot
++    const env = await codexEnv(envInput)
+     let run
+     try {
+       const spec = shell.resolve({
+@@ -101,11 +108,13 @@ export function installImageTools(define, deps, register) {
+     return { backend: 'chatgpt-subscription', ...parsed }
+   }
+ 
+-  const runVisionBackend = async ({ image, question, model, signal }) => {
+-    const env = await codexEnv({
++  const runVisionBackend = async ({ image, question, model, workspaceRoot, signal }) => {
++    const envInput = {
+       VG_IMAGE: image,
+       VG_MODEL: model === undefined ? 'gpt-5.5' : model,
+-    })
++    }
++    if (workspaceRoot) envInput.DSH_WORKSPACE_ROOT = workspaceRoot
++    const env = await codexEnv(envInput)
+     if (question) env.VG_QUESTION = question
+     let run
+     try {
+@@ -156,7 +165,7 @@ export function installImageTools(define, deps, register) {
+ 
+   const genTool = define({
+     name: 'image_gen',
+-    description: 'Generate a new bitmap image (illustrations, icons, logos, photos, concept art, UI mockups, game assets) via the ChatGPT subscription. Use when the user asks to create or generate an image. Do NOT use to edit/transform an existing image (no input-image support), to produce transparent-background images (unsupported; suggest a chroma-key background instead), or when a vector/SVG/code asset is the better fit. Write `prompt` in detail: subject, style, composition, palette, lighting, constraints. Leave `size` as auto unless the user gives dimensions. On success the result carries the workspace-relative `outputPath` — report it to the user. Result JSON: { ok, outputPath, bytes, revisedPrompt, model } or { ok: false, error }.',
++    description: 'Generate a new bitmap image (illustrations, icons, logos, photos, concept art, UI mockups, game assets) via the ChatGPT subscription. Use when the user asks to create or generate an image. Do NOT use to edit/transform an existing image (no input-image support), to produce transparent-background images (unsupported; suggest a chroma-key background instead), or when a vector/SVG/code asset is the better fit. Write `prompt` in detail: subject, style, composition, palette, lighting, constraints. Leave `size` as auto unless the user gives dimensions. On success the result carries workspace-relative `outputPath` plus `absolutePath` and `workspaceRoot`; report the path to the user and use it for later file operations. Result JSON: { ok, outputPath, absolutePath, workspaceRoot, bytes, revisedPrompt, model } or { ok: false, error }.',
+     parameters: {
+       prompt: { type: 'string', required: true, description: 'Image description: subject, style, composition, palette, lighting, constraints. More detail yields better results.' },
+       out: { type: 'string', description: 'Output path relative to the workspace; absolute paths and parent-directory segments are rejected. Parent directories are created, and an existing file is never overwritten. Default: output/imagegen/<timestamp>.<format>.' },
+@@ -187,18 +196,18 @@ export function installImageTools(define, deps, register) {
+       }
+       const extension = format === 'jpeg' ? 'jpeg' : format
+       const out = String(args.out ?? ('output/imagegen/' + Date.now() + '.' + extension)).trim()
++      const workspaceRoot = workspaceRootFor(exec)
+       try {
+-        resolveWorkspacePath(out, 'out')
++        resolveWorkspacePath(out, 'out', workspaceRoot)
+       } catch (err) {
+         return { ok: false, error: err.message }
+       }
+ 
+-      const result = await runCodexBackend({ prompt, out, size, format, model, signal: exec.signal })
++      const result = await runCodexBackend({ prompt, out, size, format, model, workspaceRoot, signal: exec.signal })
+ 
+-      if (result.ok && result.outputPath && fs !== undefined) {
++      if (result.ok && result.absolutePath) {
+         try {
+-          const target = await fs.resolve(result.outputPath)
+-          const info = await fs.stat(target, exec.signal)
++          const info = await stat(result.absolutePath)
+           result.fileWritten = info !== undefined
+           result.bytes = info && typeof info.size === 'number' ? info.size : result.bytes
+         } catch (_err) {
+@@ -225,8 +234,9 @@ export function installImageTools(define, deps, register) {
+     async execute(args, exec) {
+       const image = String(args.image ?? '').trim()
+       if (!image) return { ok: false, error: 'image path is required.' }
++      const workspaceRoot = workspaceRootFor(exec)
+       try {
+-        resolveWorkspacePath(image, 'image path')
++        resolveWorkspacePath(image, 'image path', workspaceRoot)
+       } catch (err) {
+         return { ok: false, error: err.message }
+       }
+@@ -238,7 +248,7 @@ export function installImageTools(define, deps, register) {
+       if (model !== undefined && (!model || model.length > MAX_MODEL_CHARS)) {
+         return { ok: false, error: `model must be between 1 and ${MAX_MODEL_CHARS} characters.` }
+       }
+-      return runVisionBackend({ image, question, model, signal: exec.signal })
++      return runVisionBackend({ image, question, model, workspaceRoot, signal: exec.signal })
+     }
+   })
+ 
+diff --git a/scripts/codex-common.mjs b/scripts/codex-common.mjs
+index 4058a8b..df31a21 100644
+--- a/scripts/codex-common.mjs
++++ b/scripts/codex-common.mjs
+@@ -32,17 +32,20 @@ export function defaultVersionPath(env = process.env) {
+   return home ? join(home, 'version.json') : join(homedir(), '.codex', 'version.json')
+ }
+ 
+-function workspaceRoot() {
+-  return resolve(process.cwd())
++export function workspaceRootPath(rootOverride) {
++  const configured = typeof rootOverride === 'string' && rootOverride.trim()
++    ? rootOverride.trim()
++    : String(process.env.DSH_WORKSPACE_ROOT || '').trim()
++  return resolve(configured || process.cwd())
+ }
+ 
+-function assertWorkspaceRelative(input, label) {
++function assertWorkspaceRelative(input, label, rootOverride) {
+   if (typeof input !== 'string' || !input.trim()) throw new Error(`${label} is required`)
+   if (input.includes('\0')) throw new Error(`${label} contains an invalid character`)
+   if (isAbsolute(input) || win32.isAbsolute(input) || /^[A-Za-z]:/.test(input)) throw new Error(`${label} must be relative to the workspace`)
+   const parts = input.split(/[\\/]+/)
+   if (parts.includes('..')) throw new Error(`${label} must not contain parent-directory segments`)
+-  const root = workspaceRoot()
++  const root = workspaceRootPath(rootOverride)
+   const target = resolve(root, input)
+   const rel = relative(root, target)
+   const parentPrefix = process.platform === 'win32' ? '..\\' : '../'
+@@ -52,12 +55,12 @@ function assertWorkspaceRelative(input, label) {
+   return { root, target }
+ }
+ 
+-export function resolveWorkspacePath(input, label = 'path') {
+-  return assertWorkspaceRelative(input, label).target
++export function resolveWorkspacePath(input, label = 'path', rootOverride) {
++  return assertWorkspaceRelative(input, label, rootOverride).target
+ }
+ 
+-export function workspaceRelativePath(target) {
+-  const root = workspaceRoot()
++export function workspaceRelativePath(target, rootOverride) {
++  const root = workspaceRootPath(rootOverride)
+   const rel = relative(root, target)
+   if (!rel || rel.startsWith('..' + sep) || isAbsolute(rel)) throw new Error('path is outside the workspace')
+   return rel.split(sep).join('/')
+@@ -85,8 +88,8 @@ function assertDirectoryChain(root, target) {
+   }
+ }
+ 
+-export function prepareWorkspaceOutput(input, label = 'output path') {
+-  const { root, target } = assertWorkspaceRelative(input, label)
++export function prepareWorkspaceOutput(input, label = 'output path', rootOverride) {
++  const { root, target } = assertWorkspaceRelative(input, label, rootOverride)
+   assertDirectoryChain(root, dirname(target))
+   try {
+     if (lstatSync(target)) throw new Error(`${label} already exists`)
+@@ -96,8 +99,8 @@ export function prepareWorkspaceOutput(input, label = 'output path') {
+   return target
+ }
+ 
+-export function resolveWorkspaceFile(input, label = 'image path') {
+-  const { root, target } = assertWorkspaceRelative(input, label)
++export function resolveWorkspaceFile(input, label = 'image path', rootOverride) {
++  const { root, target } = assertWorkspaceRelative(input, label, rootOverride)
+   const rel = relative(root, target)
+   let current = root
+   for (const part of rel.split(/[\\/]+/).filter(Boolean)) {
+diff --git a/scripts/codex-imagegen.mjs b/scripts/codex-imagegen.mjs
+index 6dde82b..9e52376 100644
+--- a/scripts/codex-imagegen.mjs
++++ b/scripts/codex-imagegen.mjs
+@@ -31,6 +31,7 @@
+ import {
+   CODEX_RESPONSES_URL,
+   prepareWorkspaceOutput,
++  workspaceRootPath,
+   workspaceRelativePath,
+   writeNewWorkspaceFile,
+   defaultAuthPath,
+@@ -146,6 +147,8 @@ async function main() {
+       console.log(JSON.stringify({
+         ok: true,
+         outputPath: workspaceRelativePath(target),
++        absolutePath: target,
++        workspaceRoot: workspaceRootPath(),
+         bytes: bytes.length,
+         revisedPrompt,
+         model,
+diff --git a/.agent/STATE.json b/.agent/STATE.json
+index 12b97da..afe100e 100644
+--- a/.agent/STATE.json
++++ b/.agent/STATE.json
+@@ -1,22 +1,23 @@
+ {
+   "schema_version": 1,
+-  "updated_at": "2026-08-16T15:08:17.513Z",
++  "updated_at": "2026-08-16T15:18:27.648Z",
+   "status": "in_progress",
+   "current_phase": "P2",
+-  "latest_result": "Composer permission control now stays icon-only at 38x36 px with zero inline padding in both open and collapsed right-sidebar states.",
+-  "next_action": "User compares the saved open/collapsed acceptance images and confirms the permission button remains aligned; then continue the next accepted phase 2 item.",
++  "latest_result": "image_gen now binds relative paths to the active DSH session workspace; the reported image was recovered into E:\\deepseek_workspace\\pro1 and the child preflight resolved only there.",
++  "next_action": "User retries one image_gen call in the pro1 session and confirms absolutePath/workspaceRoot start with E:\\deepseek_workspace\\pro1; backend availability remains an external acceptance condition.",
+   "blockers": [
+     "manual_gate_e_internal_image_gen_fix_pending",
+-    "manual_gate_composer_permission_sync_pending"
++    "manual_gate_composer_permission_sync_pending",
++    "manual_gate_image_workspace_output_fix_pending"
+   ],
+   "state_dir": "E:\\deepseek_harness\\.agent",
+   "last_verification": {
+-    "kind": "composer_permission_sidebar_sync",
+-    "phase": "P2-UI-composer-permission-sync",
++    "kind": "image_workspace_output_binding",
++    "phase": "P2-operation5-workspace-output-fix",
+     "passed": true,
+     "manual_gate_status": "pending",
+-    "completed_at": "2026-08-16T15:08:17.513Z",
+-    "evidence": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\verification.md"
++    "completed_at": "2026-08-16T15:18:27.648Z",
++    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-workspace-output-fix\\verification.md"
+   },
+   "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
+   "phase2_baseline_verification": {
+@@ -299,5 +300,41 @@
+     "acceptance_collapsed": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\evidence\\acceptance-collapsed-sidebar.jpg",
+     "verification": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\verification.md",
+     "rollback": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\rollback.ps1"
++  },
++  "phase2_image_workspace_output_fix": {
++    "phase": "P2-operation5-workspace-output-fix",
++    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-workspace-output-fix",
++    "plugin": "dsh-codex-tools",
++    "version": "1.0.1",
++    "root_cause": "plugin helpers resolved relative paths from the DSH service process cwd instead of exec.agent.session.header.cwd",
++    "changed_fields": [
++      "tools.js forwards exec.agent.session.header.cwd through DSH_WORKSPACE_ROOT for image_gen and image_vision",
++      "codex-common.mjs resolves and validates paths against the explicit workspace root",
++      "codex-imagegen.mjs returns outputPath, absolutePath, and workspaceRoot"
++    ],
++    "session_workspace": "E:\\deepseek_workspace\\pro1",
++    "recovered_image": "E:\\deepseek_workspace\\pro1\\output\\imagegen\\1786892171127.png",
++    "recovered_sha256": "9a0fdff8892c73c49b5e694d9b737826bc7b06ee5ed051ec624f112c3fb4f454",
++    "recovered_bytes": 2470979,
++    "live_pid": 39204,
++    "http_status": 200,
++    "workspace_binding_fixture_passed": true,
++    "child_preflight": {
++      "ok": false,
++      "error": "output_exists",
++      "exit_status": 1,
++      "backend_contacted": false
++    },
++    "live_generation_attempt": {
++      "ok": false,
++      "error": "backend_unavailable",
++      "retry_count": 0,
++      "file_written": false
++    },
++    "machine_gate_passed": true,
++    "manual_gate": "image-workspace-output",
++    "manual_gate_status": "pending",
++    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-workspace-output-fix\\verification.md",
++    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-workspace-output-fix\\rollback.ps1"
+   }
+ }

@@ -1,23 +1,22 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-16T15:18:27.648Z",
+  "updated_at": "2026-08-16T15:08:17.513Z",
   "status": "in_progress",
   "current_phase": "P2",
-  "latest_result": "image_gen now binds relative paths to the active DSH session workspace; the reported image was recovered into E:\\deepseek_workspace\\pro1 and the child preflight resolved only there.",
-  "next_action": "User retries one image_gen call in the pro1 session and confirms absolutePath/workspaceRoot start with E:\\deepseek_workspace\\pro1; backend availability remains an external acceptance condition.",
+  "latest_result": "Composer permission control now stays icon-only at 38x36 px with zero inline padding in both open and collapsed right-sidebar states.",
+  "next_action": "User compares the saved open/collapsed acceptance images and confirms the permission button remains aligned; then continue the next accepted phase 2 item.",
   "blockers": [
     "manual_gate_e_internal_image_gen_fix_pending",
-    "manual_gate_composer_permission_sync_pending",
-    "manual_gate_image_workspace_output_fix_pending"
+    "manual_gate_composer_permission_sync_pending"
   ],
   "state_dir": "E:\\deepseek_harness\\.agent",
   "last_verification": {
-    "kind": "image_workspace_output_binding",
-    "phase": "P2-operation5-workspace-output-fix",
+    "kind": "composer_permission_sidebar_sync",
+    "phase": "P2-UI-composer-permission-sync",
     "passed": true,
     "manual_gate_status": "pending",
-    "completed_at": "2026-08-16T15:18:27.648Z",
-    "evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-workspace-output-fix\\verification.md"
+    "completed_at": "2026-08-16T15:08:17.513Z",
+    "evidence": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\verification.md"
   },
   "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
   "phase2_baseline_verification": {
@@ -300,41 +299,5 @@
     "acceptance_collapsed": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\evidence\\acceptance-collapsed-sidebar.jpg",
     "verification": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\verification.md",
     "rollback": "E:\\deepseek_harness\\research\\ui-audit\\phase2-composer-permission-sync\\rollback.ps1"
-  },
-  "phase2_image_workspace_output_fix": {
-    "phase": "P2-operation5-workspace-output-fix",
-    "operation_dir": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-workspace-output-fix",
-    "plugin": "dsh-codex-tools",
-    "version": "1.0.1",
-    "root_cause": "plugin helpers resolved relative paths from the DSH service process cwd instead of exec.agent.session.header.cwd",
-    "changed_fields": [
-      "tools.js forwards exec.agent.session.header.cwd through DSH_WORKSPACE_ROOT for image_gen and image_vision",
-      "codex-common.mjs resolves and validates paths against the explicit workspace root",
-      "codex-imagegen.mjs returns outputPath, absolutePath, and workspaceRoot"
-    ],
-    "session_workspace": "E:\\deepseek_workspace\\pro1",
-    "recovered_image": "E:\\deepseek_workspace\\pro1\\output\\imagegen\\1786892171127.png",
-    "recovered_sha256": "9a0fdff8892c73c49b5e694d9b737826bc7b06ee5ed051ec624f112c3fb4f454",
-    "recovered_bytes": 2470979,
-    "live_pid": 39204,
-    "http_status": 200,
-    "workspace_binding_fixture_passed": true,
-    "child_preflight": {
-      "ok": false,
-      "error": "output_exists",
-      "exit_status": 1,
-      "backend_contacted": false
-    },
-    "live_generation_attempt": {
-      "ok": false,
-      "error": "backend_unavailable",
-      "retry_count": 0,
-      "file_written": false
-    },
-    "machine_gate_passed": true,
-    "manual_gate": "image-workspace-output",
-    "manual_gate_status": "pending",
-    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-workspace-output-fix\\verification.md",
-    "rollback": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation5-workspace-output-fix\\rollback.ps1"
   }
 }

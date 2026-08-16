@@ -1,0 +1,15 @@
+﻿{
+    "session_id":  "session-3f189ad6-0cea-4286-9848-0f6ec0dad457",
+    "session_workspace":  "E:\\deepseek_workspace\\pro1",
+    "reported_output_path":  "output/imagegen/1786892171127.png",
+    "actual_wrong_path":  "E:\\deepseek_harness\\output\\imagegen\\1786892171127.png",
+    "expected_path":  "E:\\deepseek_workspace\\pro1\\output\\imagegen\\1786892171127.png",
+    "actual_wrong_exists":  true,
+    "expected_exists":  false,
+    "bytes":  2470979,
+    "sha256":  "9a0fdff8892c73c49b5e694d9b737826bc7b06ee5ed051ec624f112c3fb4f454",
+    "tools_sha256":  "53488304bd8c10b07ed87a35c6f9bea70b5a4c1b4c24a06d684c88704d47d78d",
+    "common_sha256":  "25d7341d73ca70dda5edf2d1a0735781e91a15103942b6d7d88032bd021321cc",
+    "imagegen_sha256":  "f09e3dbd79ce72ed573dd5748ed92f58ee83364c6667765269a376515f0891bc",
+    "state_sha256":  "03772a755fd680a1f40495179fc3554b868837719712c1f683710f3d7b9b274b"
+}
