@@ -1,0 +1,8 @@
+{
+  "input_image": "E:\\deepseek_harness\\research\\phase2-codex-media\\operation5-left-character-sync\\acceptance-left-character.png",
+  "input_sha256": "a28e6ca1a5fbee9fdf32ce2c7407b25356981f46d8207c13ade0ec137824e29a",
+  "auth_file": "C:\\Users\\19739\\.codex\\auth.json",
+  "auth_sha256_before": "b915374d71b3131183816d220bf4c1baa56602d91d03c1943bed488d2584373c",
+  "auth_sha256_after": "b915374d71b3131183816d220bf4c1baa56602d91d03c1943bed488d2584373c",
+  "tokens_recorded": false
+}
