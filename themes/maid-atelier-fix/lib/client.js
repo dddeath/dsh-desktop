@@ -15,50 +15,98 @@ window.__ModuleLoader__.load({
     const CSS = `
 /* ===== maid-atelier light-mode fixes ===== */
 
-/* darker secondary/caption text tokens (win any cascade) */
+/* base text tokens */
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) {
+  --dsw-alias-label-primary: #1e2a52 !important;
   --dsw-alias-label-tertiary: #46567c !important;
   --dsw-alias-label-caption: #566384 !important;
 }
 
-/* 1) Left sidebar follows the light theme instead of staying navy */
+/* left sidebar: light surface + dark text */
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sidebarCol'],
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-slot='sidebar'] > div,
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-pane='sidebar'] {
-  background-color: #e7ecf7 !important;
+  background: rgba(231, 236, 247, 0.92) !important;
+  color: #142044;
+}
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) :is([data-pane='sidebar'], [class*='sidebarCol']) {
+  --dsw-alias-label-primary: #142044;
+  --dsw-alias-label-secondary: #2a3a6e;
+  --dsw-alias-label-tertiary: #46567c;
+  --dsw-alias-label-caption: #566384;
+}
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) :is([data-pane='sidebar'], [class*='sidebarCol']) button,
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) :is([data-pane='sidebar'], [class*='sidebarCol']) [role='button'] {
+  color: #1e2a52 !important;
 }
 
-/* 1 + 4) Hide the skin's navy/gold top chrome in light mode so the native
-   light top bar (标准模式 / 对话标题) shows through, and the right-sidebar
-   top buttons (close, subagent controls) are no longer covered by it. */
+/* hide navy/gold chrome + corner ornaments in light mode */
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-skin-chrome='top-trim'],
-body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-skin-chrome='bottom-trim'] {
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-skin-chrome='bottom-trim'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-skin-chrome='sidebar-corners'] {
   display: none !important;
 }
 
-/* 4) Top bar (标准模式 / 对话标题) and tab strip get a light surface */
-body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='header'],
-body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [role='tablist'] {
-  background: #edf1fa;
+/* sidebar rows: unselected black, selected navy + white */
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sessionRow'] {
+  color: #142044 !important;
 }
-body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='header'] {
-  border-bottom: 1px solid var(--dsw-alias-border-l2);
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sessionRow'][aria-selected='true'] {
+  background-color: #33487f !important;
+  color: #ffffff !important;
 }
 
-/* 3) View tabs (对话 / 轨迹 / 上下文): clear borders + readable text */
+/* 工作区 label + workspace folder name: dark */
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='groupSection'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sectionHeader'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sectionLabel'] {
+  color: #142044 !important;
+}
+
+/* top bar: ONE consistent opaque light surface + dark text everywhere
+   (fixes 标准模式 white text and the tab/session.log transparency mismatch) */
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) .wSkVaW_header,
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='titleRow'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='titleCluster'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='crumbs'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='headerActions'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='headerUtilities'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [role='tablist'] {
+  background-color: #eef2fa !important;
+  color: #142044 !important;
+}
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='crumb'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sessionLogButton'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='header'] [class*='label'] {
+  color: #142044 !important;
+}
+
+/* tabs: sit on the opaque strip, dark text, active pill */
 body[data-dsh-maid-atelier] [role='tab'] {
+  background-color: transparent !important;
   border: 1px solid var(--dsw-alias-border-l2);
   border-radius: 9px;
-  color: var(--dsw-alias-label-primary) !important;
+  color: #142044 !important;
 }
 body[data-dsh-maid-atelier] [role='tab'][aria-selected='true'] {
-  border-color: var(--dsw-alias-border-l3);      /* gold accent */
-  background: var(--dsw-alias-interactive-bg-active);
+  background-color: #dbe3f4 !important;
+  border-color: var(--dsw-alias-border-l3);
+  color: #142044 !important;
 }
 
-/* 2) Empty-state / read-only text (subagent, details) readable in light mode.
-   The i flag matches both empty and camelCase Empty class names
-   (e.g. better-sidebar's subagentEmpty / subagentEmptyHint). */
+/* session.log button: opaque pill matching the top bar */
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='sessionLogButton'] {
+  background-color: #e2e9f7 !important;
+  border: 1px solid var(--dsw-alias-border-l2);
+}
+
+/* settings + brand: consistent dark text (same family as new session) */
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='trigger'],
+body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='brand'] {
+  color: #1e2a52 !important;
+}
+
+/* empty / read-only text readable in light mode */
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='empty' i],
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [role='status'] {
   color: #46567c !important;
@@ -68,12 +116,12 @@ body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [role='status'] strong {
   color: #243866 !important;
 }
 
-/* 4) Right sidebar: themed periwinkle porcelain tint */
+/* right sidebar: light surface matching the left */
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [class*='detailsCol'] {
-  background: #e8edf8;
+  background: rgba(231, 236, 247, 0.92);
 }
 body[data-dsh-maid-atelier]:not([data-ds-dark-theme]) [data-slot='details'] > div {
-  background: #e8edf8f2;
+  background: rgba(231, 236, 247, 0.92);
 }
 `;
 
