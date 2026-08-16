@@ -1,0 +1,178 @@
+diff --git a/.agent/STATE.json b/.agent/STATE.json
+index 167b459..b3a44d5 100644
+--- a/.agent/STATE.json
++++ b/.agent/STATE.json
+@@ -1,13 +1,11 @@
+ {
+   "schema_version": 1,
+-  "updated_at": "2026-08-17T01:03:16+08:00",
++  "updated_at": "2026-08-17T01:11:37+08:00",
+   "status": "in_progress",
+-  "current_phase": "phase2",
+-  "latest_result": "Phase 2 persistence checks passed after desktop restart: dsh-codex-tools 1.0.1, OAuth metadata, image_gen/image_vision source registrations, generated output, desktop process, and HTTP 200 persist.",
+-  "next_action": "Manual gate F: user chooses retain-current (recommended) or execute uninstall then exact restore.",
+-  "blockers": [
+-    "manual_gate_f_persistence_recovery_decision_pending"
+-  ],
++  "current_phase": "phase3",
++  "latest_result": "Phase 2 is complete with retain-current accepted at manual gate F; the verified dsh-codex-tools 1.0.1 implementation and exact recovery snapshot are retained.",
++  "next_action": "Phase 3 operation 1: analyze the current plugin inventory, responsibilities, overlap, load/update risks, and usage recommendations for manual gate G.",
++  "blockers": [],
+   "state_dir": "E:\\deepseek_harness\\.agent",
+   "last_verification": {
+     "kind": "internal_image_base64_publication",
+@@ -466,11 +464,39 @@
+     "recommended_decision": "retain-current",
+     "machine_gate_passed": true,
+     "manual_gate": "F",
+-    "manual_gate_status": "pending",
++    "manual_gate_status": "accepted",
+     "decision_options": [
+       "retain-current",
+       "execute-uninstall-and-restore"
+     ],
+-    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\verification.md"
++    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\verification.md",
++    "decision": "retain-current",
++    "accepted_at": "2026-08-17T01:11:37+08:00"
++  },
++  "phase2_completion": {
++    "status": "completed",
++    "decision": "retain-current",
++    "completed_at": "2026-08-17T01:11:37+08:00",
++    "completion_commit": "4c7244ed0779804cf81cab5a8c4618f8126550c4",
++    "completion_evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\verification.md",
++    "plugin": "dsh-codex-tools@1.0.1",
++    "manual_gates": [
++      "A",
++      "B",
++      "C",
++      "D",
++      "E",
++      "F"
++    ],
++    "recovery_snapshot_sha256": "b32dc06d8d64aebe6bcf02e7899215b51c5e4112034f289a1051c79fb15583d7"
++  },
++  "phase3_execution": {
++    "status": "in_progress",
++    "started_at": "2026-08-17T01:11:37+08:00",
++    "rollback_point": "4c7244ed0779804cf81cab5a8c4618f8126550c4",
++    "execution_plan": "E:\\deepseek_harness\\research\\plugin-management\\phase3-execution-plan.md",
++    "current_operation": "operation1-plugin-structure-analysis",
++    "manual_gate": "G",
++    "manual_gate_status": "pending"
+   }
+ }
+diff --git a/.agent/PLAN.json b/.agent/PLAN.json
+index 1ab9264..4474302 100644
+--- a/.agent/PLAN.json
++++ b/.agent/PLAN.json
+@@ -1,11 +1,11 @@
+ {
+   "schema_version": 1,
+-  "current_phase": "P2",
++  "current_phase": "P3",
+   "phases": [
+     {
+       "id": "P1",
+       "name": "阶段 1：桌面 UI 优化与验收",
+-      "status": "completed",
++      "status": "completed",
+       "inputs": [
+         "research/ui-audit/phase1-completion/verification-phase1-ui.txt",
+         "user acceptance feedback"
+@@ -15,8 +15,8 @@
+         "完成 Composer、设置中心、响应式三栏和右侧栏拖拽同步",
+         "完成桌面运行状态与安全重启入口，并移除运行状态文字特效",
+         "保存补丁、验证记录、验收图和可执行回滚",
+-        "修复 whale-girl 桌宠被内联 opacity:0.25 半透明化",
+-        "禁用 Composer 运行态对上游 ::before 装饰层的复用，消除白色遮挡"
++        "修复 whale-girl 桌宠被内联 opacity:0.25 半透明化",
++        "禁用 Composer 运行态对上游 ::before 装饰层的复用，消除白色遮挡"
+       ],
+       "acceptance": [
+         "生产脚本通过 node --check",
+@@ -25,19 +25,19 @@
+         "HTTP 入口返回 200",
+         "补丁重放、压缩包重开与隔离回滚均通过",
+         "用户已验收阶段 1 UI",
+-        "桌宠计算 opacity 与 --pet-opacity 一致（当前 1）",
+-        "running 状态下 Composer ::before 为 content:none、display:none 且无表面尺寸"
++        "桌宠计算 opacity 与 --pet-opacity 一致（当前 1）",
++        "running 状态下 Composer ::before 为 content:none、display:none 且无表面尺寸"
+       ],
+       "rollback_point": "e9ce9e447ea20f6a9c981191da6fe3ee438baa34",
+       "requires_verification": true,
+       "completion_evidence": "research/ui-audit/phase1-completion/verification-phase1-ui.txt",
+-      "requires_user_acceptance": false,
++      "requires_user_acceptance": false,
+       "regression_evidence": "research/ui-audit/phase1-regression-pet-composer/verification-pet-composer-regression.txt"
+     },
+     {
+       "id": "P2",
+       "name": "阶段 2：Codex 额度视觉识别与图片生成插件入口",
+-      "status": "in_progress",
++      "status": "completed",
+       "inputs": [
+         "research/plugins.json",
+         "当前 web profile 插件清单",
+@@ -60,26 +60,30 @@
+         "卸载/回滚脚本通过隔离验证"
+       ],
+       "rollback_point": "bff5c9a99901e5d9c01f53ec4893542258f1ba56",
+-      "requires_verification": true,
+-      "minimal_self_validation": [
+-        "安装或修改命令退出状态为 0",
+-        "DSH 可启动且 HTTP 返回 200",
+-        "目标插件和 image_vision/image_gen 等价工具已注册",
+-        "安装前快照与可执行恢复命令存在"
+-      ],
+-      "manual_validation": [
+-        "人工确认候选插件与授权路径后才安装",
+-        "人工确认设置页中的插件状态和工具入口",
+-        "由用户本人完成 ChatGPT/Codex OAuth 授权页面确认",
+-        "人工提供图片并判断视觉识别是否准确",
+-        "人工给出生图提示词并验收真实图片产物",
+-        "人工决定是否在当前 web profile 上执行一次真实卸载和恢复"
+-      ]
++      "requires_verification": true,
++      "minimal_self_validation": [
++        "安装或修改命令退出状态为 0",
++        "DSH 可启动且 HTTP 返回 200",
++        "目标插件和 image_vision/image_gen 等价工具已注册",
++        "安装前快照与可执行恢复命令存在"
++      ],
++      "manual_validation": [
++        "人工确认候选插件与授权路径后才安装",
++        "人工确认设置页中的插件状态和工具入口",
++        "由用户本人完成 ChatGPT/Codex OAuth 授权页面确认",
++        "人工提供图片并判断视觉识别是否准确",
++        "人工给出生图提示词并验收真实图片产物",
++        "人工决定是否在当前 web profile 上执行一次真实卸载和恢复"
++      ],
++      "completed_at": "2026-08-17T01:11:37+08:00",
++      "completion_commit": "4c7244ed0779804cf81cab5a8c4618f8126550c4",
++      "completion_evidence": "research/phase2-codex-media/functional-operation9-persistence-recovery-final/verification.md",
++      "retained_decision": "dsh-codex-tools@1.0.1"
+     },
+     {
+       "id": "P3",
+       "name": "阶段 3：插件结构与管理优化",
+-      "status": "pending",
++      "status": "in_progress",
+       "inputs": [
+         "阶段 2 插件实现与现有插件清单"
+       ],
+@@ -92,8 +96,10 @@
+         "插件来源、版本、状态、权限和重启要求可见",
+         "启停、更新和回滚均有验证记录"
+       ],
+-      "rollback_point": "待阶段 2 完成后回填",
+-      "requires_verification": true
++      "rollback_point": "4c7244ed0779804cf81cab5a8c4618f8126550c4",
++      "requires_verification": true,
++      "started_at": "2026-08-17T01:11:37+08:00",
++      "execution_plan": "research/plugin-management/phase3-execution-plan.md"
+     },
+     {
+       "id": "P4",

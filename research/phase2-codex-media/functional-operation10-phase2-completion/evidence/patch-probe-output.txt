@@ -1,0 +1,6 @@
+﻿PATCH_CHECK_EXIT=0
+PATCH_APPLY_EXIT=0
+PATCH_MATCH_STATE.json=True SHA256=6584bb2fb3be04bd42d341f133a69f5be1f10fab4bf587e2d90142a29027f2bd
+PATCH_MATCH_PLAN.json=True SHA256=3b0e66b102738b9daf9ae77972b15dfabdaeec551f8cf8a80be463b703371c67
+PATCH_PROBE_OK=True
+PATCH_PROBE_DIR=research/phase2-codex-media/functional-operation10-phase2-completion/evidence/patch-probe-20260817011300

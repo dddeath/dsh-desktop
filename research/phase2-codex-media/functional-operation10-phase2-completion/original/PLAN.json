@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_phase": "P3",
+  "current_phase": "P2",
   "phases": [
     {
       "id": "P1",
@@ -37,7 +37,7 @@
     {
       "id": "P2",
       "name": "阶段 2：Codex 额度视觉识别与图片生成插件入口",
-      "status": "completed",
+      "status": "in_progress",
       "inputs": [
         "research/plugins.json",
         "当前 web profile 插件清单",
@@ -74,16 +74,12 @@
         "人工提供图片并判断视觉识别是否准确",
         "人工给出生图提示词并验收真实图片产物",
         "人工决定是否在当前 web profile 上执行一次真实卸载和恢复"
-      ],
-      "completed_at": "2026-08-17T01:11:37+08:00",
-      "completion_commit": "4c7244ed0779804cf81cab5a8c4618f8126550c4",
-      "completion_evidence": "research/phase2-codex-media/functional-operation9-persistence-recovery-final/verification.md",
-      "retained_decision": "dsh-codex-tools@1.0.1"
+      ]
     },
     {
       "id": "P3",
       "name": "阶段 3：插件结构与管理优化",
-      "status": "in_progress",
+      "status": "pending",
       "inputs": [
         "阶段 2 插件实现与现有插件清单"
       ],
@@ -96,10 +92,8 @@
         "插件来源、版本、状态、权限和重启要求可见",
         "启停、更新和回滚均有验证记录"
       ],
-      "rollback_point": "4c7244ed0779804cf81cab5a8c4618f8126550c4",
-      "requires_verification": true,
-      "started_at": "2026-08-17T01:11:37+08:00",
-      "execution_plan": "research/plugin-management/phase3-execution-plan.md"
+      "rollback_point": "待阶段 2 完成后回填",
+      "requires_verification": true
     },
     {
       "id": "P4",

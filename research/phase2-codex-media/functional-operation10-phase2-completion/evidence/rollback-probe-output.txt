@@ -1,0 +1,5 @@
+﻿ROLLBACK_ROLE=state SHA256=ab2b791ed4a41321c0f7ea245e0a0abd863c68b01dc5f0626a24d72af0e87d69
+ROLLBACK_ROLE=plan SHA256=76f69d9c121c98c8c36465abe359c6fd6f6d0cc297811f304fe88d71b9d3a656
+ROLLBACK_OK=true
+ROLLBACK_SCRIPT_EXIT=0
+ROLLBACK_PROBE_DIR=E:\deepseek_harness\research\phase2-codex-media\functional-operation10-phase2-completion\evidence\rollback-probe-20260817011306\.agent

@@ -1,11 +1,13 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-17T01:11:37+08:00",
+  "updated_at": "2026-08-17T01:03:16+08:00",
   "status": "in_progress",
-  "current_phase": "phase3",
-  "latest_result": "Phase 2 is complete with retain-current accepted at manual gate F; the verified dsh-codex-tools 1.0.1 implementation and exact recovery snapshot are retained.",
-  "next_action": "Phase 3 operation 1: analyze the current plugin inventory, responsibilities, overlap, load/update risks, and usage recommendations for manual gate G.",
-  "blockers": [],
+  "current_phase": "phase2",
+  "latest_result": "Phase 2 persistence checks passed after desktop restart: dsh-codex-tools 1.0.1, OAuth metadata, image_gen/image_vision source registrations, generated output, desktop process, and HTTP 200 persist.",
+  "next_action": "Manual gate F: user chooses retain-current (recommended) or execute uninstall then exact restore.",
+  "blockers": [
+    "manual_gate_f_persistence_recovery_decision_pending"
+  ],
   "state_dir": "E:\\deepseek_harness\\.agent",
   "last_verification": {
     "kind": "internal_image_base64_publication",
@@ -464,39 +466,11 @@
     "recommended_decision": "retain-current",
     "machine_gate_passed": true,
     "manual_gate": "F",
-    "manual_gate_status": "accepted",
+    "manual_gate_status": "pending",
     "decision_options": [
       "retain-current",
       "execute-uninstall-and-restore"
     ],
-    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\verification.md",
-    "decision": "retain-current",
-    "accepted_at": "2026-08-17T01:11:37+08:00"
-  },
-  "phase2_completion": {
-    "status": "completed",
-    "decision": "retain-current",
-    "completed_at": "2026-08-17T01:11:37+08:00",
-    "completion_commit": "4c7244ed0779804cf81cab5a8c4618f8126550c4",
-    "completion_evidence": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\verification.md",
-    "plugin": "dsh-codex-tools@1.0.1",
-    "manual_gates": [
-      "A",
-      "B",
-      "C",
-      "D",
-      "E",
-      "F"
-    ],
-    "recovery_snapshot_sha256": "b32dc06d8d64aebe6bcf02e7899215b51c5e4112034f289a1051c79fb15583d7"
-  },
-  "phase3_execution": {
-    "status": "in_progress",
-    "started_at": "2026-08-17T01:11:37+08:00",
-    "rollback_point": "4c7244ed0779804cf81cab5a8c4618f8126550c4",
-    "execution_plan": "E:\\deepseek_harness\\research\\plugin-management\\phase3-execution-plan.md",
-    "current_operation": "operation1-plugin-structure-analysis",
-    "manual_gate": "G",
-    "manual_gate_status": "pending"
+    "verification": "E:\\deepseek_harness\\research\\phase2-codex-media\\functional-operation9-persistence-recovery-final\\verification.md"
   }
 }
