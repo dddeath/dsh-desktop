@@ -1,0 +1,1 @@
+rg: /c/Users/19739/AppData/Roaming/npm/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-agent-loop: IO error for operation on /c/Users/19739/AppData/Roaming/npm/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-agent-loop: 系统找不到指定的路径。 (os error 3)

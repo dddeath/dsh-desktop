@@ -1,0 +1,3 @@
+﻿standard-bash/preset/custom-fs-search-windows.mjs
+standard-bash/test/windows-search-path.test.mjs
+installed/custom-fs-search-windows.mjs

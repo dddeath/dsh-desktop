@@ -1,0 +1,29 @@
+FINAL VERIFICATION
+UNIT_TEST_COMMAND: C:\Program Files\nodejs\node.exe --test E:\deepseek_harness\standard-bash\test\windows-search-path.test.mjs
+UNIT_TEST_OUTPUT: tests=4 pass=4 fail=0
+UNIT_TEST_EXIT_STATUS: 0
+INTEGRATION_COMMAND: C:\Program Files\nodejs\node.exe E:\deepseek_harness\research\standard-bash\operation1-windows-search-path-fix\integration-verify.mjs
+INTEGRATION_INPUT: /c/Users/19739/AppData/Roaming/npm/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-agent-loop
+INTEGRATION_OUTPUT: normalized=C:\Users\19739\AppData\Roaming\npm\node_modules\@deepseek-ai\dsh\node_modules\@deepseek-ai\dsh-agent-loop; exitCode=0; firstResult=README.zh.md
+INTEGRATION_EXIT_STATUS: 0
+REAL_GREP_SESSION: session-c5325700-7982-46e4-bc0f-e9371ff348f7
+REAL_GREP_OUTPUT: Found 2 matches; native C:\ path; isError=false
+REAL_GREP_EXIT_STATUS: 0
+REAL_GLOB_SESSION: session-af8b98d2-b380-49a6-aec0-331cb37cc631
+REAL_GLOB_OUTPUT: native C:\...\README.md; isError=false
+REAL_GLOB_EXIT_STATUS: 0
+PATCH_PROBE: PATCH_EXIT=0; all three git diff exit statuses=0
+ROLLBACK_PROBE: ROLLBACK_EXIT=0; SOURCE_RESTORED=True; INSTALLED_RESTORED=True; ADAPTER_REMOVED=True
+INSTALLED_SYNC_MATCH: True
+DSH_PID: 45200
+DSH_HEALTH_OK: True
+BRIDGE_VERSION: 0.1.2
+BASH_SOURCE_DIFF_LINES: 0
+ROLE_MODIFIED_PATH: E:\deepseek_harness\standard-bash\preset\custom-fs-search-windows.mjs
+ROLE_MODIFIED_SHA256: A7C00F691BEDD275FB211A90C2B6D1A3CF8FCF3682BE340397EEBEAC2CD8E092
+ROLE_PATCH_PATH: E:\deepseek_harness\research\standard-bash\operation1-windows-search-path-fix\change.patch
+ROLE_PATCH_SHA256: BCD16D7DECB9C9B68F686B3869E574D030EC0891B91F4DBEB64A5B89DDAE2506
+ROLE_VERIFICATION_PATH: E:\deepseek_harness\research\standard-bash\operation1-windows-search-path-fix\verification.md
+ROLE_VERIFICATION_SHA256: 982AA245B5759DFAA7117D52A790165266E0A8033FF1E96BD12B6EA550EABF30
+ROLE_ROLLBACK_PATH: E:\deepseek_harness\research\standard-bash\operation1-windows-search-path-fix\rollback.ps1
+ROLE_ROLLBACK_SHA256: BACDDAE747C34552B5AA777D2EDF7006BA8DBDBEE85340FBFD7A3635EAA8FB2C

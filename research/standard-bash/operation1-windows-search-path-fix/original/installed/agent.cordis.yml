@@ -72,7 +72,7 @@
   name: '@deepseek-ai/dsh-tool-fs'
 
 - id: tool-fs-search
-  name: ./custom-fs-search-windows.mjs
+  name: '@deepseek-ai/dsh-tool-fs-search'
   config:
     sampleOverCapGlobResults: false
 
