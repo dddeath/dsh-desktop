@@ -1,13 +1,11 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-17T12:34:48.884Z",
-  "status": "awaiting_input",
+  "updated_at": "2026-08-17T12:43:11.096Z",
+  "status": "stopped",
   "current_phase": "P5",
-  "latest_result": "Prepared and statically verified a fail-closed Authenticode rebuild, verification, GitHub Release upload, download verification, and rollback workflow. No trusted code-signing certificate is installed or configured on this machine.",
-  "next_action": "Provide the absolute path of a publicly trusted Authenticode .pfx/.p12 certificate and inject its password through DSH_CODESIGN_PASSWORD; then run the signed rebuild and public release workflow.",
-  "blockers": [
-    "trusted_authenticode_certificate_missing"
-  ],
+  "latest_result": "Authenticode signing and public release workflow stopped by user. Azure CLI installation process was terminated; no GitHub Release was created and both local executables remain byte-identical and unsigned.",
+  "next_action": "User will follow up on Azure Artifact Signing and public release independently.",
+  "blockers": [],
   "state_dir": "E:\\deepseek_harness\\.agent",
   "last_verification": {
     "kind": "v0.2.0_publication",
@@ -723,7 +721,7 @@
     "artifacts_remain_local": true,
     "publication": "E:\\deepseek_harness\\release\\v0.2.0\\publication.json",
     "authenticode": {
-      "status": "awaiting_trusted_certificate",
+      "status": "stopped_by_user",
       "code_signing_certificate_found": false,
       "github_cli_authenticated": true,
       "repository_public": true,
@@ -733,7 +731,12 @@
       "rollback": "E:\\deepseek_harness\\release\\v0.2.0\\signing\\rollback-authenticode-release.ps1",
       "password_environment_variable": "DSH_CODESIGN_PASSWORD",
       "secrets_recorded": false,
-      "prepared_at": "2026-08-17T12:34:48.884Z"
+      "prepared_at": "2026-08-17T12:34:48.884Z",
+      "azure_cli_installation": "stopped_and_absent",
+      "active_install_processes": 0,
+      "artifacts_modified": false,
+      "stopped_at": "2026-08-17T12:43:11.096Z",
+      "follow_up_owner": "user"
     }
   }
 }

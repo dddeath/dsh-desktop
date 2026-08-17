@@ -141,7 +141,7 @@
     {
       "id": "P5",
       "name": "Authenticode 签名与公开下载附件",
-      "status": "awaiting_input",
+      "status": "stopped_by_user",
       "inputs": [
         "v0.2.0 已推送标签",
         "受信任 Authenticode PFX/P12 证书",
@@ -163,7 +163,10 @@
       "blocker": "trusted_authenticode_certificate_missing",
       "signing_script": "release/v0.2.0/signing/sign-and-publish.ps1",
       "rollback": "release/v0.2.0/signing/rollback-authenticode-release.ps1",
-      "prepared_at": "2026-08-17T12:34:48.884Z"
+      "prepared_at": "2026-08-17T12:34:48.884Z",
+      "stopped_at": "2026-08-17T12:43:11.096Z",
+      "stop_result": "No Azure CLI installation, no signed artifact, and no GitHub Release.",
+      "follow_up_owner": "user"
     }
   ]
 }

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "stoppedAt": "2026-08-17T12:43:11.096Z",
+  "result": "PASS",
+  "requestedBy": "user",
+  "azureCliInstallation": "absent",
+  "activeTargetProcesses": 0,
+  "githubReleaseExists": false,
+  "artifacts": [
+    {
+      "name": "DeepSeek-Harness-Desktop-0.2.0-portable.exe",
+      "signature": "NotSigned",
+      "sha256": "6622B6C7066853F33858A4BBAF42035772C8F664C5ABDC5042A36624915A958E"
+    },
+    {
+      "name": "DeepSeek-Harness-Desktop-Setup-0.2.0.exe",
+      "signature": "NotSigned",
+      "sha256": "E0CA067904A6A8623FA3B9BAF773A0320FB4C2F4D45AF83D0A2036FD7B91564D"
+    }
+  ],
+  "publicationChanged": false,
+  "signingChanged": false,
+  "followUpOwner": "user"
+}
