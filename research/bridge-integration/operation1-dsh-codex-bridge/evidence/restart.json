@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "running": true,
+  "baseUrl": "http://127.0.0.1:3080",
+  "ownership": "mcp-managed",
+  "pid": 33956,
+  "bridge": {
+    "ok": true,
+    "value": {
+      "version": "0.1.0",
+      "traceRoot": "C:\\Users\\19739\\.dsh\\codex-bridge\\prompt-traces",
+      "protocol": "dsh-codex-bridge/1",
+      "maxHops": 2
+    }
+  },
+  "logPath": "C:\\Users\\19739\\.dsh\\codex-bridge\\dsh-web.log",
+  "action": "started"
+}

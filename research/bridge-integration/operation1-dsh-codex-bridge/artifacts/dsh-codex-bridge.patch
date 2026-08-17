@@ -1,0 +1,2786 @@
+diff --git a/plugins/dsh-codex-bridge/.gitignore b/plugins/dsh-codex-bridge/.gitignore
+new file mode 100644
+index 0000000..c2658d7
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/.gitignore
+@@ -0,0 +1 @@
++node_modules/
+diff --git a/plugins/dsh-codex-bridge/README.md b/plugins/dsh-codex-bridge/README.md
+new file mode 100644
+index 0000000..1823ba8
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/README.md
+@@ -0,0 +1,41 @@
++# dsh-codex-bridge
++
++一个共享包同时提供：
++
++- **Codex MCP (`dsh-control`)**：启停 DSH、管理对话、查看/规划插件、获取 DSH 发给模型的完整最终请求。
++- **DSH 插件**：注册 `codex_research`，通过现有 Codex 登录态与 ChatGPT 订阅 Responses 传输调研信息并返回摘要和来源。
++- **硬限环协议**：`traceId + origin + hop + visited`。跨边界前检查目标是否已访问，最大 2 跳；DSH 来源的 Codex 子进程环境也会被 MCP 拒绝。
++
++## 完整 prompt 追踪
++
++插件在 `llm/stream` 调用 `next()` 之前只读抓取冻结后的最终请求，默认写入：
++
++`%USERPROFILE%\.dsh\codex-bridge\prompt-traces\<uuid>.json`
++
++内容包括 `system`、`messages`、`tools`、provider/model、reasoning effort、temperature、maxTokens 和 stop。该监听器不修改请求。后续记忆插件应通过 `ctx.systemPrompt.context()` / `section()` 修改组装阶段，而不是改写 `llm/stream` 参数。
++
++## Codex 配置
++
++```toml
++[mcp_servers.dsh_control]
++command = "C:\\Program Files\\nodejs\\node.exe"
++args = ["E:\\deepseek_harness\\plugins\\dsh-codex-bridge\\lib\\mcp-server.js"]
++cwd = "E:\\deepseek_harness"
++startup_timeout_sec = 20
++tool_timeout_sec = 600
++```
++
++## DSH 安装
++
++```powershell
++& 'C:\Program Files\nodejs\node.exe' `
++  'C:\Users\19739\AppData\Roaming\npm\node_modules\@deepseek-ai\dsh\lib\bin.js' `
++  plugin --profile web add 'E:\deepseek_harness\plugins\dsh-codex-bridge'
++```
++
++## 验证
++
++```powershell
++& 'C:\Program Files\nodejs\npm.cmd' test --prefix 'E:\deepseek_harness\plugins\dsh-codex-bridge'
++Invoke-RestMethod http://127.0.0.1:3080/__dsh-codex-bridge/v1/health
++```
+diff --git a/plugins/dsh-codex-bridge/cordis.patch.yml b/plugins/dsh-codex-bridge/cordis.patch.yml
+new file mode 100644
+index 0000000..4f3c7a7
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/cordis.patch.yml
+@@ -0,0 +1,4 @@
++- insert:
++    - id: dsh-codex-bridge:active
++      name: dsh-codex-bridge
++      config: {}
+diff --git a/plugins/dsh-codex-bridge/lib/codex-research.js b/plugins/dsh-codex-bridge/lib/codex-research.js
+new file mode 100644
+index 0000000..eea856e
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/lib/codex-research.js
+@@ -0,0 +1,74 @@
++import { homedir } from "node:os";
++import { join } from "node:path";
++import { prepareDshToCodex } from "./loop-guard.js";
++
++function parseLastJson(text) {
++  const lines = String(text || "").split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
++  for (let i = lines.length - 1; i >= 0; i -= 1) {
++    try { return JSON.parse(lines[i]); } catch { /* continue */ }
++  }
++  return null;
++}
++
++function researchScriptPath() {
++  return process.env.DSH_CODEX_SEARCH_SCRIPT || join(
++    process.env.DSH_PROFILE_DIR || join(homedir(), ".dsh", "profiles", "web"),
++    "node_modules", "dsh-codex-tools", "scripts", "codex-search.mjs",
++  );
++}
++
++export function installCodexResearchTool(ctx, defineTool, sessionEnvelopes) {
++  const tool = defineTool({
++    name: "codex_research",
++    description: "Delegate current-information research to the Codex subscription and return a concise summary with source URLs. This bridge has a hard loop guard: a conversation that entered DSH from Codex cannot call back into Codex.",
++    parameters: {
++      query: { type: "string", required: true, description: "Research question, up to 4000 characters." },
++      maxSources: { type: "number", description: "1 to 10, default 5." },
++      freshness: { type: "string", enum: ["cached", "live"], description: "Use live for time-sensitive research." },
++      model: { type: "string", description: "Optional Codex backend model id." },
++    },
++    output: {
++      schema: { type: "json" },
++      render: (_args, value) => [{ type: "text", text: JSON.stringify(value, null, 2) }],
++    },
++    async execute(args, exec) {
++      const query = String(args.query || "").trim();
++      if (!query || query.length > 4000) return { ok: false, error: "invalid_query" };
++      const sessionId = String(exec?.agent?.session?.id || exec?.agent?.session?.header?.id || "");
++      const inbound = sessionEnvelopes.get(sessionId);
++      const route = prepareDshToCodex(inbound);
++      if (!route.ok) return route;
++
++      const access = await ctx.credentials.resolve("OPENAI_CODEX_API_KEY").catch(() => undefined);
++      const refresh = await ctx.credentials.resolve("OPENAI_CODEX_REFRESH_TOKEN").catch(() => undefined);
++      const env = {
++        CODEX_PREFER_AUTH_FILE: "1",
++        CS_QUERY: query,
++        CS_MAX_SOURCES: String(Math.max(1, Math.min(10, Number(args.maxSources) || 5))),
++        CS_FRESHNESS: args.freshness === "live" ? "live" : "cached",
++        DSH_CODEX_BRIDGE_ORIGIN: "dsh",
++        DSH_CODEX_BRIDGE_TRACE_ID: route.envelope.traceId,
++      };
++      if (typeof args.model === "string" && args.model.trim()) env.CS_MODEL = args.model.trim();
++      if (access?.value) env.CODEX_ACCESS_TOKEN = access.value;
++      if (refresh?.value) env.CODEX_REFRESH_TOKEN = refresh.value;
++      const script = researchScriptPath().replaceAll("\\", "/");
++      try {
++        const spec = ctx.shell.resolve({
++          command: `node ${JSON.stringify(script)}`,
++          env,
++          timeoutMs: 180000,
++          stdoutMaxBytes: 2 * 1024 * 1024,
++          signal: exec.signal,
++        });
++        const run = await ctx.shell.run(spec);
++        const result = parseLastJson(run.stdout);
++        if (!result) return { ok: false, error: "backend_unavailable", exitCode: run.exitCode, envelope: route.envelope };
++        return { ...result, envelope: route.envelope };
++      } catch (error) {
++        return { ok: false, error: "backend_unavailable", detail: String(error?.message || error).slice(0, 500), envelope: route.envelope };
++      }
++    },
++  });
++  return ctx.tools.register(tool);
++}
+diff --git a/plugins/dsh-codex-bridge/lib/dsh-client.js b/plugins/dsh-codex-bridge/lib/dsh-client.js
+new file mode 100644
+index 0000000..241aae7
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/lib/dsh-client.js
+@@ -0,0 +1,151 @@
++import { appendFileSync, closeSync, mkdirSync, openSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
++import { homedir } from "node:os";
++import { dirname, join } from "node:path";
++import { spawn, spawnSync } from "node:child_process";
++
++export const DEFAULT_BASE_URL = process.env.DSH_BASE_URL || "http://127.0.0.1:3080";
++const STATE_ROOT = process.env.DSH_CODEX_BRIDGE_STATE_DIR || join(homedir(), ".dsh", "codex-bridge");
++const PID_PATH = join(STATE_ROOT, "dsh-web.pid");
++const LOG_PATH = join(STATE_ROOT, "dsh-web.log");
++const NODE = process.env.DSH_NODE || join(process.env.ProgramFiles || "C:\\Program Files", "nodejs", "node.exe");
++const DSH_BIN = process.env.DSH_BIN_JS || join(process.env.APPDATA || join(homedir(), "AppData", "Roaming"), "npm", "node_modules", "@deepseek-ai", "dsh", "lib", "bin.js");
++
++function delay(ms) { return new Promise((resolve) => setTimeout(resolve, ms)); }
++
++export async function request(path, { method = "GET", body, timeoutMs = 30000 } = {}) {
++  const controller = new AbortController();
++  const timer = setTimeout(() => controller.abort(new Error("request timeout")), timeoutMs);
++  try {
++    const response = await fetch(new URL(path, DEFAULT_BASE_URL), {
++      method,
++      headers: body === undefined ? undefined : { "Content-Type": "application/json" },
++      body: body === undefined ? undefined : JSON.stringify(body),
++      signal: controller.signal,
++    });
++    const text = await response.text();
++    let value;
++    try { value = JSON.parse(text); } catch { value = { ok: false, error: "invalid_json", detail: text.slice(0, 1000) }; }
++    if (!response.ok && value.ok !== false) value = { ok: false, error: `http_${response.status}`, value };
++    return value;
++  } finally {
++    clearTimeout(timer);
++  }
++}
++
++async function probeRoot() {
++  try {
++    const response = await fetch(DEFAULT_BASE_URL, { signal: AbortSignal.timeout(3000) });
++    const text = await response.text();
++    return response.status === 200 && text.includes("__DSH_BOOT__");
++  } catch { return false; }
++}
++
++async function bridgeHealth() {
++  try { return await request("/__dsh-codex-bridge/v1/health", { timeoutMs: 3000 }); }
++  catch { return { ok: false, error: "bridge_unavailable" }; }
++}
++
++function readManagedPid() {
++  try {
++    const pid = Number(readFileSync(PID_PATH, "utf8").trim());
++    return Number.isInteger(pid) && pid > 0 ? pid : null;
++  } catch { return null; }
++}
++
++function pidAlive(pid) {
++  if (!pid) return false;
++  try { process.kill(pid, 0); return true; } catch { return false; }
++}
++
++export async function instanceStatus() {
++  const pid = readManagedPid();
++  const running = await probeRoot();
++  return {
++    ok: true,
++    running,
++    baseUrl: DEFAULT_BASE_URL,
++    ownership: pid && pidAlive(pid) ? "mcp-managed" : running ? "external" : "none",
++    pid: pid && pidAlive(pid) ? pid : null,
++    bridge: running ? await bridgeHealth() : { ok: false, error: "dsh_not_running" },
++    logPath: LOG_PATH,
++  };
++}
++
++export async function startInstance({ timeoutMs = 60000 } = {}) {
++  const before = await instanceStatus();
++  if (before.running) return { ...before, action: "already_running" };
++  mkdirSync(STATE_ROOT, { recursive: true });
++  appendFileSync(LOG_PATH, `\n[${new Date().toISOString()}] start ${NODE} ${DSH_BIN} web --port 3080\n`);
++  const out = openSync(LOG_PATH, "a");
++  const child = spawn(NODE, [DSH_BIN, "web", "--port", "3080"], {
++    cwd: process.cwd(),
++    detached: true,
++    windowsHide: true,
++    stdio: ["ignore", out, out],
++    env: withNodePath(process.env),
++  });
++  closeSync(out);
++  child.unref();
++  writeFileSync(PID_PATH, String(child.pid));
++  const deadline = Date.now() + Math.max(5000, Math.min(120000, Number(timeoutMs) || 60000));
++  while (Date.now() < deadline) {
++    if (await probeRoot()) return { ...(await instanceStatus()), action: "started" };
++    if (!pidAlive(child.pid)) break;
++    await delay(500);
++  }
++  return { ok: false, error: "startup_failed", pid: child.pid, logPath: LOG_PATH };
++}
++
++function withNodePath(env) {
++  const result = { ...env };
++  const key = Object.keys(result).find((name) => name.toLowerCase() === "path") || "Path";
++  const nodeDir = dirname(NODE);
++  result[key] = [nodeDir, result[key] || ""].filter(Boolean).join(";");
++  return result;
++}
++
++function taskkill(pid) {
++  return spawnSync("taskkill.exe", ["/pid", String(pid), "/T", "/F"], { encoding: "utf8", windowsHide: true });
++}
++
++function discoverDshPids() {
++  const script = [
++    "$rows=Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match '@deepseek-ai[\\\\/]dsh[\\\\/]lib[\\\\/]bin\\.js' -and ($_.CommandLine -match '\\sweb(\\s|$)' -or $_.CommandLine -match '--profile(?:=|\\s+)web') };",
++    "$rows | Select-Object ProcessId,CommandLine | ConvertTo-Json -Compress",
++  ].join(" ");
++  const run = spawnSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", script], { encoding: "utf8", windowsHide: true });
++  if (run.status !== 0 || !run.stdout.trim()) return [];
++  try {
++    const value = JSON.parse(run.stdout);
++    return (Array.isArray(value) ? value : [value]).map((row) => Number(row.ProcessId)).filter((pid) => Number.isInteger(pid) && pid > 0);
++  } catch { return []; }
++}
++
++export async function stopInstance({ forceExternal = false } = {}) {
++  const before = await instanceStatus();
++  if (!before.running) return { ...before, action: "already_stopped" };
++  let pids = before.pid ? [before.pid] : [];
++  if (!pids.length && forceExternal) pids = discoverDshPids();
++  if (!pids.length) return { ok: false, error: "external_instance", detail: "Set forceExternal=true to stop a verified DSH web process." };
++  const results = pids.map((pid) => ({ pid, exitCode: taskkill(pid).status }));
++  try { unlinkSync(PID_PATH); } catch { /* absent */ }
++  for (let i = 0; i < 30 && await probeRoot(); i += 1) await delay(200);
++  return { ok: !(await probeRoot()), action: "stopped", results };
++}
++
++export async function restartInstance(options = {}) {
++  const stopped = await stopInstance(options);
++  if (!stopped.ok) return stopped;
++  return startInstance(options);
++}
++
++export function runPluginCommand(action, target) {
++  const allowed = new Set(["list", "add", "remove", "update", "install"]);
++  if (!allowed.has(action)) return { ok: false, error: "invalid_action" };
++  const args = [DSH_BIN, "plugin", "--profile", "web", action];
++  if (target) args.push(String(target));
++  const run = spawnSync(NODE, args, { encoding: "utf8", windowsHide: true, env: withNodePath(process.env), timeout: 180000 });
++  return { ok: run.status === 0, action, target: target || null, exitCode: run.status, stdout: run.stdout, stderr: run.stderr };
++}
++
++export const paths = { stateRoot: STATE_ROOT, pidPath: PID_PATH, logPath: LOG_PATH, node: NODE, dshBin: DSH_BIN };
+diff --git a/plugins/dsh-codex-bridge/lib/dsh-plugin.js b/plugins/dsh-codex-bridge/lib/dsh-plugin.js
+new file mode 100644
+index 0000000..afd7f27
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/lib/dsh-plugin.js
+@@ -0,0 +1,168 @@
++import { randomUUID } from "node:crypto";
++import { createRequire } from "node:module";
++import { homedir } from "node:os";
++import { join, resolve } from "node:path";
++import { pathToFileURL } from "node:url";
++import { createEnvelope, enterBridge, normalizeEnvelope } from "./loop-guard.js";
++import { PromptTraceStore } from "./trace-store.js";
++import { query, readJsonBody, sendJson } from "./http-utils.js";
++import { installCodexResearchTool } from "./codex-research.js";
++
++const hostPackage = process.env.DSH_HOST_PACKAGE_JSON || join(
++  process.env.APPDATA || join(homedir(), "AppData", "Roaming"),
++  "npm", "node_modules", "@deepseek-ai", "dsh", "package.json",
++);
++const hostRequire = createRequire(hostPackage);
++const hostImport = (name) => import(pathToFileURL(hostRequire.resolve(name)).href);
++const [{ installModelSelection }, { createUserMessage }, { SessionId }, { defineTool }] = await Promise.all([
++  hostImport("@deepseek-ai/dsh-agent"),
++  hostImport("@deepseek-ai/dsh-llm"),
++  hostImport("@deepseek-ai/dsh-session"),
++  hostImport("@deepseek-ai/dsh-tools"),
++]);
++
++export const name = "dsh-codex-bridge";
++export const inject = ["webServer", "agents", "sessions", "sessionQuery", "agentDefaultModel", "tools", "shell", "credentials", "systemPrompt"];
++const BASE = "/__dsh-codex-bridge/v1";
++
++function setupModel(ctx) {
++  const selection = ctx.agentDefaultModel.currentSelection();
++  return {
++    selection,
++    setup(agentCtx) { installModelSelection(agentCtx, { current: selection, assembled: undefined }); },
++  };
++}
++
++function eventText(event) {
++  const content = event?.data?.message?.content || event?.message?.content || event?.data?.content || event?.content;
++  if (!Array.isArray(content)) return "";
++  return content.filter((part) => part?.type === "text" && typeof part.text === "string").map((part) => part.text).join("\n");
++}
++
++function summarizeSession(snapshot) {
++  return {
++    session: snapshot.session,
++    events: snapshot.events,
++    assistantText: snapshot.events.filter((event) => event.type === "assistant/message").map(eventText).filter(Boolean).at(-1) || "",
++    lastSeq: snapshot.events.at(-1)?.seq ?? null,
++  };
++}
++
++export function apply(ctx) {
++  const traces = new PromptTraceStore();
++  const sessionEnvelopes = new Map();
++  const ownedHandles = new Map();
++
++  const offPrompt = ctx.on("llm/stream", (options, next) => {
++    const sid = options.sessionId === undefined ? "" : String(options.sessionId);
++    traces.capture(options, sessionEnvelopes.get(sid));
++    return next();
++  });
++
++  const offContext = ctx.systemPrompt.context({
++    name: "dsh-codex-bridge:research",
++    order: 125,
++    text: "Use codex_research for current public information when helpful, then report concise findings with sources. Bridge calls carry a two-hop envelope; if a call returns loop_blocked, do not retry through the other bridge.",
++  });
++  const offResearch = installCodexResearchTool(ctx, defineTool, sessionEnvelopes);
++
++  async function acquireAgent(sessionId, cwd) {
++    const id = SessionId(sessionId);
++    let agent = ctx.agents.get(id);
++    if (agent) return agent;
++    if (ownedHandles.has(sessionId)) return ownedHandles.get(sessionId).agent;
++    const records = await ctx.sessionQuery.listSessions();
++    const persisted = records.some((record) => String(record.header.id) === sessionId);
++    const model = setupModel(ctx);
++    const handle = persisted
++      ? await ctx.agents.resume({ resumeSessionId: id, setup: model.setup })
++      : await ctx.agents.create({
++          sessionId: id,
++          meta: { cwd: resolve(cwd || process.cwd()) },
++          agentOptions: { provider: model.selection.provider, model: model.selection.model },
++          setup: model.setup,
++        });
++    ownedHandles.set(sessionId, handle);
++    return handle.agent;
++  }
++
++  const routes = [
++    ctx.webServer.register({
++      kind: "exact", path: `${BASE}/health`, handler(req, res) {
++        if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
++        sendJson(res, 200, { ok: true, value: { version: "0.1.0", traceRoot: traces.root, protocol: "dsh-codex-bridge/1", maxHops: 2 } });
++      },
++    }),
++    ctx.webServer.register({
++      kind: "exact", path: `${BASE}/sessions`, async handler(req, res) {
++        if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
++        try { sendJson(res, 200, { ok: true, value: await ctx.sessionQuery.listSessions() }); }
++        catch (error) { sendJson(res, 500, { ok: false, error: "sessions_failed", detail: error.message }); }
++      },
++    }),
++    ctx.webServer.register({
++      kind: "exact", path: `${BASE}/session`, async handler(req, res) {
++        if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
++        const id = query(req).get("id");
++        if (!id) return sendJson(res, 400, { ok: false, error: "session_id_required" });
++        try { sendJson(res, 200, { ok: true, value: summarizeSession(await ctx.sessionQuery.readSession(SessionId(id))) }); }
++        catch (error) { sendJson(res, 404, { ok: false, error: "session_not_found", detail: error.message }); }
++      },
++    }),
++    ctx.webServer.register({
++      kind: "exact", path: `${BASE}/conversation`, async handler(req, res) {
++        if (req.method !== "POST") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
++        try {
++          const body = await readJsonBody(req);
++          const text = String(body.message || "").trim();
++          if (!text || text.length > 200000) return sendJson(res, 400, { ok: false, error: "invalid_message" });
++          const inbound = normalizeEnvelope(body.envelope, "codex");
++          const route = enterBridge(inbound, "codex", "dsh");
++          if (!route.ok) return sendJson(res, 409, route);
++          const sessionId = String(body.sessionId || `session-${randomUUID()}`);
++          sessionEnvelopes.set(sessionId, route.envelope);
++          const agent = await acquireAgent(sessionId, body.cwd);
++          await agent.whenIdle();
++          const firstSeq = agent.session.seq;
++          agent.followup(createUserMessage({ content: [{ type: "text", text }], source: { kind: "user" } }));
++          await agent.whenIdle();
++          await ctx.sessions.flush(agent.session);
++          const snapshot = summarizeSession(await ctx.sessionQuery.readSession(SessionId(sessionId)));
++          sendJson(res, 200, { ok: true, value: {
++            sessionId,
++            firstSeq,
++            envelope: route.envelope,
++            session: snapshot.session,
++            assistantText: snapshot.assistantText,
++            lastSeq: snapshot.lastSeq,
++          } });
++        } catch (error) {
++          sendJson(res, 500, { ok: false, error: "conversation_failed", detail: String(error?.message || error).slice(0, 1000) });
++        }
++      },
++    }),
++    ctx.webServer.register({
++      kind: "exact", path: `${BASE}/prompts`, handler(req, res) {
++        if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
++        const params = query(req);
++        sendJson(res, 200, { ok: true, value: traces.list(params.get("limit"), params.get("sessionId")) });
++      },
++    }),
++    ctx.webServer.register({
++      kind: "exact", path: `${BASE}/prompt`, handler(req, res) {
++        if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
++        const value = traces.get(query(req).get("id"));
++        if (!value) return sendJson(res, 404, { ok: false, error: "prompt_not_found" });
++        sendJson(res, 200, { ok: true, value });
++      },
++    }),
++  ];
++
++  return async () => {
++    for (const off of routes.reverse()) off();
++    offResearch();
++    offContext();
++    offPrompt();
++    for (const handle of ownedHandles.values()) await handle.dispose().catch(() => undefined);
++  };
++}
+diff --git a/plugins/dsh-codex-bridge/lib/http-utils.js b/plugins/dsh-codex-bridge/lib/http-utils.js
+new file mode 100644
+index 0000000..70099b6
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/lib/http-utils.js
+@@ -0,0 +1,36 @@
++export function sendJson(res, status, value) {
++  const body = JSON.stringify(value);
++  res.statusCode = status;
++  res.setHeader("Content-Type", "application/json; charset=utf-8");
++  res.setHeader("Cache-Control", "no-store");
++  res.setHeader("Content-Length", Buffer.byteLength(body));
++  res.end(body);
++}
++
++export function readJsonBody(req, maxBytes = 1024 * 1024) {
++  return new Promise((resolve, reject) => {
++    let body = "";
++    let settled = false;
++    req.setEncoding("utf8");
++    req.on("data", (chunk) => {
++      if (settled) return;
++      body += chunk;
++      if (Buffer.byteLength(body) > maxBytes) {
++        settled = true;
++        reject(new Error("request body exceeds limit"));
++        req.destroy();
++      }
++    });
++    req.on("end", () => {
++      if (settled) return;
++      settled = true;
++      try { resolve(body ? JSON.parse(body) : {}); }
++      catch { reject(new Error("invalid JSON body")); }
++    });
++    req.on("error", reject);
++  });
++}
++
++export function query(req) {
++  return new URL(req.url || "/", "http://127.0.0.1").searchParams;
++}
+diff --git a/plugins/dsh-codex-bridge/lib/loop-guard.js b/plugins/dsh-codex-bridge/lib/loop-guard.js
+new file mode 100644
+index 0000000..568369c
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/lib/loop-guard.js
+@@ -0,0 +1,81 @@
++import { randomUUID } from "node:crypto";
++
++export const BRIDGE_PROTOCOL = "dsh-codex-bridge/1";
++export const MAX_BRIDGE_HOPS = 2;
++const SIDES = new Set(["codex", "dsh"]);
++
++function side(value, field) {
++  const normalized = String(value || "").toLowerCase();
++  if (!SIDES.has(normalized)) throw new TypeError(`${field} must be codex or dsh`);
++  return normalized;
++}
++
++export function createEnvelope(origin, traceId = randomUUID()) {
++  const normalized = side(origin, "origin");
++  return Object.freeze({
++    protocol: BRIDGE_PROTOCOL,
++    traceId: String(traceId || randomUUID()),
++    origin: normalized,
++    hop: 0,
++    visited: Object.freeze([normalized]),
++  });
++}
++
++export function normalizeEnvelope(value, fallbackOrigin) {
++  if (!value || typeof value !== "object") return createEnvelope(fallbackOrigin);
++  const origin = side(value.origin || fallbackOrigin, "origin");
++  const visited = Array.isArray(value.visited) ? value.visited.map((entry) => side(entry, "visited")) : [origin];
++  if (!visited.includes(origin)) visited.unshift(origin);
++  const hop = Number(value.hop);
++  if (!Number.isInteger(hop) || hop < 0) throw new TypeError("hop must be a non-negative integer");
++  return Object.freeze({
++    protocol: BRIDGE_PROTOCOL,
++    traceId: String(value.traceId || randomUUID()),
++    origin,
++    hop,
++    visited: Object.freeze([...new Set(visited)]),
++  });
++}
++
++export function enterBridge(value, from, to) {
++  const source = side(from, "from");
++  const target = side(to, "to");
++  if (source === target) return { ok: false, error: "same_side_route", envelope: normalizeEnvelope(value, source) };
++  const envelope = normalizeEnvelope(value, source);
++  if (!envelope.visited.includes(source)) {
++    return { ok: false, error: "source_not_visited", envelope };
++  }
++  if (envelope.visited.includes(target)) {
++    return { ok: false, error: "loop_blocked", envelope };
++  }
++  if (envelope.hop >= MAX_BRIDGE_HOPS) {
++    return { ok: false, error: "hop_limit", envelope };
++  }
++  return {
++    ok: true,
++    envelope: Object.freeze({
++      ...envelope,
++      hop: envelope.hop + 1,
++      visited: Object.freeze([...envelope.visited, target]),
++    }),
++  };
++}
++
++export function assertMcpEntryAllowed(environment = process.env, value) {
++  if (String(environment.DSH_CODEX_BRIDGE_ORIGIN || "").toLowerCase() === "dsh") {
++    return { ok: false, error: "loop_blocked", detail: "DSH-originated Codex work cannot re-enter DSH." };
++  }
++  const envelope = normalizeEnvelope(value || createEnvelope("codex"), "codex");
++  if (envelope.origin !== "codex" || envelope.visited.includes("dsh") || envelope.hop !== 0) {
++    return { ok: false, error: "loop_blocked", detail: "MCP accepts only a fresh Codex-originated envelope.", envelope };
++  }
++  return { ok: true, envelope };
++}
++
++export function prepareDshToCodex(value) {
++  const envelope = normalizeEnvelope(value || createEnvelope("dsh"), "dsh");
++  if (envelope.visited.includes("codex")) {
++    return { ok: false, error: "loop_blocked", detail: "A Codex-originated DSH turn cannot call Codex again.", envelope };
++  }
++  return enterBridge(envelope, "dsh", "codex");
++}
+diff --git a/plugins/dsh-codex-bridge/lib/mcp-server.js b/plugins/dsh-codex-bridge/lib/mcp-server.js
+new file mode 100644
+index 0000000..e44d4a4
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/lib/mcp-server.js
+@@ -0,0 +1,134 @@
++#!/usr/bin/env node
++import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
++import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
++import * as z from "zod/v4";
++import { assertMcpEntryAllowed, createEnvelope } from "./loop-guard.js";
++import { instanceStatus, request, restartInstance, runPluginCommand, startInstance, stopInstance } from "./dsh-client.js";
++
++const server = new McpServer({ name: "dsh-control", version: "0.1.0" }, {
++  instructions: [
++    "Control the local DeepSeek Harness instance, conversations, plugins, and exact final LLM prompt traces.",
++    "Every Codex-to-DSH conversation must use the bridge envelope returned by this server.",
++    "Hard loop rule: when DSH_CODEX_BRIDGE_ORIGIN=dsh, all DSH re-entry tools return loop_blocked.",
++    "Prompt traces are read-only snapshots. Future memory plugins should modify prompt assembly through DSH systemPrompt contributions, not by mutating llm/stream requests.",
++  ].join(" "),
++});
++
++function result(value, isError = value?.ok === false) {
++  return {
++    content: [{ type: "text", text: JSON.stringify(value, null, 2) }],
++    structuredContent: value && typeof value === "object" ? value : { value },
++    isError,
++  };
++}
++
++function guard(envelope) {
++  return assertMcpEntryAllowed(process.env, envelope || createEnvelope("codex"));
++}
++
++server.registerTool("dsh_instance_status", {
++  description: "Get DSH Web and bridge status without changing the instance.",
++  inputSchema: {},
++  annotations: { readOnlyHint: true, openWorldHint: false },
++}, async () => result(await instanceStatus(), false));
++
++server.registerTool("dsh_instance_start", {
++  description: "Start DSH Web on 127.0.0.1:3080, or attach if it is already running.",
++  inputSchema: { timeoutMs: z.number().int().min(5000).max(120000).optional() },
++  annotations: { destructiveHint: false, openWorldHint: false },
++}, async (args) => result(await startInstance(args)));
++
++server.registerTool("dsh_instance_stop", {
++  description: "Stop the MCP-managed DSH instance. External DSH processes require forceExternal=true and are command-line verified before termination.",
++  inputSchema: { forceExternal: z.boolean().optional() },
++  annotations: { destructiveHint: true, openWorldHint: false },
++}, async (args) => result(await stopInstance(args)));
++
++server.registerTool("dsh_instance_restart", {
++  description: "Restart DSH. Use forceExternal=true only when the desktop app owns the verified DSH process.",
++  inputSchema: { forceExternal: z.boolean().optional(), timeoutMs: z.number().int().min(5000).max(120000).optional() },
++  annotations: { destructiveHint: true, openWorldHint: false },
++}, async (args) => result(await restartInstance(args)));
++
++server.registerTool("dsh_conversation_list", {
++  description: "List DSH conversations from the live-preferred session corpus.",
++  inputSchema: {},
++  annotations: { readOnlyHint: true, openWorldHint: false },
++}, async () => result(await request("/__dsh-codex-bridge/v1/sessions")));
++
++server.registerTool("dsh_conversation_get", {
++  description: "Read the complete event log and latest assistant text for one DSH conversation.",
++  inputSchema: { sessionId: z.string().min(1) },
++  annotations: { readOnlyHint: true, openWorldHint: false },
++}, async ({ sessionId }) => result(await request(`/__dsh-codex-bridge/v1/session?id=${encodeURIComponent(sessionId)}`)));
++
++server.registerTool("dsh_conversation_send", {
++  description: "Create or continue a DSH conversation and wait for its agent response. Captures the exact final provider prompt. Nested Codex/DSH re-entry is blocked.",
++  inputSchema: {
++    message: z.string().min(1).max(200000),
++    sessionId: z.string().min(1).optional(),
++    cwd: z.string().min(1).optional(),
++    envelope: z.object({
++      protocol: z.string().optional(),
++      traceId: z.string().min(1),
++      origin: z.enum(["codex", "dsh"]),
++      hop: z.number().int().min(0),
++      visited: z.array(z.enum(["codex", "dsh"])),
++    }).optional(),
++  },
++  annotations: { destructiveHint: false, openWorldHint: true },
++}, async ({ message, sessionId, cwd, envelope }) => {
++  const route = guard(envelope);
++  if (!route.ok) return result(route, true);
++  return result(await request("/__dsh-codex-bridge/v1/conversation", {
++    method: "POST",
++    timeoutMs: 600000,
++    body: { message, sessionId, cwd, envelope: route.envelope },
++  }));
++});
++
++server.registerTool("dsh_prompt_trace_list", {
++  description: "List exact final DSH-to-provider prompt captures. Each capture includes system, messages, tool schemas, model, and generation settings.",
++  inputSchema: { limit: z.number().int().min(1).max(200).optional(), sessionId: z.string().min(1).optional() },
++  annotations: { readOnlyHint: true, openWorldHint: false },
++}, async ({ limit = 50, sessionId }) => {
++  const qs = new URLSearchParams({ limit: String(limit) });
++  if (sessionId) qs.set("sessionId", sessionId);
++  return result(await request(`/__dsh-codex-bridge/v1/prompts?${qs}`));
++});
++
++server.registerTool("dsh_prompt_trace_get", {
++  description: "Read one exact final DSH provider request snapshot by trace id.",
++  inputSchema: { id: z.string().uuid() },
++  annotations: { readOnlyHint: true, openWorldHint: false },
++}, async ({ id }) => result(await request(`/__dsh-codex-bridge/v1/prompt?id=${encodeURIComponent(id)}`)));
++
++server.registerTool("dsh_plugin_list", {
++  description: "List installed/running DSH plugins through the local plugin control center.",
++  inputSchema: {},
++  annotations: { readOnlyHint: true, openWorldHint: false },
++}, async () => {
++  const snapshot = await request("/__dsh-plugin-control-center/snapshot").catch(() => null);
++  return result(snapshot?.ok ? snapshot : runPluginCommand("list"));
++});
++
++server.registerTool("dsh_plugin_plan", {
++  description: "Create a safety snapshot and stage a DSH plugin action without applying it.",
++  inputSchema: {
++    action: z.enum(["stage-enable", "stage-disable", "update", "remove", "restore"]),
++    name: z.string().min(1),
++  },
++  annotations: { destructiveHint: false, openWorldHint: false },
++}, async ({ action, name }) => result(await request("/__dsh-plugin-control-center/plan", { method: "POST", body: { action, name } })));
++
++server.registerTool("dsh_plugin_apply", {
++  description: "Apply a DSH profile package command. add accepts a package/path; remove and update accept a package name; install refreshes the profile. Restart DSH afterward.",
++  inputSchema: {
++    action: z.enum(["add", "remove", "update", "install"]),
++    target: z.string().min(1).optional(),
++  },
++  annotations: { destructiveHint: true, openWorldHint: true },
++}, async ({ action, target }) => result(runPluginCommand(action, target)));
++
++const transport = new StdioServerTransport();
++await server.connect(transport);
+diff --git a/plugins/dsh-codex-bridge/lib/trace-store.js b/plugins/dsh-codex-bridge/lib/trace-store.js
+new file mode 100644
+index 0000000..73ccdab
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/lib/trace-store.js
+@@ -0,0 +1,74 @@
++import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
++import { homedir } from "node:os";
++import { join } from "node:path";
++import { randomUUID } from "node:crypto";
++
++function jsonClone(value) {
++  if (value === undefined) return undefined;
++  return JSON.parse(JSON.stringify(value));
++}
++
++export class PromptTraceStore {
++  constructor(root = process.env.DSH_CODEX_BRIDGE_TRACE_DIR || join(homedir(), ".dsh", "codex-bridge", "prompt-traces")) {
++    this.root = root;
++    mkdirSync(root, { recursive: true });
++  }
++
++  capture(options, envelope) {
++    const id = randomUUID();
++    const trace = {
++      schema: "dsh-full-prompt-trace/1",
++      id,
++      capturedAt: new Date().toISOString(),
++      sessionId: options.sessionId === undefined ? null : String(options.sessionId),
++      envelope: envelope || null,
++      request: {
++        provider: options.provider ?? null,
++        model: options.model ?? null,
++        reasoningEffort: options.reasoningEffort ?? null,
++        system: options.system ?? null,
++        messages: jsonClone(options.messages ?? []),
++        tools: jsonClone(options.tools ?? []),
++        temperature: options.temperature ?? null,
++        maxTokens: options.maxTokens ?? null,
++        stop: jsonClone(options.stop ?? null),
++      },
++    };
++    const path = join(this.root, `${id}.json`);
++    writeFileSync(path, JSON.stringify(trace, null, 2), { mode: 0o600 });
++    return { ...trace, path };
++  }
++
++  list(limit = 50, sessionId) {
++    const safeLimit = Math.max(1, Math.min(200, Number(limit) || 50));
++    return readdirSync(this.root, { withFileTypes: true })
++      .filter((entry) => entry.isFile() && /^[0-9a-f-]{36}\.json$/i.test(entry.name))
++      .map((entry) => {
++        try {
++          const value = JSON.parse(readFileSync(join(this.root, entry.name), "utf8"));
++          return {
++            id: value.id,
++            capturedAt: value.capturedAt,
++            sessionId: value.sessionId,
++            provider: value.request?.provider ?? null,
++            model: value.request?.model ?? null,
++            traceId: value.envelope?.traceId ?? null,
++          };
++        } catch {
++          return null;
++        }
++      })
++      .filter((value) => value && (!sessionId || value.sessionId === String(sessionId)))
++      .sort((a, b) => String(b.capturedAt).localeCompare(String(a.capturedAt)))
++      .slice(0, safeLimit);
++  }
++
++  get(id) {
++    if (!/^[0-9a-f-]{36}$/i.test(String(id || ""))) return null;
++    try {
++      return JSON.parse(readFileSync(join(this.root, `${id}.json`), "utf8"));
++    } catch {
++      return null;
++    }
++  }
++}
+diff --git a/plugins/dsh-codex-bridge/package-lock.json b/plugins/dsh-codex-bridge/package-lock.json
+new file mode 100644
+index 0000000..8ffedc6
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/package-lock.json
+@@ -0,0 +1,1186 @@
++{
++  "name": "dsh-codex-bridge",
++  "version": "0.1.0",
++  "lockfileVersion": 3,
++  "requires": true,
++  "packages": {
++    "": {
++      "name": "dsh-codex-bridge",
++      "version": "0.1.0",
++      "license": "MIT",
++      "dependencies": {
++        "@modelcontextprotocol/sdk": "^1.30.0",
++        "zod": "^4.4.3"
++      },
++      "bin": {
++        "dsh-control-mcp": "lib/mcp-server.js"
++      },
++      "engines": {
++        "node": ">=22"
++      }
++    },
++    "node_modules/@hono/node-server": {
++      "version": "2.1.1",
++      "resolved": "https://registry.npmjs.org/@hono/node-server/-/node-server-2.1.1.tgz",
++      "integrity": "sha512-ELuehkj5VCBdgEw9zs+ivkKwyzzUCSQuE96YmiPvn1ECBoZCczbFXJLeEGMTYjphP6gydh4pHMqEYPVMYUVgQg==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=20"
++      },
++      "peerDependencies": {
++        "hono": "^4"
++      }
++    },
++    "node_modules/@modelcontextprotocol/sdk": {
++      "version": "1.30.0",
++      "resolved": "https://registry.npmjs.org/@modelcontextprotocol/sdk/-/sdk-1.30.0.tgz",
++      "integrity": "sha512-xKd8OIzlqNzcqcNumGAa6g+PW2kjD5vrpcKOnfldAUPP3j7lnqMPwlTXQm8gF+UwH72z0lqaRbjr9hqGz0eITA==",
++      "license": "MIT",
++      "dependencies": {
++        "@hono/node-server": "^1.19.9 || ^2.0.5",
++        "ajv": "^8.17.1",
++        "ajv-formats": "^3.0.1",
++        "content-type": "^1.0.5",
++        "cors": "^2.8.5",
++        "cross-spawn": "^7.0.5",
++        "eventsource": "^3.0.2",
++        "eventsource-parser": "^3.0.0",
++        "express": "^5.2.1",
++        "express-rate-limit": "^8.2.1",
++        "hono": "^4.11.4",
++        "jose": "^6.1.3",
++        "json-schema-typed": "^8.0.2",
++        "pkce-challenge": "^5.0.0",
++        "raw-body": "^3.0.0",
++        "zod": "^3.25 || ^4.0",
++        "zod-to-json-schema": "^3.25.1"
++      },
++      "engines": {
++        "node": ">=18"
++      },
++      "peerDependencies": {
++        "@cfworker/json-schema": "^4.1.1",
++        "zod": "^3.25 || ^4.0"
++      },
++      "peerDependenciesMeta": {
++        "@cfworker/json-schema": {
++          "optional": true
++        },
++        "zod": {
++          "optional": false
++        }
++      }
++    },
++    "node_modules/accepts": {
++      "version": "2.0.0",
++      "resolved": "https://registry.npmjs.org/accepts/-/accepts-2.0.0.tgz",
++      "integrity": "sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng==",
++      "license": "MIT",
++      "dependencies": {
++        "mime-types": "^3.0.0",
++        "negotiator": "^1.0.0"
++      },
++      "engines": {
++        "node": ">= 0.6"
++      }
++    },
++    "node_modules/ajv": {
++      "version": "8.20.0",
++      "resolved": "https://registry.npmjs.org/ajv/-/ajv-8.20.0.tgz",
++      "integrity": "sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA==",
++      "license": "MIT",
++      "dependencies": {
++        "fast-deep-equal": "^3.1.3",
++        "fast-uri": "^3.0.1",
++        "json-schema-traverse": "^1.0.0",
++        "require-from-string": "^2.0.2"
++      },
++      "funding": {
++        "type": "github",
++        "url": "https://github.com/sponsors/epoberezkin"
++      }
++    },
++    "node_modules/ajv-formats": {
++      "version": "3.0.1",
++      "resolved": "https://registry.npmjs.org/ajv-formats/-/ajv-formats-3.0.1.tgz",
++      "integrity": "sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==",
++      "license": "MIT",
++      "dependencies": {
++        "ajv": "^8.0.0"
++      },
++      "peerDependencies": {
++        "ajv": "^8.0.0"
++      },
++      "peerDependenciesMeta": {
++        "ajv": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/body-parser": {
++      "version": "2.3.0",
++      "resolved": "https://registry.npmjs.org/body-parser/-/body-parser-2.3.0.tgz",
++      "integrity": "sha512-2cGmJupaNgg+QUwVLAucDuWuoMZ6EX9iHDRswZ5lsNYEmwPaRknMPCLZz07yTzVq/83p4o/wzbDZbBrTvGGTIw==",
++      "license": "MIT",
++      "dependencies": {
++        "bytes": "^3.1.2",
++        "content-type": "^2.0.0",
++        "debug": "^4.4.3",
++        "http-errors": "^2.0.1",
++        "iconv-lite": "^0.7.2",
++        "on-finished": "^2.4.1",
++        "qs": "^6.15.2",
++        "raw-body": "^3.0.2",
++        "type-is": "^2.1.0"
++      },
++      "engines": {
++        "node": ">=18"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/body-parser/node_modules/content-type": {
++      "version": "2.1.0",
++      "resolved": "https://registry.npmjs.org/content-type/-/content-type-2.1.0.tgz",
++      "integrity": "sha512-mj7UPXE0jaqaOsukNZRUEfEi2AcL7C/vwmwcHV0O97eO1E1pxBZuyjlZrx5seTaNBg1U6+o35wpa35Qfcc+7ag==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=18"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/bytes": {
++      "version": "3.1.2",
++      "resolved": "https://registry.npmjs.org/bytes/-/bytes-3.1.2.tgz",
++      "integrity": "sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.8"
++      }
++    },
++    "node_modules/call-bind-apply-helpers": {
++      "version": "1.0.2",
++      "resolved": "https://registry.npmjs.org/call-bind-apply-helpers/-/call-bind-apply-helpers-1.0.2.tgz",
++      "integrity": "sha512-Sp1ablJ0ivDkSzjcaJdxEunN5/XvksFJ2sMBFfq6x0ryhQV/2b/KwFe21cMpmHtPOSij8K99/wSfoEuTObmuMQ==",
++      "license": "MIT",
++      "dependencies": {
++        "es-errors": "^1.3.0",
++        "function-bind": "^1.1.2"
++      },
++      "engines": {
++        "node": ">= 0.4"
++      }
++    },
++    "node_modules/call-bound": {
++      "version": "1.0.4",
++      "resolved": "https://registry.npmjs.org/call-bound/-/call-bound-1.0.4.tgz",
++      "integrity": "sha512-+ys997U96po4Kx/ABpBCqhA9EuxJaQWDQg7295H4hBphv3IZg0boBKuwYpt4YXp6MZ5AmZQnU/tyMTlRpaSejg==",
++      "license": "MIT",
++      "dependencies": {
++        "call-bind-apply-helpers": "^1.0.2",
++        "get-intrinsic": "^1.3.0"
++      },
++      "engines": {
++        "node": ">= 0.4"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/ljharb"
++      }
++    },
++    "node_modules/content-disposition": {
++      "version": "1.1.0",
++      "resolved": "https://registry.npmjs.org/content-disposition/-/content-disposition-1.1.0.tgz",
++      "integrity": "sha512-5jRCH9Z/+DRP7rkvY83B+yGIGX96OYdJmzngqnw2SBSxqCFPd0w2km3s5iawpGX8krnwSGmF0FW5Nhr0Hfai3g==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=18"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/content-type": {
++      "version": "1.0.5",
++      "resolved": "https://registry.npmjs.org/content-type/-/content-type-1.0.5.tgz",
++      "integrity": "sha512-nTjqfcBFEipKdXCv4YDQWCfmcLZKm81ldF0pAopTvyrFGVbcR6P/VAAd5G7N+0tTr8QqiU0tFadD6FK4NtJwOA==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.6"
++      }
++    },
++    "node_modules/cookie": {
++      "version": "0.7.2",
++      "resolved": "https://registry.npmjs.org/cookie/-/cookie-0.7.2.tgz",
++      "integrity": "sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.6"
++      }
++    },
++    "node_modules/cookie-signature": {
++      "version": "1.2.2",
++      "resolved": "https://registry.npmjs.org/cookie-signature/-/cookie-signature-1.2.2.tgz",
++      "integrity": "sha512-D76uU73ulSXrD1UXF4KE2TMxVVwhsnCgfAyTg9k8P6KGZjlXKrOLe4dJQKI3Bxi5wjesZoFXJWElNWBjPZMbhg==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=6.6.0"
++      }
++    },
++    "node_modules/cors": {
++      "version": "2.8.6",
++      "resolved": "https://registry.npmjs.org/cors/-/cors-2.8.6.tgz",
++      "integrity": "sha512-tJtZBBHA6vjIAaF6EnIaq6laBBP9aq/Y3ouVJjEfoHbRBcHBAHYcMh/w8LDrk2PvIMMq8gmopa5D4V8RmbrxGw==",
++      "license": "MIT",
++      "dependencies": {
++        "object-assign": "^4",
++        "vary": "^1"
++      },
++      "engines": {
++        "node": ">= 0.10"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/cross-spawn": {
++      "version": "7.0.6",
++      "resolved": "https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.6.tgz",
++      "integrity": "sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==",
++      "license": "MIT",
++      "dependencies": {
++        "path-key": "^3.1.0",
++        "shebang-command": "^2.0.0",
++        "which": "^2.0.1"
++      },
++      "engines": {
++        "node": ">= 8"
++      }
++    },
++    "node_modules/debug": {
++      "version": "4.4.3",
++      "resolved": "https://registry.npmjs.org/debug/-/debug-4.4.3.tgz",
++      "integrity": "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==",
++      "license": "MIT",
++      "dependencies": {
++        "ms": "^2.1.3"
++      },
++      "engines": {
++        "node": ">=6.0"
++      },
++      "peerDependenciesMeta": {
++        "supports-color": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/depd": {
++      "version": "2.0.0",
++      "resolved": "https://registry.npmjs.org/depd/-/depd-2.0.0.tgz",
++      "integrity": "sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.8"
++      }
++    },
++    "node_modules/dunder-proto": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/dunder-proto/-/dunder-proto-1.0.1.tgz",
++      "integrity": "sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==",
++      "license": "MIT",
++      "dependencies": {
++        "call-bind-apply-helpers": "^1.0.1",
++        "es-errors": "^1.3.0",
++        "gopd": "^1.2.0"
++      },
++      "engines": {
++        "node": ">= 0.4"
++      }
++    },
++    "node_modules/ee-first": {
++      "version": "1.1.1",
++      "resolved": "https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz",
++      "integrity": "sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==",
++      "license": "MIT"
++    },
++    "node_modules/encodeurl": {
++      "version": "2.0.0",
++      "resolved": "https://registry.npmjs.org/encodeurl/-/encodeurl-2.0.0.tgz",
++      "integrity": "sha512-Q0n9HRi4m6JuGIV1eFlmvJB7ZEVxu93IrMyiMsGC0lrMJMWzRgx6WGquyfQgZVb31vhGgXnfmPNNXmxnOkRBrg==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.8"
++      }
++    },
++    "node_modules/es-define-property": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/es-define-property/-/es-define-property-1.0.1.tgz",
++      "integrity": "sha512-e3nRfgfUZ4rNGL232gUgX06QNyyez04KdjFrF+LTRoOXmrOgFKDg4BCdsjW8EnT69eqdYGmRpJwiPVYNrCaW3g==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.4"
++      }
++    },
++    "node_modules/es-errors": {
++      "version": "1.3.0",
++      "resolved": "https://registry.npmjs.org/es-errors/-/es-errors-1.3.0.tgz",
++      "integrity": "sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.4"
++      }
++    },
++    "node_modules/es-object-atoms": {
++      "version": "1.1.2",
++      "resolved": "https://registry.npmjs.org/es-object-atoms/-/es-object-atoms-1.1.2.tgz",
++      "integrity": "sha512-HWcBoN6NileqtSydK2FqHbS/LoDd2pqrnQHLyJzBj4kOp/ky2MWMN694xOfkK8/SnUsW2DH7EfyVlydKCsm1Zw==",
++      "license": "MIT",
++      "dependencies": {
++        "es-errors": "^1.3.0"
++      },
++      "engines": {
++        "node": ">= 0.4"
++      }
++    },
++    "node_modules/escape-html": {
++      "version": "1.0.3",
++      "resolved": "https://registry.npmjs.org/escape-html/-/escape-html-1.0.3.tgz",
++      "integrity": "sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow==",
++      "license": "MIT"
++    },
++    "node_modules/etag": {
++      "version": "1.8.1",
++      "resolved": "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz",
++      "integrity": "sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.6"
++      }
++    },
++    "node_modules/eventsource": {
++      "version": "3.0.7",
++      "resolved": "https://registry.npmjs.org/eventsource/-/eventsource-3.0.7.tgz",
++      "integrity": "sha512-CRT1WTyuQoD771GW56XEZFQ/ZoSfWid1alKGDYMmkt2yl8UXrVR4pspqWNEcqKvVIzg6PAltWjxcSSPrboA4iA==",
++      "license": "MIT",
++      "dependencies": {
++        "eventsource-parser": "^3.0.1"
++      },
++      "engines": {
++        "node": ">=18.0.0"
++      }
++    },
++    "node_modules/eventsource-parser": {
++      "version": "3.1.1",
++      "resolved": "https://registry.npmjs.org/eventsource-parser/-/eventsource-parser-3.1.1.tgz",
++      "integrity": "sha512-EKN1vKAMcZ8MlYMpaNuxN6R9yakzH6uajHcHVTqWJzvu5pWw9DyhbP35HH8MVBQ+dZjAfDxk+A8NiR9KWaXiyQ==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=18.0.0"
++      }
++    },
++    "node_modules/express": {
++      "version": "5.2.1",
++      "resolved": "https://registry.npmjs.org/express/-/express-5.2.1.tgz",
++      "integrity": "sha512-hIS4idWWai69NezIdRt2xFVofaF4j+6INOpJlVOLDO8zXGpUVEVzIYk12UUi2JzjEzWL3IOAxcTubgz9Po0yXw==",
++      "license": "MIT",
++      "dependencies": {
++        "accepts": "^2.0.0",
++        "body-parser": "^2.2.1",
++        "content-disposition": "^1.0.0",
++        "content-type": "^1.0.5",
++        "cookie": "^0.7.1",
++        "cookie-signature": "^1.2.1",
++        "debug": "^4.4.0",
++        "depd": "^2.0.0",
++        "encodeurl": "^2.0.0",
++        "escape-html": "^1.0.3",
++        "etag": "^1.8.1",
++        "finalhandler": "^2.1.0",
++        "fresh": "^2.0.0",
++        "http-errors": "^2.0.0",
++        "merge-descriptors": "^2.0.0",
++        "mime-types": "^3.0.0",
++        "on-finished": "^2.4.1",
++        "once": "^1.4.0",
++        "parseurl": "^1.3.3",
++        "proxy-addr": "^2.0.7",
++        "qs": "^6.14.0",
++        "range-parser": "^1.2.1",
++        "router": "^2.2.0",
++        "send": "^1.1.0",
++        "serve-static": "^2.2.0",
++        "statuses": "^2.0.1",
++        "type-is": "^2.0.1",
++        "vary": "^1.1.2"
++      },
++      "engines": {
++        "node": ">= 18"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/express-rate-limit": {
++      "version": "8.6.2",
++      "resolved": "https://registry.npmjs.org/express-rate-limit/-/express-rate-limit-8.6.2.tgz",
++      "integrity": "sha512-YH4ru+eOJxQABscKFfRCy9R7x9QFGdezclVMwwgFFndzS2Xnm0uo6B0ABZsLhcpeptGv2qvuJVWlQr9gQZoC3A==",
++      "license": "MIT",
++      "dependencies": {
++        "debug": "^4.4.3",
++        "ip-address": "^10.2.0"
++      },
++      "engines": {
++        "node": ">= 16"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/express-rate-limit"
++      },
++      "peerDependencies": {
++        "express": ">= 4.11"
++      }
++    },
++    "node_modules/fast-deep-equal": {
++      "version": "3.1.3",
++      "resolved": "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz",
++      "integrity": "sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==",
++      "license": "MIT"
++    },
++    "node_modules/fast-uri": {
++      "version": "3.1.5",
++      "resolved": "https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.5.tgz",
++      "integrity": "sha512-gHwA1O9LDIcKunMKhObS/HimwtehO1nPUECKAu5TpKgaO19fcWEl4bliWe1jWxVFvIXztJjjQ4L8XQ1EU9f7Jw==",
++      "funding": [
++        {
++          "type": "github",
++          "url": "https://github.com/sponsors/fastify"
++        },
++        {
++          "type": "opencollective",
++          "url": "https://opencollective.com/fastify"
++        }
++      ],
++      "license": "BSD-3-Clause"
++    },
++    "node_modules/finalhandler": {
++      "version": "2.1.1",
++      "resolved": "https://registry.npmjs.org/finalhandler/-/finalhandler-2.1.1.tgz",
++      "integrity": "sha512-S8KoZgRZN+a5rNwqTxlZZePjT/4cnm0ROV70LedRHZ0p8u9fRID0hJUZQpkKLzro8LfmC8sx23bY6tVNxv8pQA==",
++      "license": "MIT",
++      "dependencies": {
++        "debug": "^4.4.0",
++        "encodeurl": "^2.0.0",
++        "escape-html": "^1.0.3",
++        "on-finished": "^2.4.1",
++        "parseurl": "^1.3.3",
++        "statuses": "^2.0.1"
++      },
++      "engines": {
++        "node": ">= 18.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/forwarded": {
++      "version": "0.2.0",
++      "resolved": "https://registry.npmjs.org/forwarded/-/forwarded-0.2.0.tgz",
++      "integrity": "sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.6"
++      }
++    },
++    "node_modules/fresh": {
++      "version": "2.0.0",
++      "resolved": "https://registry.npmjs.org/fresh/-/fresh-2.0.0.tgz",
++      "integrity": "sha512-Rx/WycZ60HOaqLKAi6cHRKKI7zxWbJ31MhntmtwMoaTeF7XFH9hhBp8vITaMidfljRQ6eYWCKkaTK+ykVJHP2A==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.8"
++      }
++    },
++    "node_modules/function-bind": {
++      "version": "1.1.2",
++      "resolved": "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz",
++      "integrity": "sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==",
++      "license": "MIT",
++      "funding": {
++        "url": "https://github.com/sponsors/ljharb"
++      }
++    },
++    "node_modules/get-intrinsic": {
++      "version": "1.3.0",
++      "resolved": "https://registry.npmjs.org/get-intrinsic/-/get-intrinsic-1.3.0.tgz",
++      "integrity": "sha512-9fSjSaos/fRIVIp+xSJlE6lfwhES7LNtKaCBIamHsjr2na1BiABJPo0mOjjz8GJDURarmCPGqaiVg5mfjb98CQ==",
++      "license": "MIT",
++      "dependencies": {
++        "call-bind-apply-helpers": "^1.0.2",
++        "es-define-property": "^1.0.1",
++        "es-errors": "^1.3.0",
++        "es-object-atoms": "^1.1.1",
++        "function-bind": "^1.1.2",
++        "get-proto": "^1.0.1",
++        "gopd": "^1.2.0",
++        "has-symbols": "^1.1.0",
++        "hasown": "^2.0.2",
++        "math-intrinsics": "^1.1.0"
++      },
++      "engines": {
++        "node": ">= 0.4"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/ljharb"
++      }
++    },
++    "node_modules/get-proto": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/get-proto/-/get-proto-1.0.1.tgz",
++      "integrity": "sha512-sTSfBjoXBp89JvIKIefqw7U2CCebsc74kiY6awiGogKtoSGbgjYE/G/+l9sF3MWFPNc9IcoOC4ODfKHfxFmp0g==",
++      "license": "MIT",
++      "dependencies": {
++        "dunder-proto": "^1.0.1",
++        "es-object-atoms": "^1.0.0"
++      },
++      "engines": {
++        "node": ">= 0.4"
++      }
++    },
++    "node_modules/gopd": {
++      "version": "1.2.0",
++      "resolved": "https://registry.npmjs.org/gopd/-/gopd-1.2.0.tgz",
++      "integrity": "sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.4"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/ljharb"
++      }
++    },
++    "node_modules/has-symbols": {
++      "version": "1.1.0",
++      "resolved": "https://registry.npmjs.org/has-symbols/-/has-symbols-1.1.0.tgz",
++      "integrity": "sha512-1cDNdwJ2Jaohmb3sg4OmKaMBwuC48sYni5HUw2DvsC8LjGTLK9h+eb1X6RyuOHe4hT0ULCW68iomhjUoKUqlPQ==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.4"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/ljharb"
++      }
++    },
++    "node_modules/hasown": {
++      "version": "2.0.4",
++      "resolved": "https://registry.npmjs.org/hasown/-/hasown-2.0.4.tgz",
++      "integrity": "sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==",
++      "license": "MIT",
++      "dependencies": {
++        "function-bind": "^1.1.2"
++      },
++      "engines": {
++        "node": ">= 0.4"
++      }
++    },
++    "node_modules/hono": {
++      "version": "4.13.2",
++      "resolved": "https://registry.npmjs.org/hono/-/hono-4.13.2.tgz",
++      "integrity": "sha512-JydRilDRkYBQMt9qR9U92mXxmbGqsqSn/IKOrh4e7/gEbn+0zSr8igTu0obwJoNGN4sez28DIql7FBHWydoJpA==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=16.9.0"
++      }
++    },
++    "node_modules/http-errors": {
++      "version": "2.0.1",
++      "resolved": "https://registry.npmjs.org/http-errors/-/http-errors-2.0.1.tgz",
++      "integrity": "sha512-4FbRdAX+bSdmo4AUFuS0WNiPz8NgFt+r8ThgNWmlrjQjt1Q7ZR9+zTlce2859x4KSXrwIsaeTqDoKQmtP8pLmQ==",
++      "license": "MIT",
++      "dependencies": {
++        "depd": "~2.0.0",
++        "inherits": "~2.0.4",
++        "setprototypeof": "~1.2.0",
++        "statuses": "~2.0.2",
++        "toidentifier": "~1.0.1"
++      },
++      "engines": {
++        "node": ">= 0.8"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/iconv-lite": {
++      "version": "0.7.3",
++      "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.7.3.tgz",
++      "integrity": "sha512-IKXpvIzjnC9XTAUbVBcMfGS0EPaIXtW6v+zr+RRp+hqULEpo0owZax6wyRwPOJbWbzjYspQwusTsfVr0ifh4uQ==",
++      "license": "MIT",
++      "dependencies": {
++        "safer-buffer": ">= 2.1.2 < 3.0.0"
++      },
++      "engines": {
++        "node": ">=0.10.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/inherits": {
++      "version": "2.0.4",
++      "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.4.tgz",
++      "integrity": "sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==",
++      "license": "ISC"
++    },
++    "node_modules/ip-address": {
++      "version": "10.5.0",
++      "resolved": "https://registry.npmjs.org/ip-address/-/ip-address-10.5.0.tgz",
++      "integrity": "sha512-R5SnVLJmgYYvf2F2ZgwSBnelz5G4q5AxIC277GDfUaNbrZKNANcBC7RHqYYePlszf4kBolVkJauG0ZjHHFh55g==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 12"
++      }
++    },
++    "node_modules/ipaddr.js": {
++      "version": "1.9.1",
++      "resolved": "https://registry.npmjs.org/ipaddr.js/-/ipaddr.js-1.9.1.tgz",
++      "integrity": "sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.10"
++      }
++    },
++    "node_modules/is-promise": {
++      "version": "4.0.0",
++      "resolved": "https://registry.npmjs.org/is-promise/-/is-promise-4.0.0.tgz",
++      "integrity": "sha512-hvpoI6korhJMnej285dSg6nu1+e6uxs7zG3BYAm5byqDsgJNWwxzM6z6iZiAgQR4TJ30JmBTOwqZUw3WlyH3AQ==",
++      "license": "MIT"
++    },
++    "node_modules/isexe": {
++      "version": "2.0.0",
++      "resolved": "https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz",
++      "integrity": "sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==",
++      "license": "ISC"
++    },
++    "node_modules/jose": {
++      "version": "6.2.9",
++      "resolved": "https://registry.npmjs.org/jose/-/jose-6.2.9.tgz",
++      "integrity": "sha512-XrchZOFZUl/T3vTwRe8XK+cJrGtMF4th1ARnDfwbBXFKThGhlsxEE4Zu03AD/bjJSt/9jT/mxrOCkJWOg77aPA==",
++      "license": "MIT",
++      "funding": {
++        "url": "https://github.com/sponsors/panva"
++      }
++    },
++    "node_modules/json-schema-traverse": {
++      "version": "1.0.0",
++      "resolved": "https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-1.0.0.tgz",
++      "integrity": "sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==",
++      "license": "MIT"
++    },
++    "node_modules/json-schema-typed": {
++      "version": "8.0.2",
++      "resolved": "https://registry.npmjs.org/json-schema-typed/-/json-schema-typed-8.0.2.tgz",
++      "integrity": "sha512-fQhoXdcvc3V28x7C7BMs4P5+kNlgUURe2jmUT1T//oBRMDrqy1QPelJimwZGo7Hg9VPV3EQV5Bnq4hbFy2vetA==",
++      "license": "BSD-2-Clause"
++    },
++    "node_modules/math-intrinsics": {
++      "version": "1.1.0",
++      "resolved": "https://registry.npmjs.org/math-intrinsics/-/math-intrinsics-1.1.0.tgz",
++      "integrity": "sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.4"
++      }
++    },
++    "node_modules/media-typer": {
++      "version": "1.1.1",
++      "resolved": "https://registry.npmjs.org/media-typer/-/media-typer-1.1.1.tgz",
++      "integrity": "sha512-yz3xRaG20c6/BOzvYoDaGtPmGscs7YivItZEEqe6GbwNfHuxu9YNmvnEkMzKldAGY4/80pRcQRZSEnhquk9XuQ==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.8"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/merge-descriptors": {
++      "version": "2.0.0",
++      "resolved": "https://registry.npmjs.org/merge-descriptors/-/merge-descriptors-2.0.0.tgz",
++      "integrity": "sha512-Snk314V5ayFLhp3fkUREub6WtjBfPdCPY1Ln8/8munuLuiYhsABgBVWsozAG+MWMbVEvcdcpbi9R7ww22l9Q3g==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=18"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/sindresorhus"
++      }
++    },
++    "node_modules/mime-db": {
++      "version": "1.54.0",
++      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.54.0.tgz",
++      "integrity": "sha512-aU5EJuIN2WDemCcAp2vFBfp/m4EAhWJnUNSSw0ixs7/kXbd6Pg64EmwJkNdFhB8aWt1sH2CTXrLxo/iAGV3oPQ==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.6"
++      }
++    },
++    "node_modules/mime-types": {
++      "version": "3.0.2",
++      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-3.0.2.tgz",
++      "integrity": "sha512-Lbgzdk0h4juoQ9fCKXW4by0UJqj+nOOrI9MJ1sSj4nI8aI2eo1qmvQEie4VD1glsS250n15LsWsYtCugiStS5A==",
++      "license": "MIT",
++      "dependencies": {
++        "mime-db": "^1.54.0"
++      },
++      "engines": {
++        "node": ">=18"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/ms": {
++      "version": "2.1.3",
++      "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz",
++      "integrity": "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==",
++      "license": "MIT"
++    },
++    "node_modules/negotiator": {
++      "version": "1.0.0",
++      "resolved": "https://registry.npmjs.org/negotiator/-/negotiator-1.0.0.tgz",
++      "integrity": "sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.6"
++      }
++    },
++    "node_modules/object-assign": {
++      "version": "4.1.1",
++      "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz",
++      "integrity": "sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=0.10.0"
++      }
++    },
++    "node_modules/object-inspect": {
++      "version": "1.13.4",
++      "resolved": "https://registry.npmjs.org/object-inspect/-/object-inspect-1.13.4.tgz",
++      "integrity": "sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.4"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/ljharb"
++      }
++    },
++    "node_modules/on-finished": {
++      "version": "2.4.1",
++      "resolved": "https://registry.npmjs.org/on-finished/-/on-finished-2.4.1.tgz",
++      "integrity": "sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==",
++      "license": "MIT",
++      "dependencies": {
++        "ee-first": "1.1.1"
++      },
++      "engines": {
++        "node": ">= 0.8"
++      }
++    },
++    "node_modules/once": {
++      "version": "1.4.0",
++      "resolved": "https://registry.npmjs.org/once/-/once-1.4.0.tgz",
++      "integrity": "sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==",
++      "license": "ISC",
++      "dependencies": {
++        "wrappy": "1"
++      }
++    },
++    "node_modules/parseurl": {
++      "version": "1.3.3",
++      "resolved": "https://registry.npmjs.org/parseurl/-/parseurl-1.3.3.tgz",
++      "integrity": "sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.8"
++      }
++    },
++    "node_modules/path-key": {
++      "version": "3.1.1",
++      "resolved": "https://registry.npmjs.org/path-key/-/path-key-3.1.1.tgz",
++      "integrity": "sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=8"
++      }
++    },
++    "node_modules/path-to-regexp": {
++      "version": "8.4.2",
++      "resolved": "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-8.4.2.tgz",
++      "integrity": "sha512-qRcuIdP69NPm4qbACK+aDogI5CBDMi1jKe0ry5rSQJz8JVLsC7jV8XpiJjGRLLol3N+R5ihGYcrPLTno6pAdBA==",
++      "license": "MIT",
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/pkce-challenge": {
++      "version": "5.0.1",
++      "resolved": "https://registry.npmjs.org/pkce-challenge/-/pkce-challenge-5.0.1.tgz",
++      "integrity": "sha512-wQ0b/W4Fr01qtpHlqSqspcj3EhBvimsdh0KlHhH8HRZnMsEa0ea2fTULOXOS9ccQr3om+GcGRk4e+isrZWV8qQ==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=16.20.0"
++      }
++    },
++    "node_modules/proxy-addr": {
++      "version": "2.0.7",
++      "resolved": "https://registry.npmjs.org/proxy-addr/-/proxy-addr-2.0.7.tgz",
++      "integrity": "sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==",
++      "license": "MIT",
++      "dependencies": {
++        "forwarded": "0.2.0",
++        "ipaddr.js": "1.9.1"
++      },
++      "engines": {
++        "node": ">= 0.10"
++      }
++    },
++    "node_modules/qs": {
++      "version": "6.15.3",
++      "resolved": "https://registry.npmjs.org/qs/-/qs-6.15.3.tgz",
++      "integrity": "sha512-O9gl3zCl5h5blw1KGUzQKhA5oUXSl8rwUIM5o0S3nCXMliSvy5Dzx7/DJcI+SwgICv+IneSZwhBh1oSyEHA71A==",
++      "license": "BSD-3-Clause",
++      "dependencies": {
++        "es-define-property": "^1.0.1",
++        "side-channel": "^1.1.1"
++      },
++      "engines": {
++        "node": ">=0.6"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/ljharb"
++      }
++    },
++    "node_modules/range-parser": {
++      "version": "1.3.0",
++      "resolved": "https://registry.npmjs.org/range-parser/-/range-parser-1.3.0.tgz",
++      "integrity": "sha512-hek2mFQpPuI4E1BBKrSto+BU3e3x4xuarsbiwr3+lf7p44juvFMV0XFWQAP3xUyqXA4RrXLIoaSUGbSt056ZMw==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.6"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/raw-body": {
++      "version": "3.0.2",
++      "resolved": "https://registry.npmjs.org/raw-body/-/raw-body-3.0.2.tgz",
++      "integrity": "sha512-K5zQjDllxWkf7Z5xJdV0/B0WTNqx6vxG70zJE4N0kBs4LovmEYWJzQGxC9bS9RAKu3bgM40lrd5zoLJ12MQ5BA==",
++      "license": "MIT",
++      "dependencies": {
++        "bytes": "~3.1.2",
++        "http-errors": "~2.0.1",
++        "iconv-lite": "~0.7.0",
++        "unpipe": "~1.0.0"
++      },
++      "engines": {
++        "node": ">= 0.10"
++      }
++    },
++    "node_modules/require-from-string": {
++      "version": "2.0.2",
++      "resolved": "https://registry.npmjs.org/require-from-string/-/require-from-string-2.0.2.tgz",
++      "integrity": "sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=0.10.0"
++      }
++    },
++    "node_modules/router": {
++      "version": "2.2.0",
++      "resolved": "https://registry.npmjs.org/router/-/router-2.2.0.tgz",
++      "integrity": "sha512-nLTrUKm2UyiL7rlhapu/Zl45FwNgkZGaCpZbIHajDYgwlJCOzLSk+cIPAnsEqV955GjILJnKbdQC1nVPz+gAYQ==",
++      "license": "MIT",
++      "dependencies": {
++        "debug": "^4.4.0",
++        "depd": "^2.0.0",
++        "is-promise": "^4.0.0",
++        "parseurl": "^1.3.3",
++        "path-to-regexp": "^8.0.0"
++      },
++      "engines": {
++        "node": ">= 18"
++      }
++    },
++    "node_modules/safer-buffer": {
++      "version": "2.1.2",
++      "resolved": "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz",
++      "integrity": "sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==",
++      "license": "MIT"
++    },
++    "node_modules/send": {
++      "version": "1.2.1",
++      "resolved": "https://registry.npmjs.org/send/-/send-1.2.1.tgz",
++      "integrity": "sha512-1gnZf7DFcoIcajTjTwjwuDjzuz4PPcY2StKPlsGAQ1+YH20IRVrBaXSWmdjowTJ6u8Rc01PoYOGHXfP1mYcZNQ==",
++      "license": "MIT",
++      "dependencies": {
++        "debug": "^4.4.3",
++        "encodeurl": "^2.0.0",
++        "escape-html": "^1.0.3",
++        "etag": "^1.8.1",
++        "fresh": "^2.0.0",
++        "http-errors": "^2.0.1",
++        "mime-types": "^3.0.2",
++        "ms": "^2.1.3",
++        "on-finished": "^2.4.1",
++        "range-parser": "^1.2.1",
++        "statuses": "^2.0.2"
++      },
++      "engines": {
++        "node": ">= 18"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/serve-static": {
++      "version": "2.2.1",
++      "resolved": "https://registry.npmjs.org/serve-static/-/serve-static-2.2.1.tgz",
++      "integrity": "sha512-xRXBn0pPqQTVQiC8wyQrKs2MOlX24zQ0POGaj0kultvoOCstBQM5yvOhAVSUwOMjQtTvsPWoNCHfPGwaaQJhTw==",
++      "license": "MIT",
++      "dependencies": {
++        "encodeurl": "^2.0.0",
++        "escape-html": "^1.0.3",
++        "parseurl": "^1.3.3",
++        "send": "^1.2.0"
++      },
++      "engines": {
++        "node": ">= 18"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/setprototypeof": {
++      "version": "1.2.0",
++      "resolved": "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.2.0.tgz",
++      "integrity": "sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==",
++      "license": "ISC"
++    },
++    "node_modules/shebang-command": {
++      "version": "2.0.0",
++      "resolved": "https://registry.npmjs.org/shebang-command/-/shebang-command-2.0.0.tgz",
++      "integrity": "sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==",
++      "license": "MIT",
++      "dependencies": {
++        "shebang-regex": "^3.0.0"
++      },
++      "engines": {
++        "node": ">=8"
++      }
++    },
++    "node_modules/shebang-regex": {
++      "version": "3.0.0",
++      "resolved": "https://registry.npmjs.org/shebang-regex/-/shebang-regex-3.0.0.tgz",
++      "integrity": "sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=8"
++      }
++    },
++    "node_modules/side-channel": {
++      "version": "1.1.1",
++      "resolved": "https://registry.npmjs.org/side-channel/-/side-channel-1.1.1.tgz",
++      "integrity": "sha512-6x6dK6zJdpTzF4sQeNYxwtvBzf6Eg4GtlesS94HOvTudUeyK2WXAaIfmDgsyslYrRBeFIlsi54AYsFGUuhmvrQ==",
++      "license": "MIT",
++      "dependencies": {
++        "es-errors": "^1.3.0",
++        "object-inspect": "^1.13.4",
++        "side-channel-list": "^1.0.1",
++        "side-channel-map": "^1.0.1",
++        "side-channel-weakmap": "^1.0.2"
++      },
++      "engines": {
++        "node": ">= 0.4"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/ljharb"
++      }
++    },
++    "node_modules/side-channel-list": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/side-channel-list/-/side-channel-list-1.0.1.tgz",
++      "integrity": "sha512-mjn/0bi/oUURjc5Xl7IaWi/OJJJumuoJFQJfDDyO46+hBWsfaVM65TBHq2eoZBhzl9EchxOijpkbRC8SVBQU0w==",
++      "license": "MIT",
++      "dependencies": {
++        "es-errors": "^1.3.0",
++        "object-inspect": "^1.13.4"
++      },
++      "engines": {
++        "node": ">= 0.4"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/ljharb"
++      }
++    },
++    "node_modules/side-channel-map": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/side-channel-map/-/side-channel-map-1.0.1.tgz",
++      "integrity": "sha512-VCjCNfgMsby3tTdo02nbjtM/ewra6jPHmpThenkTYh8pG9ucZ/1P8So4u4FGBek/BjpOVsDCMoLA/iuBKIFXRA==",
++      "license": "MIT",
++      "dependencies": {
++        "call-bound": "^1.0.2",
++        "es-errors": "^1.3.0",
++        "get-intrinsic": "^1.2.5",
++        "object-inspect": "^1.13.3"
++      },
++      "engines": {
++        "node": ">= 0.4"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/ljharb"
++      }
++    },
++    "node_modules/side-channel-weakmap": {
++      "version": "1.0.2",
++      "resolved": "https://registry.npmjs.org/side-channel-weakmap/-/side-channel-weakmap-1.0.2.tgz",
++      "integrity": "sha512-WPS/HvHQTYnHisLo9McqBHOJk2FkHO/tlpvldyrnem4aeQp4hai3gythswg6p01oSoTl58rcpiFAjF2br2Ak2A==",
++      "license": "MIT",
++      "dependencies": {
++        "call-bound": "^1.0.2",
++        "es-errors": "^1.3.0",
++        "get-intrinsic": "^1.2.5",
++        "object-inspect": "^1.13.3",
++        "side-channel-map": "^1.0.1"
++      },
++      "engines": {
++        "node": ">= 0.4"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/ljharb"
++      }
++    },
++    "node_modules/statuses": {
++      "version": "2.0.2",
++      "resolved": "https://registry.npmjs.org/statuses/-/statuses-2.0.2.tgz",
++      "integrity": "sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.8"
++      }
++    },
++    "node_modules/toidentifier": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.1.tgz",
++      "integrity": "sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=0.6"
++      }
++    },
++    "node_modules/type-is": {
++      "version": "2.1.0",
++      "resolved": "https://registry.npmjs.org/type-is/-/type-is-2.1.0.tgz",
++      "integrity": "sha512-faYHw0anBbc/kWF3zFTEnxSFOAGUX9GFbOBthvDdLsIlEoWOFOtS0zgCiQYwIskL9iGXZL3kAXD8OoZ4GmMATA==",
++      "license": "MIT",
++      "dependencies": {
++        "content-type": "^2.0.0",
++        "media-typer": "^1.1.0",
++        "mime-types": "^3.0.0"
++      },
++      "engines": {
++        "node": ">= 18"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/type-is/node_modules/content-type": {
++      "version": "2.1.0",
++      "resolved": "https://registry.npmjs.org/content-type/-/content-type-2.1.0.tgz",
++      "integrity": "sha512-mj7UPXE0jaqaOsukNZRUEfEi2AcL7C/vwmwcHV0O97eO1E1pxBZuyjlZrx5seTaNBg1U6+o35wpa35Qfcc+7ag==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=18"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/express"
++      }
++    },
++    "node_modules/unpipe": {
++      "version": "1.0.0",
++      "resolved": "https://registry.npmjs.org/unpipe/-/unpipe-1.0.0.tgz",
++      "integrity": "sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.8"
++      }
++    },
++    "node_modules/vary": {
++      "version": "1.1.2",
++      "resolved": "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz",
++      "integrity": "sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.8"
++      }
++    },
++    "node_modules/which": {
++      "version": "2.0.2",
++      "resolved": "https://registry.npmjs.org/which/-/which-2.0.2.tgz",
++      "integrity": "sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==",
++      "license": "ISC",
++      "dependencies": {
++        "isexe": "^2.0.0"
++      },
++      "bin": {
++        "node-which": "bin/node-which"
++      },
++      "engines": {
++        "node": ">= 8"
++      }
++    },
++    "node_modules/wrappy": {
++      "version": "1.0.2",
++      "resolved": "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz",
++      "integrity": "sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==",
++      "license": "ISC"
++    },
++    "node_modules/zod": {
++      "version": "4.4.3",
++      "resolved": "https://registry.npmjs.org/zod/-/zod-4.4.3.tgz",
++      "integrity": "sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==",
++      "license": "MIT",
++      "funding": {
++        "url": "https://github.com/sponsors/colinhacks"
++      }
++    },
++    "node_modules/zod-to-json-schema": {
++      "version": "3.25.2",
++      "resolved": "https://registry.npmjs.org/zod-to-json-schema/-/zod-to-json-schema-3.25.2.tgz",
++      "integrity": "sha512-O/PgfnpT1xKSDeQYSCfRI5Gy3hPf91mKVDuYLUHZJMiDFptvP41MSnWofm8dnCm0256ZNfZIM7DSzuSMAFnjHA==",
++      "license": "ISC",
++      "peerDependencies": {
++        "zod": "^3.25.28 || ^4"
++      }
++    }
++  }
++}
+diff --git a/plugins/dsh-codex-bridge/package.json b/plugins/dsh-codex-bridge/package.json
+new file mode 100644
+index 0000000..9370a08
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/package.json
+@@ -0,0 +1,38 @@
++{
++  "name": "dsh-codex-bridge",
++  "version": "0.1.0",
++  "description": "Bidirectional DSH/Codex bridge with prompt tracing and hard loop prevention.",
++  "type": "module",
++  "main": "./lib/dsh-plugin.js",
++  "exports": {
++    ".": "./lib/dsh-plugin.js",
++    "./loop-guard": "./lib/loop-guard.js"
++  },
++  "bin": {
++    "dsh-control-mcp": "./lib/mcp-server.js"
++  },
++  "files": [
++    "lib/",
++    "scripts/",
++    "test/",
++    "cordis.patch.yml",
++    "README.md"
++  ],
++  "scripts": {
++    "test": "node --test",
++    "check": "node --check lib/dsh-plugin.js && node --check lib/mcp-server.js && node --test"
++  },
++  "engines": {
++    "node": ">=22"
++  },
++  "dsh": {
++    "bundle": {
++      "patch": "./cordis.patch.yml"
++    }
++  },
++  "dependencies": {
++    "@modelcontextprotocol/sdk": "^1.30.0",
++    "zod": "^4.4.3"
++  },
++  "license": "MIT"
++}
+diff --git a/plugins/dsh-codex-bridge/scripts/verify.mjs b/plugins/dsh-codex-bridge/scripts/verify.mjs
+new file mode 100644
+index 0000000..3c12afe
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/scripts/verify.mjs
+@@ -0,0 +1,70 @@
++#!/usr/bin/env node
++import { Client } from "@modelcontextprotocol/sdk/client/index.js";
++import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
++import { fileURLToPath } from "node:url";
++import { dirname, join, resolve } from "node:path";
++import { assertMcpEntryAllowed } from "../lib/loop-guard.js";
++
++const here = dirname(fileURLToPath(import.meta.url));
++const packageRoot = resolve(here, "..");
++const workspace = resolve(packageRoot, "..", "..");
++const serverPath = join(packageRoot, "lib", "mcp-server.js");
++const node = process.execPath;
++
++const client = new Client({ name: "dsh-codex-bridge-verifier", version: "0.1.0" });
++const transport = new StdioClientTransport({ command: node, args: [serverPath], cwd: workspace });
++await client.connect(transport);
++
++async function call(name, args = {}) {
++  const response = await client.callTool({ name, arguments: args }, undefined, { timeout: 60000 });
++  return JSON.parse(response.content[0].text);
++}
++
++try {
++  const tools = await client.listTools();
++  const status = await call("dsh_instance_status");
++  const plugins = await call("dsh_plugin_list");
++  const traces = await call("dsh_prompt_trace_list", { limit: 50 });
++  const candidates = (traces.value || []).filter((entry) => entry.provider === "opencode-go").slice(0, 20);
++  const loadedPrompts = [];
++  for (const candidate of candidates) loadedPrompts.push(await call("dsh_prompt_trace_get", { id: candidate.id }));
++  const prompt = loadedPrompts
++    .filter((entry) => entry.ok)
++    .sort((a, b) => (b.value.request?.tools?.length || 0) - (a.value.request?.tools?.length || 0))[0] || null;
++  const sessionId = prompt?.value?.sessionId;
++  const conversation = sessionId ? await call("dsh_conversation_get", { sessionId }) : null;
++  const dshOriginGuard = assertMcpEntryAllowed({ DSH_CODEX_BRIDGE_ORIGIN: "dsh" });
++  const pluginItems = plugins.value?.plugins || [];
++  const summary = {
++    ok: Boolean(
++      status.ok && status.running && status.bridge?.ok &&
++      tools.tools.length === 12 &&
++      pluginItems.some((entry) => entry.name === "dsh-codex-bridge") &&
++      prompt?.ok && prompt.value?.request?.system && Array.isArray(prompt.value?.request?.messages) &&
++      dshOriginGuard.ok === false && dshOriginGuard.error === "loop_blocked"
++    ),
++    mcp: { toolCount: tools.tools.length, toolNames: tools.tools.map((entry) => entry.name) },
++    instance: status,
++    plugin: { count: pluginItems.length, bridgeInstalled: pluginItems.some((entry) => entry.name === "dsh-codex-bridge") },
++    prompt: prompt?.ok ? {
++      id: prompt.value.id,
++      sessionId: prompt.value.sessionId,
++      traceId: prompt.value.envelope?.traceId,
++      provider: prompt.value.request.provider,
++      model: prompt.value.request.model,
++      systemChars: prompt.value.request.system?.length || 0,
++      messageCount: prompt.value.request.messages?.length || 0,
++      toolCount: prompt.value.request.tools?.length || 0,
++    } : null,
++    conversation: conversation?.ok ? {
++      sessionId,
++      assistantText: conversation.value.assistantText,
++      lastSeq: conversation.value.lastSeq,
++    } : null,
++    loopGuard: dshOriginGuard,
++  };
++  console.log(JSON.stringify(summary, null, 2));
++  if (!summary.ok) process.exitCode = 1;
++} finally {
++  await client.close();
++}
+diff --git a/plugins/dsh-codex-bridge/test/loop-guard.test.js b/plugins/dsh-codex-bridge/test/loop-guard.test.js
+new file mode 100644
+index 0000000..51db6f1
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/test/loop-guard.test.js
+@@ -0,0 +1,44 @@
++import test from "node:test";
++import assert from "node:assert/strict";
++import { assertMcpEntryAllowed, createEnvelope, enterBridge, MAX_BRIDGE_HOPS, prepareDshToCodex } from "../lib/loop-guard.js";
++
++test("Codex can enter DSH exactly once", () => {
++  const route = enterBridge(createEnvelope("codex", "trace-a"), "codex", "dsh");
++  assert.equal(route.ok, true);
++  assert.equal(route.envelope.hop, 1);
++  assert.deepEqual(route.envelope.visited, ["codex", "dsh"]);
++});
++
++test("DSH cannot call Codex after a Codex-originated entry", () => {
++  const first = enterBridge(createEnvelope("codex", "trace-b"), "codex", "dsh");
++  const second = enterBridge(first.envelope, "dsh", "codex");
++  assert.deepEqual(second, { ok: false, error: "loop_blocked", envelope: first.envelope });
++});
++
++test("DSH-originated Codex process cannot re-enter MCP", () => {
++  const route = assertMcpEntryAllowed({ DSH_CODEX_BRIDGE_ORIGIN: "dsh" }, createEnvelope("codex"));
++  assert.equal(route.ok, false);
++  assert.equal(route.error, "loop_blocked");
++});
++
++test("MCP passes a fresh envelope to the DSH boundary without pre-consuming a hop", () => {
++  const route = assertMcpEntryAllowed({}, createEnvelope("codex", "trace-fresh"));
++  assert.equal(route.ok, true);
++  assert.equal(route.envelope.hop, 0);
++  assert.deepEqual(route.envelope.visited, ["codex"]);
++});
++
++test("DSH research tool rejects an envelope that already visited Codex", () => {
++  const inbound = enterBridge(createEnvelope("codex", "trace-tool"), "codex", "dsh").envelope;
++  const route = prepareDshToCodex(inbound);
++  assert.equal(route.ok, false);
++  assert.equal(route.error, "loop_blocked");
++});
++
++test("hop limit is finite and two", () => {
++  assert.equal(MAX_BRIDGE_HOPS, 2);
++  const envelope = { protocol: "dsh-codex-bridge/1", traceId: "trace-c", origin: "codex", hop: 2, visited: ["codex"] };
++  const route = enterBridge(envelope, "codex", "dsh");
++  assert.equal(route.ok, false);
++  assert.equal(route.error, "hop_limit");
++});
+diff --git a/plugins/dsh-codex-bridge/test/trace-store.test.js b/plugins/dsh-codex-bridge/test/trace-store.test.js
+new file mode 100644
+index 0000000..f3ab435
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/test/trace-store.test.js
+@@ -0,0 +1,26 @@
++import test from "node:test";
++import assert from "node:assert/strict";
++import { mkdtempSync, rmSync } from "node:fs";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
++import { PromptTraceStore } from "../lib/trace-store.js";
++
++test("captures complete prompt-bearing request fields", () => {
++  const root = mkdtempSync(join(tmpdir(), "dsh-trace-"));
++  try {
++    const store = new PromptTraceStore(root);
++    const saved = store.capture({
++      sessionId: "s1", provider: "p", model: "m", system: "SYS",
++      messages: [{ role: "user", content: [{ type: "text", text: "hello" }] }],
++      tools: [{ name: "t", description: "tool", parameters: { type: "object" } }],
++      reasoningEffort: "high", temperature: 0.2, maxTokens: 123, stop: ["END"],
++      signal: new AbortController().signal,
++    }, { traceId: "bridge-trace" });
++    const loaded = store.get(saved.id);
++    assert.equal(loaded.request.system, "SYS");
++    assert.equal(loaded.request.messages[0].content[0].text, "hello");
++    assert.equal(loaded.request.tools[0].name, "t");
++    assert.equal("signal" in loaded.request, false);
++    assert.equal(store.list(10, "s1")[0].id, saved.id);
++  } finally { rmSync(root, { recursive: true, force: true }); }
++});
+diff --git a/research/bridge-integration/operation1-dsh-codex-bridge/evidence/baseline-backups.json b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/baseline-backups.json
+new file mode 100644
+index 0000000..4272f77
+--- /dev/null
++++ b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/baseline-backups.json
+@@ -0,0 +1,8 @@
++{
++    "timestamp":  "20260817-205958",
++    "dshBackup":  "C:\\Users\\19739\\.dsh\\backups\\dsh-codex-bridge-20260817-205958",
++    "codexBackup":  "C:\\Users\\19739\\.codex\\backups\\dsh-codex-bridge-20260817-205958",
++    "profilePackageSha256":  "3A241EC9B52A3BF24B65DD7AC3980C5A6CF49EE613A9F7E9E3034281BBA3CA50",
++    "profileLockSha256":  "D8A76DD6B2760504FBF9A008D2FFEEEF8057AB747EAAE315D7F540D5FFF3B6E9",
++    "codexConfigSha256":  "6F80D0D5A10B7466BEACD7AC4DE589B1801EBEC2B7F45F6CD7EB1F4DC93FD5F8"
++}
+diff --git a/research/bridge-integration/operation1-dsh-codex-bridge/evidence/bridge-verification.json b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/bridge-verification.json
+new file mode 100644
+index 0000000..45cf21c
+--- /dev/null
++++ b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/bridge-verification.json
+@@ -0,0 +1,61 @@
++{
++  "ok": true,
++  "mcp": {
++    "toolCount": 12,
++    "toolNames": [
++      "dsh_instance_status",
++      "dsh_instance_start",
++      "dsh_instance_stop",
++      "dsh_instance_restart",
++      "dsh_conversation_list",
++      "dsh_conversation_get",
++      "dsh_conversation_send",
++      "dsh_prompt_trace_list",
++      "dsh_prompt_trace_get",
++      "dsh_plugin_list",
++      "dsh_plugin_plan",
++      "dsh_plugin_apply"
++    ]
++  },
++  "instance": {
++    "ok": true,
++    "running": true,
++    "baseUrl": "http://127.0.0.1:3080",
++    "ownership": "mcp-managed",
++    "pid": 33956,
++    "bridge": {
++      "ok": true,
++      "value": {
++        "version": "0.1.0",
++        "traceRoot": "C:\\Users\\19739\\.dsh\\codex-bridge\\prompt-traces",
++        "protocol": "dsh-codex-bridge/1",
++        "maxHops": 2
++      }
++    },
++    "logPath": "C:\\Users\\19739\\.dsh\\codex-bridge\\dsh-web.log"
++  },
++  "plugin": {
++    "count": 16,
++    "bridgeInstalled": true
++  },
++  "prompt": {
++    "id": "8e45542d-7797-48f0-99d0-f0640c4910e8",
++    "sessionId": "session-9b5d87f3-61df-4a60-b321-b67ef948f7d5",
++    "traceId": "f49fef8e-38de-4613-b511-6041d71c59b7",
++    "provider": "opencode-go",
++    "model": "deepseek-v4-flash",
++    "systemChars": 1818,
++    "messageCount": 2,
++    "toolCount": 6
++  },
++  "conversation": {
++    "sessionId": "session-9b5d87f3-61df-4a60-b321-b67ef948f7d5",
++    "assistantText": "BRIDGE_OK",
++    "lastSeq": 85
++  },
++  "loopGuard": {
++    "ok": false,
++    "error": "loop_blocked",
++    "detail": "DSH-originated Codex work cannot re-enter DSH."
++  }
++}
+diff --git a/research/bridge-integration/operation1-dsh-codex-bridge/evidence/codex-config-parse.txt b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/codex-config-parse.txt
+new file mode 100644
+index 0000000..8842ed9
+--- /dev/null
++++ b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/codex-config-parse.txt
+@@ -0,0 +1 @@
++{'ok': True, 'command': 'C:\\Program Files\\nodejs\\node.exe', 'args': ['E:\\deepseek_harness\\plugins\\dsh-codex-bridge\\lib\\mcp-server.js'], 'cwd': 'E:\\deepseek_harness', 'enabled': True}
+diff --git a/research/bridge-integration/operation1-dsh-codex-bridge/evidence/codex-research.json b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/codex-research.json
+new file mode 100644
+index 0000000..ce6ee67
+--- /dev/null
++++ b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/codex-research.json
+@@ -0,0 +1,23 @@
++{
++  "command": "CODEX_PREFER_AUTH_FILE=1 CS_QUERY='OpenAI Codex MCP official documentation URL' CS_MAX_SOURCES=2 CS_FRESHNESS=cached CS_MODEL=gpt-5.4-mini node codex-search.mjs",
++  "exitCode": 0,
++  "output": {
++    "ok": true,
++    "query": "OpenAI Codex MCP official documentation URL",
++    "freshness": "cached",
++    "summary": "The official OpenAI MCP documentation URL for Codex integration is https://developers.openai.com/mcp. OpenAI’s developer community post also shows this as the MCP server URL used with Codex CLI.",
++    "sources": [
++      {
++        "title": "OpenAI Developers",
++        "url": "https://developers.openai.com/mcp",
++        "snippet": "Official OpenAI MCP documentation / server endpoint for Codex integration."
++      },
++      {
++        "title": "Connect Codex to OpenAI Developer Docs via MCP",
++        "url": "https://community.openai.com/t/connect-codex-to-openai-developer-docs-via-mcp/1371352",
++        "snippet": "Shows the Codex CLI command using https://developers.openai.com/mcp."
++      }
++    ],
++    "model": "gpt-5.4-mini"
++  }
++}
+diff --git a/research/bridge-integration/operation1-dsh-codex-bridge/evidence/exit-statuses.json b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/exit-statuses.json
+new file mode 100644
+index 0000000..fa15458
+--- /dev/null
++++ b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/exit-statuses.json
+@@ -0,0 +1,9 @@
++{
++    "npmCheck":  0,
++    "restart":  0,
++    "bridgeVerify":  0,
++    "tomlParse":  0,
++    "rollbackWhatIf":  0,
++    "rollbackProbe":  0,
++    "patchApplyCheck":  0
++}
+diff --git a/research/bridge-integration/operation1-dsh-codex-bridge/evidence/modified-state.json b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/modified-state.json
+new file mode 100644
+index 0000000..8c70c13
+--- /dev/null
++++ b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/modified-state.json
+@@ -0,0 +1,60 @@
++{
++    "capturedAt":  "2026-08-17T21:09:46.3862357+08:00",
++    "files":  [
++                  {
++                      "path":  "E:\\deepseek_harness\\plugins\\dsh-codex-bridge\\package.json",
++                      "sha256":  "28321C96B67077A32C58C5656AE022F65FE3A64259044C3CBC44E3471183AAE7",
++                      "bytes":  823
++                  },
++                  {
++                      "path":  "E:\\deepseek_harness\\plugins\\dsh-codex-bridge\\package-lock.json",
++                      "sha256":  "0A0B18924686365E22CD755D079B169EED6776EAC2DAF333932454C439DC231A",
++                      "bytes":  41721
++                  },
++                  {
++                      "path":  "E:\\deepseek_harness\\plugins\\dsh-codex-bridge\\lib\\dsh-plugin.js",
++                      "sha256":  "DE4BABC0DF0B6FEC0589370C4B993C9A36033461C7C33D852DAD2B761B5DD76C",
++                      "bytes":  7852
++                  },
++                  {
++                      "path":  "E:\\deepseek_harness\\plugins\\dsh-codex-bridge\\lib\\mcp-server.js",
++                      "sha256":  "06EACBDE499561BC9FEFC4F903966098DFDA864986D10164375D68247B3E6FB7",
++                      "bytes":  6737
++                  },
++                  {
++                      "path":  "E:\\deepseek_harness\\plugins\\dsh-codex-bridge\\lib\\loop-guard.js",
++                      "sha256":  "960B42FCD0A579A61B01D0EF376092449E6FCBB7F843D4BDCBD03E1E9F193C2B",
++                      "bytes":  3099
++                  },
++                  {
++                      "path":  "C:\\Users\\19739\\.dsh\\profiles\\web\\package.json",
++                      "sha256":  "94D5078ED8C8B4BBC38A18AF39D27963488F83F1F20411DEE57B953865D840C5",
++                      "bytes":  1688
++                  },
++                  {
++                      "path":  "C:\\Users\\19739\\.dsh\\profiles\\web\\pnpm-lock.yaml",
++                      "sha256":  "7284263D22EE1EDD2CAED4922597641A8694C97ACB0C81CD131AA9B910AAA777",
++                      "bytes":  29372
++                  },
++                  {
++                      "path":  "C:\\Users\\19739\\.codex\\config.toml",
++                      "sha256":  "2A8205FAEA67D1DA1B8A3FAF274F08E5097CDF8745B3305D162C1563D8A6413F",
++                      "bytes":  6766
++                  },
++                  {
++                      "path":  "C:\\Users\\19739\\.dsh\\codex-bridge\\prompt-traces\\8e45542d-7797-48f0-99d0-f0640c4910e8.json",
++                      "sha256":  "6C384D060F7414318CFE3FABEE47BF02019D1465639EDC8E10E07B0BE08FC0C1",
++                      "bytes":  13090
++                  }
++              ],
++    "dshHttp":  200,
++    "bridge":  {
++                   "ok":  true,
++                   "value":  {
++                                 "version":  "0.1.0",
++                                 "traceRoot":  "C:\\Users\\19739\\.dsh\\codex-bridge\\prompt-traces",
++                                 "protocol":  "dsh-codex-bridge/1",
++                                 "maxHops":  2
++                             }
++               }
++}
+diff --git a/research/bridge-integration/operation1-dsh-codex-bridge/evidence/npm-check.txt b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/npm-check.txt
+new file mode 100644
+index 0000000..fcc8bde
+--- /dev/null
++++ b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/npm-check.txt
+@@ -0,0 +1,19 @@
++
++> dsh-codex-bridge@0.1.0 check
++> node --check lib/dsh-plugin.js && node --check lib/mcp-server.js && node --test
++
++✔ Codex can enter DSH exactly once (1.1139ms)
++✔ DSH cannot call Codex after a Codex-originated entry (0.2465ms)
++✔ DSH-originated Codex process cannot re-enter MCP (0.5235ms)
++✔ MCP passes a fresh envelope to the DSH boundary without pre-consuming a hop (0.1444ms)
++✔ DSH research tool rejects an envelope that already visited Codex (0.1234ms)
++✔ hop limit is finite and two (0.087ms)
++✔ captures complete prompt-bearing request fields (8.3936ms)
++ℹ tests 7
++ℹ suites 0
++ℹ pass 7
++ℹ fail 0
++ℹ cancelled 0
++ℹ skipped 0
++ℹ todo 0
++ℹ duration_ms 103.242
+diff --git a/research/bridge-integration/operation1-dsh-codex-bridge/evidence/patch-apply-check.txt b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/patch-apply-check.txt
+new file mode 100644
+index 0000000..c39cd71
+--- /dev/null
++++ b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/patch-apply-check.txt
+@@ -0,0 +1,4 @@
++COMMAND=git apply --check --whitespace=error-all
++EXIT_CODE=0
++PROBE=C:\Users\19739\AppData\Local\Temp\dsh-codex-patch-probe-8225495644c44feea1ecaededeff02ec
++RESULT=PASS
+diff --git a/research/bridge-integration/operation1-dsh-codex-bridge/evidence/restart.json b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/restart.json
+new file mode 100644
+index 0000000..b65c972
+--- /dev/null
++++ b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/restart.json
+@@ -0,0 +1,18 @@
++{
++  "ok": true,
++  "running": true,
++  "baseUrl": "http://127.0.0.1:3080",
++  "ownership": "mcp-managed",
++  "pid": 33956,
++  "bridge": {
++    "ok": true,
++    "value": {
++      "version": "0.1.0",
++      "traceRoot": "C:\\Users\\19739\\.dsh\\codex-bridge\\prompt-traces",
++      "protocol": "dsh-codex-bridge/1",
++      "maxHops": 2
++    }
++  },
++  "logPath": "C:\\Users\\19739\\.dsh\\codex-bridge\\dsh-web.log",
++  "action": "started"
++}
+diff --git a/research/bridge-integration/operation1-dsh-codex-bridge/evidence/rollback-probe.json b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/rollback-probe.json
+new file mode 100644
+index 0000000..128f0ea
+--- /dev/null
++++ b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/rollback-probe.json
+@@ -0,0 +1,9 @@
++{
++    "exitCode":  0,
++    "output":  "Restored           : True\r\nProfilePackageHash : 3A241EC9B52A3BF24B65DD7AC3980C5A6CF49EE613A9F7E9E3034281BBA3CA50\r\nProfileLockHash    : D8A76DD6B2760504FBF9A008D2FFEEEF8057AB747EAAE315D7F540D5FFF3B6E9\r\nCodexConfigHash    : 6F80D0D5A10B7466BEACD7AC4DE589B1801EBEC2B7F45F6CD7EB1F4DC93FD5F8\r\nRestartSkipped     : True\r\nInstallSkipped     : True",
++    "probePath":  "C:\\Users\\19739\\AppData\\Local\\Temp\\dsh-codex-rollback-probe-298a993d4c70425c9dfa9ff438d62105",
++    "profilePackageSha256":  "3A241EC9B52A3BF24B65DD7AC3980C5A6CF49EE613A9F7E9E3034281BBA3CA50",
++    "profileLockSha256":  "D8A76DD6B2760504FBF9A008D2FFEEEF8057AB747EAAE315D7F540D5FFF3B6E9",
++    "codexConfigSha256":  "6F80D0D5A10B7466BEACD7AC4DE589B1801EBEC2B7F45F6CD7EB1F4DC93FD5F8",
++    "hashesMatch":  true
++}
+\ No newline at end of file
+diff --git a/research/bridge-integration/operation1-dsh-codex-bridge/evidence/rollback-whatif.txt b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/rollback-whatif.txt
+new file mode 100644
+index 0000000..461e0da
+--- /dev/null
++++ b/research/bridge-integration/operation1-dsh-codex-bridge/evidence/rollback-whatif.txt
+@@ -0,0 +1,5 @@
++What if: Performing the operation "restore pre-bridge backups" on target "DSH web profile and Codex MCP config".
++
++WhatIf BackupHashes                               RestartSkipped
++------ ------------                               --------------
++  True {ProfilePackage, CodexConfig, ProfileLock} False
+diff --git a/research/bridge-integration/operation1-dsh-codex-bridge/rollback.ps1 b/research/bridge-integration/operation1-dsh-codex-bridge/rollback.ps1
+new file mode 100644
+index 0000000..220f9bd
+--- /dev/null
++++ b/research/bridge-integration/operation1-dsh-codex-bridge/rollback.ps1
+@@ -0,0 +1,80 @@
++[CmdletBinding(SupportsShouldProcess)]
++param(
++  [switch]$SkipRestart,
++  [switch]$SkipInstall,
++  [string]$ProfilePath,
++  [string]$CodexConfigPath
++)
++
++$ErrorActionPreference = 'Stop'
++$Workspace = 'E:\deepseek_harness'
++$Plugin = Join-Path $Workspace 'plugins\dsh-codex-bridge'
++$DshProfile = if ($ProfilePath) { $ProfilePath } else { 'C:\Users\19739\.dsh\profiles\web' }
++$DshBackup = 'C:\Users\19739\.dsh\backups\dsh-codex-bridge-20260817-205958'
++$CodexConfig = if ($CodexConfigPath) { $CodexConfigPath } else { 'C:\Users\19739\.codex\config.toml' }
++$CodexBackup = 'C:\Users\19739\.codex\backups\dsh-codex-bridge-20260817-205958\config.toml'
++$Node = 'C:\Program Files\nodejs\node.exe'
++$DshBin = 'C:\Users\19739\AppData\Roaming\npm\node_modules\@deepseek-ai\dsh\lib\bin.js'
++
++function Get-Sha256([string]$Path) {
++  $Bytes = [System.IO.File]::ReadAllBytes($Path)
++  $Hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash($Bytes)
++  return ([System.BitConverter]::ToString($Hash)).Replace('-', '')
++}
++
++foreach ($Path in @(
++  (Join-Path $DshBackup 'package.json'),
++  (Join-Path $DshBackup 'pnpm-lock.yaml'),
++  $CodexBackup,
++  (Join-Path $Plugin 'lib\dsh-client.js')
++)) {
++  if (-not (Test-Path -LiteralPath $Path)) { throw "Rollback input missing: $Path" }
++}
++
++$Expected = @{
++  ProfilePackage = '3A241EC9B52A3BF24B65DD7AC3980C5A6CF49EE613A9F7E9E3034281BBA3CA50'
++  ProfileLock = 'D8A76DD6B2760504FBF9A008D2FFEEEF8057AB747EAAE315D7F540D5FFF3B6E9'
++  CodexConfig = '6F80D0D5A10B7466BEACD7AC4DE589B1801EBEC2B7F45F6CD7EB1F4DC93FD5F8'
++}
++$Actual = @{
++  ProfilePackage = Get-Sha256 (Join-Path $DshBackup 'package.json')
++  ProfileLock = Get-Sha256 (Join-Path $DshBackup 'pnpm-lock.yaml')
++  CodexConfig = Get-Sha256 $CodexBackup
++}
++foreach ($Key in $Expected.Keys) {
++  if ($Expected[$Key] -ne $Actual[$Key]) { throw "Rollback backup hash mismatch: $Key" }
++}
++
++if (-not $PSCmdlet.ShouldProcess('DSH web profile and Codex MCP config', 'restore pre-bridge backups')) {
++  [pscustomobject]@{ WhatIf = $true; BackupHashes = $Actual; RestartSkipped = $SkipRestart }
++  return
++}
++
++if (-not $SkipRestart) {
++  & $Node --input-type=module -e "import('file:///$($Plugin.Replace('\','/'))/lib/dsh-client.js').then(m=>m.stopInstance({forceExternal:true})).then(x=>{console.log(JSON.stringify(x));if(!x.ok)process.exit(1)})"
++  if ($LASTEXITCODE -ne 0) { throw 'Failed to stop DSH before rollback.' }
++}
++
++Copy-Item -LiteralPath (Join-Path $DshBackup 'package.json') -Destination (Join-Path $DshProfile 'package.json') -Force
++Copy-Item -LiteralPath (Join-Path $DshBackup 'pnpm-lock.yaml') -Destination (Join-Path $DshProfile 'pnpm-lock.yaml') -Force
++Copy-Item -LiteralPath $CodexBackup -Destination $CodexConfig -Force
++
++if (-not $SkipInstall) {
++  $env:Path = 'C:\Program Files\nodejs;' + $env:Path
++  & $Node $DshBin plugin --profile web install --offline --frozen-lockfile
++  if ($LASTEXITCODE -ne 0) { throw 'DSH profile dependency restore failed.' }
++}
++
++if (-not $SkipRestart) {
++  & $Node --input-type=module -e "import('file:///$($Plugin.Replace('\','/'))/lib/dsh-client.js').then(m=>m.startInstance({timeoutMs:90000})).then(x=>{console.log(JSON.stringify(x));if(!x.ok)process.exit(1)})"
++  if ($LASTEXITCODE -ne 0) { throw 'DSH restart after rollback failed.' }
++}
++
++[pscustomobject]@{
++  Restored = $true
++  ProfilePackageHash = (Get-FileHash -LiteralPath (Join-Path $DshProfile 'package.json') -Algorithm SHA256).Hash
++  ProfileLockHash = (Get-FileHash -LiteralPath (Join-Path $DshProfile 'pnpm-lock.yaml') -Algorithm SHA256).Hash
++  CodexConfigHash = (Get-FileHash -LiteralPath $CodexConfig -Algorithm SHA256).Hash
++  RestartSkipped = $SkipRestart
++  InstallSkipped = $SkipInstall
++}
+diff --git a/research/bridge-integration/operation1-dsh-codex-bridge/verification-record.md b/research/bridge-integration/operation1-dsh-codex-bridge/verification-record.md
+new file mode 100644
+index 0000000..31359bc
+--- /dev/null
++++ b/research/bridge-integration/operation1-dsh-codex-bridge/verification-record.md
+@@ -0,0 +1,192 @@
++# DSH ↔ Codex bridge verification record
++
++Date: 2026-08-17 (Asia/Shanghai)
++Workspace: `E:\deepseek_harness`
++Branch: `codex/phase1-ui-complete-phase2-ready`
++
++## Baseline and preservation
++
++Baseline command:
++
++```powershell
++Get-FileHash C:\Users\19739\.dsh\profiles\web\package.json -Algorithm SHA256
++Get-FileHash C:\Users\19739\.dsh\profiles\web\pnpm-lock.yaml -Algorithm SHA256
++Get-FileHash C:\Users\19739\.codex\config.toml -Algorithm SHA256
++```
++
++Literal baseline output (exit 0):
++
++```text
++profile package  3A241EC9B52A3BF24B65DD7AC3980C5A6CF49EE613A9F7E9E3034281BBA3CA50
++profile lock     D8A76DD6B2760504FBF9A008D2FFEEEF8057AB747EAAE315D7F540D5FFF3B6E9
++Codex config     6F80D0D5A10B7466BEACD7AC4DE589B1801EBEC2B7F45F6CD7EB1F4DC93FD5F8
++```
++
++Before installation, `http://127.0.0.1:3080/__dsh-codex-bridge/v1/health` fell through to the DSH HTML shell and the client reported `bridge.ok=false, error=invalid_json`; no bridge API was loaded.
++
++Preserved originals:
++
++- `C:\Users\19739\.dsh\backups\dsh-codex-bridge-20260817-205958\package.json`
++- `C:\Users\19739\.dsh\backups\dsh-codex-bridge-20260817-205958\pnpm-lock.yaml`
++- `C:\Users\19739\.codex\backups\dsh-codex-bridge-20260817-205958\config.toml`
++- Hash record: `E:\deepseek_harness\research\bridge-integration\operation1-dsh-codex-bridge\evidence\baseline-backups.json`
++
++## Modified verification
++
++### 1. Static checks and loop tests
++
++Command:
++
++```powershell
++$env:Path='C:\Program Files\nodejs;'+$env:Path
++& 'C:\Program Files\nodejs\npm.cmd' run check --prefix 'E:\deepseek_harness\plugins\dsh-codex-bridge'
++```
++
++Literal result (exit 0):
++
++```text
++tests 7
++pass 7
++fail 0
++```
++
++The tested decisions include Codex→DSH one-time entry, DSH→Codex one-time entry, rejection after the target is already in `visited`, rejection of DSH-originated MCP re-entry, and `MAX_BRIDGE_HOPS=2`.
++
++Full output: `E:\deepseek_harness\research\bridge-integration\operation1-dsh-codex-bridge\evidence\npm-check.txt`
++
++### 2. DSH instance and MCP handshake
++
++Commands:
++
++```powershell
++node E:\deepseek_harness\plugins\dsh-codex-bridge\scripts\verify.mjs
++```
++
++Literal result (exit 0):
++
++```json
++{
++  "ok": true,
++  "mcp": { "toolCount": 12 },
++  "instance": { "running": true, "baseUrl": "http://127.0.0.1:3080" },
++  "plugin": { "count": 16, "bridgeInstalled": true },
++  "conversation": { "assistantText": "BRIDGE_OK", "lastSeq": 85 },
++  "loopGuard": { "ok": false, "error": "loop_blocked" }
++}
++```
++
++Full output: `E:\deepseek_harness\research\bridge-integration\operation1-dsh-codex-bridge\evidence\bridge-verification.json`
++
++### 3. Real conversation and complete prompt capture
++
++Input sent through the MCP tool `dsh_conversation_send`:
++
++```text
++桥接验证：请只回复 BRIDGE_OK，不要调用任何工具。
++```
++
++Literal response:
++
++```text
++BRIDGE_OK
++```
++
++Verified session and bridge correlation:
++
++```text
++sessionId = session-9b5d87f3-61df-4a60-b321-b67ef948f7d5
++traceId   = f49fef8e-38de-4613-b511-6041d71c59b7
++promptId  = 8e45542d-7797-48f0-99d0-f0640c4910e8
++provider  = opencode-go
++model     = deepseek-v4-flash
++systemChars = 1818
++messageCount = 2
++toolCount = 6
++```
++
++The prompt artifact exists at:
++
++`C:\Users\19739\.dsh\codex-bridge\prompt-traces\8e45542d-7797-48f0-99d0-f0640c4910e8.json`
++
++It contains the literal `system`, `messages`, `tools`, provider/model, reasoning effort, temperature, maxTokens, stop, session ID, and bridge envelope. The listener is read-only and runs before `next()`.
++
++### 4. DSH → Codex research transport
++
++Input:
++
++```text
++OpenAI Codex MCP official documentation URL
++```
++
++Literal result (exit 0):
++
++```text
++ok=true
++model=gpt-5.4-mini
++summary=The official OpenAI MCP documentation URL for Codex integration is https://developers.openai.com/mcp.
++```
++
++Complete JSON: `E:\deepseek_harness\research\bridge-integration\operation1-dsh-codex-bridge\evidence\codex-research.json`
++
++### 5. Codex configuration
++
++Command:
++
++```powershell
++C:\Users\19739\anaconda3\python.exe -c "import tomllib; tomllib.load(open(r'C:\Users\19739\.codex\config.toml','rb'))"
++```
++
++Literal result (exit 0):
++
++```text
++command=C:\Program Files\nodejs\node.exe
++args=E:\deepseek_harness\plugins\dsh-codex-bridge\lib\mcp-server.js
++cwd=E:\deepseek_harness
++enabled=True
++```
++
++### 6. Rollback
++
++Dry-run command:
++
++```powershell
++powershell.exe -NoProfile -ExecutionPolicy Bypass -File E:\deepseek_harness\research\bridge-integration\operation1-dsh-codex-bridge\rollback.ps1 -WhatIf
++```
++
++Literal result (exit 0):
++
++```text
++What if: Performing the operation "restore pre-bridge backups" on target "DSH web profile and Codex MCP config".
++WhatIf=True
++RestartSkipped=False
++```
++
++The script verifies all three original hashes before restoring the profile manifest, lockfile, and Codex config; it then reinstalls the frozen profile and restarts DSH.
++
++An isolated, write-enabled rollback probe also ran the same script with `-SkipInstall -SkipRestart` against temporary modified copies. Literal result (exit 0):
++
++```text
++Restored=True
++ProfilePackageHash=3A241EC9B52A3BF24B65DD7AC3980C5A6CF49EE613A9F7E9E3034281BBA3CA50
++ProfileLockHash=D8A76DD6B2760504FBF9A008D2FFEEEF8057AB747EAAE315D7F540D5FFF3B6E9
++CodexConfigHash=6F80D0D5A10B7466BEACD7AC4DE589B1801EBEC2B7F45F6CD7EB1F4DC93FD5F8
++hashesMatch=true
++```
++
++Probe record: `E:\deepseek_harness\research\bridge-integration\operation1-dsh-codex-bridge\evidence\rollback-probe.json`
++
++## Exit statuses
++
++`E:\deepseek_harness\research\bridge-integration\operation1-dsh-codex-bridge\evidence\exit-statuses.json`:
++
++```json
++{
++  "npmCheck": 0,
++  "restart": 0,
++  "bridgeVerify": 0,
++  "tomlParse": 0,
++  "rollbackWhatIf": 0,
++  "rollbackProbe": 0,
++  "patchApplyCheck": 0
++}
++```

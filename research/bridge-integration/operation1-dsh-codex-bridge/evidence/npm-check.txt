@@ -1,0 +1,19 @@
+
+> dsh-codex-bridge@0.1.0 check
+> node --check lib/dsh-plugin.js && node --check lib/mcp-server.js && node --test
+
+✔ Codex can enter DSH exactly once (1.1139ms)
+✔ DSH cannot call Codex after a Codex-originated entry (0.2465ms)
+✔ DSH-originated Codex process cannot re-enter MCP (0.5235ms)
+✔ MCP passes a fresh envelope to the DSH boundary without pre-consuming a hop (0.1444ms)
+✔ DSH research tool rejects an envelope that already visited Codex (0.1234ms)
+✔ hop limit is finite and two (0.087ms)
+✔ captures complete prompt-bearing request fields (8.3936ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 103.242

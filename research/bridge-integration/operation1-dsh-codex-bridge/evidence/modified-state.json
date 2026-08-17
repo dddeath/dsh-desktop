@@ -1,0 +1,60 @@
+{
+    "capturedAt":  "2026-08-17T21:09:46.3862357+08:00",
+    "files":  [
+                  {
+                      "path":  "E:\\deepseek_harness\\plugins\\dsh-codex-bridge\\package.json",
+                      "sha256":  "28321C96B67077A32C58C5656AE022F65FE3A64259044C3CBC44E3471183AAE7",
+                      "bytes":  823
+                  },
+                  {
+                      "path":  "E:\\deepseek_harness\\plugins\\dsh-codex-bridge\\package-lock.json",
+                      "sha256":  "0A0B18924686365E22CD755D079B169EED6776EAC2DAF333932454C439DC231A",
+                      "bytes":  41721
+                  },
+                  {
+                      "path":  "E:\\deepseek_harness\\plugins\\dsh-codex-bridge\\lib\\dsh-plugin.js",
+                      "sha256":  "DE4BABC0DF0B6FEC0589370C4B993C9A36033461C7C33D852DAD2B761B5DD76C",
+                      "bytes":  7852
+                  },
+                  {
+                      "path":  "E:\\deepseek_harness\\plugins\\dsh-codex-bridge\\lib\\mcp-server.js",
+                      "sha256":  "06EACBDE499561BC9FEFC4F903966098DFDA864986D10164375D68247B3E6FB7",
+                      "bytes":  6737
+                  },
+                  {
+                      "path":  "E:\\deepseek_harness\\plugins\\dsh-codex-bridge\\lib\\loop-guard.js",
+                      "sha256":  "960B42FCD0A579A61B01D0EF376092449E6FCBB7F843D4BDCBD03E1E9F193C2B",
+                      "bytes":  3099
+                  },
+                  {
+                      "path":  "C:\\Users\\19739\\.dsh\\profiles\\web\\package.json",
+                      "sha256":  "94D5078ED8C8B4BBC38A18AF39D27963488F83F1F20411DEE57B953865D840C5",
+                      "bytes":  1688
+                  },
+                  {
+                      "path":  "C:\\Users\\19739\\.dsh\\profiles\\web\\pnpm-lock.yaml",
+                      "sha256":  "7284263D22EE1EDD2CAED4922597641A8694C97ACB0C81CD131AA9B910AAA777",
+                      "bytes":  29372
+                  },
+                  {
+                      "path":  "C:\\Users\\19739\\.codex\\config.toml",
+                      "sha256":  "2A8205FAEA67D1DA1B8A3FAF274F08E5097CDF8745B3305D162C1563D8A6413F",
+                      "bytes":  6766
+                  },
+                  {
+                      "path":  "C:\\Users\\19739\\.dsh\\codex-bridge\\prompt-traces\\8e45542d-7797-48f0-99d0-f0640c4910e8.json",
+                      "sha256":  "6C384D060F7414318CFE3FABEE47BF02019D1465639EDC8E10E07B0BE08FC0C1",
+                      "bytes":  13090
+                  }
+              ],
+    "dshHttp":  200,
+    "bridge":  {
+                   "ok":  true,
+                   "value":  {
+                                 "version":  "0.1.0",
+                                 "traceRoot":  "C:\\Users\\19739\\.dsh\\codex-bridge\\prompt-traces",
+                                 "protocol":  "dsh-codex-bridge/1",
+                                 "maxHops":  2
+                             }
+               }
+}

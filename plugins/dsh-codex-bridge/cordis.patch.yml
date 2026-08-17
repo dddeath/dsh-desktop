@@ -1,0 +1,4 @@
+- insert:
+    - id: dsh-codex-bridge:active
+      name: dsh-codex-bridge
+      config: {}

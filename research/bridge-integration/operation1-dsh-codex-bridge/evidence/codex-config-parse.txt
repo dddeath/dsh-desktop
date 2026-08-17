@@ -1,0 +1,1 @@
+{'ok': True, 'command': 'C:\\Program Files\\nodejs\\node.exe', 'args': ['E:\\deepseek_harness\\plugins\\dsh-codex-bridge\\lib\\mcp-server.js'], 'cwd': 'E:\\deepseek_harness', 'enabled': True}

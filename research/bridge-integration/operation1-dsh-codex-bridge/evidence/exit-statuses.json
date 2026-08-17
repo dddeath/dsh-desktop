@@ -1,0 +1,9 @@
+{
+    "npmCheck":  0,
+    "restart":  0,
+    "bridgeVerify":  0,
+    "tomlParse":  0,
+    "rollbackWhatIf":  0,
+    "rollbackProbe":  0,
+    "patchApplyCheck":  0
+}

@@ -1,0 +1,4 @@
+COMMAND=git apply --check --whitespace=error-all
+EXIT_CODE=0
+PROBE=C:\Users\19739\AppData\Local\Temp\dsh-codex-patch-probe-8225495644c44feea1ecaededeff02ec
+RESULT=PASS

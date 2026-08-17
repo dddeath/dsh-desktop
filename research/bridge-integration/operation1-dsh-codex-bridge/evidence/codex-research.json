@@ -1,0 +1,23 @@
+{
+  "command": "CODEX_PREFER_AUTH_FILE=1 CS_QUERY='OpenAI Codex MCP official documentation URL' CS_MAX_SOURCES=2 CS_FRESHNESS=cached CS_MODEL=gpt-5.4-mini node codex-search.mjs",
+  "exitCode": 0,
+  "output": {
+    "ok": true,
+    "query": "OpenAI Codex MCP official documentation URL",
+    "freshness": "cached",
+    "summary": "The official OpenAI MCP documentation URL for Codex integration is https://developers.openai.com/mcp. OpenAI’s developer community post also shows this as the MCP server URL used with Codex CLI.",
+    "sources": [
+      {
+        "title": "OpenAI Developers",
+        "url": "https://developers.openai.com/mcp",
+        "snippet": "Official OpenAI MCP documentation / server endpoint for Codex integration."
+      },
+      {
+        "title": "Connect Codex to OpenAI Developer Docs via MCP",
+        "url": "https://community.openai.com/t/connect-codex-to-openai-developer-docs-via-mcp/1371352",
+        "snippet": "Shows the Codex CLI command using https://developers.openai.com/mcp."
+      }
+    ],
+    "model": "gpt-5.4-mini"
+  }
+}

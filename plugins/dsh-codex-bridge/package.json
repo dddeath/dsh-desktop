@@ -1,0 +1,38 @@
+{
+  "name": "dsh-codex-bridge",
+  "version": "0.1.0",
+  "description": "Bidirectional DSH/Codex bridge with prompt tracing and hard loop prevention.",
+  "type": "module",
+  "main": "./lib/dsh-plugin.js",
+  "exports": {
+    ".": "./lib/dsh-plugin.js",
+    "./loop-guard": "./lib/loop-guard.js"
+  },
+  "bin": {
+    "dsh-control-mcp": "./lib/mcp-server.js"
+  },
+  "files": [
+    "lib/",
+    "scripts/",
+    "test/",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check lib/dsh-plugin.js && node --check lib/mcp-server.js && node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^4.4.3"
+  },
+  "license": "MIT"
+}

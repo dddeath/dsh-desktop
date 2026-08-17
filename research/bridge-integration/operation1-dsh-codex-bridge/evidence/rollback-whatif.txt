@@ -1,0 +1,5 @@
+What if: Performing the operation "restore pre-bridge backups" on target "DSH web profile and Codex MCP config".
+
+WhatIf BackupHashes                               RestartSkipped
+------ ------------                               --------------
+  True {ProfilePackage, CodexConfig, ProfileLock} False
