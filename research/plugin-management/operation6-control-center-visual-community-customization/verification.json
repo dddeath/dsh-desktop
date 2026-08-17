@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-08-17T11:58:51.529Z",
+  "result": "PASS",
+  "commands": [
+    {
+      "command": "node --check plugins/plugin-control-center/lib/client.js",
+      "exitStatus": 0
+    },
+    {
+      "command": "node operation6/verify.mjs",
+      "exitStatus": 0
+    },
+    {
+      "command": "GET /plugins/dsh-plugin-control-center/client.js?rev=6163eae40f69",
+      "literalOutput": "HTTP 200; modified CSS served",
+      "exitStatus": 0
+    }
+  ],
+  "checks": {
+    "syntaxContract": true,
+    "version": "0.1.1",
+    "fixedToggleColumn": true,
+    "fixedToggleSize": true,
+    "noToggleWrap": true,
+    "unifiedTagHeight": true,
+    "statusTagClass": true,
+    "framedDetails": true,
+    "maintenanceDetail": true,
+    "textEffectsDisabled": true
+  },
+  "outputs": {
+    "clientSha256": "FFA840ACE96B1127EB61254BB719E3D53129DABA8F5E3EF5CB9A989CAC889359",
+    "packageSha256": "75D99E60F6782084266CD4A0FF2A79568BD1F68F4355D6B875052C4C58C92B62",
+    "profilePackageSha256": "9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD",
+    "profileLockSha256": "BA8E4D3DEC6E2C0066FD52C809E49A52919D40341923BAADC6B70C7455992EF4",
+    "httpStatus": 200,
+    "servedClientStatus": 200,
+    "servedClientUrl": "/plugins/dsh-plugin-control-center/client.js?rev=6163eae40f69",
+    "profileChanged": false,
+    "restartRequiredForOpenWindow": true
+  }
+}

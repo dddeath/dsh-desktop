@@ -31,19 +31,16 @@ window.__ModuleLoader__.load({
 .dcc-button:disabled { opacity: .48; cursor: not-allowed; }
 .dcc-primary { border-color: color-mix(in srgb, var(--dsh-accent, currentColor) 58%, transparent); }
 .dcc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.dcc-card { padding: 14px; display: grid; gap: 11px; min-width: 0; align-content: start; }
-.dcc-card-head { display: grid; grid-template-columns: minmax(0, 1fr) 68px; align-items: start; gap: 12px; }
-.dcc-card-head > div { min-width: 0; }
+.dcc-card { padding: 14px; display: grid; gap: 11px; min-width: 0; }
+.dcc-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .dcc-card h3 { font-size: 15px; overflow-wrap: anywhere; }
-.dcc-card-toggle { inline-size: 68px; block-size: 38px; min-height: 38px; padding: 0 10px; display: inline-grid; place-items: center; white-space: nowrap; line-height: 1; }
-.dcc-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; min-height: 28px; }
-.dcc-tag { min-height: 28px; border: 1px solid color-mix(in srgb, currentColor 18%, transparent); border-radius: 9px; padding: 0 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; line-height: 1; white-space: nowrap; background: color-mix(in srgb, currentColor 5%, transparent); }
-.dcc-status-tag { min-width: 66px; font-weight: 600; }
+.dcc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.dcc-tag { border: 1px solid color-mix(in srgb, currentColor 18%, transparent); border-radius: 999px; padding: 3px 8px; font-size: 12px; background: color-mix(in srgb, currentColor 5%, transparent); }
 .dcc-tag[data-tone='good'] { color: var(--dsh-success, #237a4b); }
 .dcc-tag[data-tone='warn'] { color: var(--dsh-warning, #946200); }
 .dcc-tag[data-tone='bad'] { color: var(--dsh-danger, #b42318); }
 .dcc-source { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; overflow-wrap: anywhere; opacity: .78; }
-.dcc-details { display: grid; gap: 8px; border: 1px solid color-mix(in srgb, currentColor 12%, transparent); border-radius: 10px; padding: 11px 12px; background: color-mix(in srgb, currentColor 3%, transparent); }
+.dcc-details { display: grid; gap: 8px; border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent); padding-top: 10px; }
 .dcc-detail-row { display: grid; grid-template-columns: 88px 1fr; gap: 8px; font-size: 13px; }
 .dcc-detail-row > span:first-child { opacity: .65; }
 .dcc-actions { display: flex; flex-wrap: wrap; gap: 7px; }
@@ -206,10 +203,10 @@ window.__ModuleLoader__.load({
           return h("article", { className: "dcc-card", key: plugin.name, "data-plugin-management-card": "true", "data-plugin-name": plugin.name, "data-plugin-status": plugin.status },
             h("div", { className: "dcc-card-head" },
               h("div", null, h("h3", null, plugin.name), h("p", { className: "dcc-muted" }, plugin.current || plugin.source)),
-              h("button", { className: "dcc-button dcc-card-toggle", type: "button", onClick: () => setExpanded((current) => ({ ...current, [plugin.name]: !open })), "aria-expanded": open }, open ? "收起" : "详情")
+              h("button", { className: "dcc-button", type: "button", onClick: () => setExpanded((current) => ({ ...current, [plugin.name]: !open })), "aria-expanded": open }, open ? "收起" : "详情")
             ),
             h("div", { className: "dcc-tags" },
-              h("span", { className: "dcc-tag dcc-status-tag", "data-tone": tone }, STATUS_LABEL[plugin.status]),
+              h("span", { className: "dcc-tag", "data-tone": tone }, STATUS_LABEL[plugin.status]),
               h("span", { className: "dcc-tag" }, plugin.group),
               h("span", { className: "dcc-tag" }, `${plugin.sensitivity}敏感度`),
               local ? h("span", { className: "dcc-tag" }, "本地链接") : null,
@@ -221,7 +218,6 @@ window.__ModuleLoader__.load({
               h("div", { className: "dcc-detail-row" }, h("span", null, "能力"), h("span", null, plugin.capabilities.join("、"))),
               h("div", { className: "dcc-detail-row" }, h("span", null, "装载位置"), h("span", null, plugin.inBundle ? `bundle #${plugin.bundleIndex}` : "未加入 bundle")),
               h("div", { className: "dcc-detail-row" }, h("span", null, "运行实例"), h("span", null, plugin.runtimeRows.length ? plugin.runtimeRows.map((row) => `${row.entryId}:${row.fiberPhase}`).join("；") : "未发现")),
-              h("div", { className: "dcc-detail-row" }, h("span", null, "维护方式"), h("span", null, local ? "本地工作区维护；市场不自动更新" : "插件市场托管；直接修改安装目录会被更新覆盖")),
               h("div", { className: "dcc-detail-row" }, h("span", null, "使用建议"), h("span", null, plugin.recommendation)),
               plugin.protected ? h("div", { className: "dcc-detail-row" }, h("span", null, "保护原因"), h("span", null, plugin.protectedReason)) : null
             ) : null,

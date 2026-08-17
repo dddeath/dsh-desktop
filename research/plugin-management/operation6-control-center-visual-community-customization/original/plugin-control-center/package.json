@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-control-center",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Theme-neutral installed-plugin control center for DeepSeek Harness.",
   "private": true,
   "type": "module",

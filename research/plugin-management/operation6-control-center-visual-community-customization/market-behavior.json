@@ -1,0 +1,15 @@
+{
+  "dshmarketVersion": "1.5.0",
+  "routesPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dshmarket\\lib\\routes.js",
+  "routesSha256": "37A0FE5EE2BB8F7BC8FB02EDA8522DBD9E24BFE10B5786C20496E2A82AC26583",
+  "updatesPath": "C:\\Users\\19739\\.dsh\\profiles\\web\\node_modules\\dshmarket\\lib\\updates.js",
+  "updatesSha256": "7C84206F7F14547C87C25063CEE3B2F1066E4AC2E5421EE3B4B15575B28773AF",
+  "sidebarSpec": "^0.12.2",
+  "sidebarVersion": "0.12.2",
+  "observedRules": [
+    "link: and file: updates are rejected and delegated to the checkout",
+    "npm update target is dsh-better-sidebar@latest",
+    "GitHub update target removes the # revision and follows that repository HEAD",
+    "updates run a package-manager add operation; installed directory edits are not merged"
+  ]
+}

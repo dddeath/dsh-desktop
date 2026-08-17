@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-08-17T11:59:49.6303479Z",
+  "result": "PASS",
+  "probeRoot": "C:\\Users\\19739\\AppData\\Local\\Temp\\dsh-control-center-rollback-probe-20260817195935",
+  "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File rollback.ps1 -RepoRoot C:\\Users\\19739\\AppData\\Local\\Temp\\dsh-control-center-rollback-probe-20260817195935 -OperationRoot E:\\deepseek_harness\\research\\plugin-management\\operation6-control-center-visual-community-customization",
+  "literalOutput": "{\n    \"result\":  \"ROLLBACK PASS\",\n    \"restored\":  [\n                     \"C:\\\\Users\\\\19739\\\\AppData\\\\Local\\\\Temp\\\\dsh-control-center-rollback-probe-20260817195935\\\\plugins\\\\plugin-control-center\\\\lib\\\\client.js\",\n                     \"C:\\\\Users\\\\19739\\\\AppData\\\\Local\\\\Temp\\\\dsh-control-center-rollback-probe-20260817195935\\\\plugins\\\\plugin-control-center\\\\package.json\",\n                     \"C:\\\\Users\\\\19739\\\\AppData\\\\Local\\\\Temp\\\\dsh-control-center-rollback-probe-20260817195935\\\\.agent\\\\STATE.json\"\n                 ],\n    \"profileChanged\":  false,\n    \"restartRequired\":  true\n}",
+  "exitStatus": 0,
+  "restored": {
+    "clientSha256": "386D19B7B44CBDD176C6D3D18245AC6B913F656C7E4A8EB4AF4780F481201BD0",
+    "packageSha256": "DF28F1A78493AFF49DEB0F7330E98A161C0D1DA56A34988C25BCC442E12B6813",
+    "stateSha256": "90699F3367974169C3C7B61F7C0FEAC80D846CDEF902552F9690FF1C6FF64FC8"
+  }
+}

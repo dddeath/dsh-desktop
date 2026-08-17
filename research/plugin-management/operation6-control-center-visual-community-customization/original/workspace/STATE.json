@@ -1,29 +1,32 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-17T12:00:26.621Z",
-  "status": "awaiting_user_validation",
-  "current_phase": "post_phase3_control_center_ui",
-  "latest_result": "Control-center UI 0.1.1 is staged: status chips and detail controls use fixed visual contracts, expanded details use a unified panel, and source maintenance mode is explicit.",
-  "next_action": "User refreshes or restarts Harness, checks the management-center card grid, expands one market plugin and one local-link plugin, and accepts or reports visual adjustments.",
+  "updated_at": "2026-08-17T11:49:37.015Z",
+  "status": "phase3_completed",
+  "current_phase": "phase3",
+  "latest_result": "Phase 3 operation 4 and manual Gate J passed. The real dsh-notification disable/restart/restore/restart drill is closed, and the final web profile matches the settled post-market baseline.",
+  "next_action": "Prepare publication and wrap-up artifacts for the completed Phase 3 plugin-management work.",
   "blockers": [],
   "state_dir": "E:\\deepseek_harness\\.agent",
   "last_verification": {
-    "kind": "control_center_visual_and_maintenance_mode_staged",
-    "phase": "post-phase3",
+    "kind": "phase3_plugin_management_real_start_stop_complete",
+    "phase": "phase3-operation4",
     "passed": true,
-    "manual_gate_status": "awaiting_ui_validation",
-    "completed_at": "2026-08-17T11:58:51.529Z",
-    "evidence": "E:\\deepseek_harness\\research\\plugin-management\\operation6-control-center-visual-community-customization\\verification.json",
+    "manual_gate_status": "accepted",
+    "completed_at": "2026-08-17T11:49:01.7079623Z",
+    "evidence": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\real-profile-drill\\final-verification.json",
     "outputs": {
-      "version": "0.1.1",
-      "original_client_sha256": "386D19B7B44CBDD176C6D3D18245AC6B913F656C7E4A8EB4AF4780F481201BD0",
-      "modified_client_sha256": "FFA840ACE96B1127EB61254BB719E3D53129DABA8F5E3EF5CB9A989CAC889359",
-      "fixed_detail_button": true,
-      "unified_status_chips": true,
-      "unified_detail_panel": true,
-      "maintenance_mode_visible": true,
-      "live_profile_changed": false,
-      "rollback_probe": "PASS"
+      "package": "dsh-notification",
+      "changed_field": "web profile dsh.profile.bundles entry dsh-notification",
+      "disabled_bundle_index": -1,
+      "disabled_boot_contains_notification": false,
+      "restored_bundle_index": 16,
+      "restored_boot_contains_notification": true,
+      "restored_activation_state": "live",
+      "final_package_sha256": "9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD",
+      "final_lock_sha256": "BA8E4D3DEC6E2C0066FD52C809E49A52919D40341923BAADC6B70C7455992EF4",
+      "final_patch_sha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354",
+      "final_listener_pid": 45288,
+      "rollback_idempotent": true
     }
   },
   "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
@@ -654,31 +657,5 @@
       "accepted_at": "2026-08-17T11:49:01.7079623Z"
     },
     "completed_at": "2026-08-17T11:49:01.7079623Z"
-  },
-  "post_phase3_control_center_ui": {
-    "status": "awaiting_user_validation",
-    "started_at": "2026-08-17T12:00:26.621Z",
-    "package": "dsh-plugin-control-center",
-    "version": "0.1.1",
-    "changed_fields": [
-      "status and metadata tags share a 28px height and 9px radius",
-      "detail/collapse button uses a reserved 68x38px single-line slot",
-      "expanded details use one bordered panel contract",
-      "details identify market-managed versus locally maintained sources"
-    ],
-    "community_plugin_decision": {
-      "sidebar_spec": "^0.12.2",
-      "sidebar_version": "0.12.2",
-      "direct_node_modules_edit": "overwritten_by_market_update",
-      "ui_only_recommendation": "theme-neutral overlay plugin",
-      "behavior_change_recommendation": "local fork linked with link:"
-    },
-    "profile_changed": false,
-    "manual_gate_status": "awaiting_ui_validation",
-    "operation_dir": "E:\\deepseek_harness\\research\\plugin-management\\operation6-control-center-visual-community-customization",
-    "verification": "E:\\deepseek_harness\\research\\plugin-management\\operation6-control-center-visual-community-customization\\verification.json",
-    "patch": "E:\\deepseek_harness\\research\\plugin-management\\operation6-control-center-visual-community-customization\\change.patch",
-    "rollback": "E:\\deepseek_harness\\research\\plugin-management\\operation6-control-center-visual-community-customization\\rollback.ps1",
-    "strategy": "E:\\deepseek_harness\\research\\plugin-management\\operation6-control-center-visual-community-customization\\community-plugin-customization.md"
   }
 }
