@@ -1,0 +1,21 @@
+PATCH PROBE
+PATCH_EXIT=0
+DIFF_dsh-plugin.js_EXIT=0
+DIFF_mcp-server.js_EXIT=0
+DIFF_workspace-invariant.js_EXIT=0
+DIFF_verify.mjs_EXIT=0
+DIFF_workspace-invariant.test.js_EXIT=0
+DIFF_package.json_EXIT=0
+DIFF_package-lock.json_EXIT=0
+CURRENT_PATCH_REVERSE_CHECK_EXIT=0
+CURRENT_SNAPSHOTS_MATCH=7/7
+
+ROLLBACK PROBE
+ROLLBACK_OK
+ROLLBACK_EXIT=0
+RESTORED_dsh-plugin.js=True
+RESTORED_mcp-server.js=True
+RESTORED_verify.mjs=True
+RESTORED_package.json=True
+RESTORED_package-lock.json=True
+NEW_FILES_REMOVED=True

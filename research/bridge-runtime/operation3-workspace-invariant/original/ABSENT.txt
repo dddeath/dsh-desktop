@@ -1,0 +1,2 @@
+lib/workspace-invariant.js
+test/workspace-invariant.test.js

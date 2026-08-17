@@ -1,0 +1,30 @@
+﻿{
+    "ok":  true,
+    "value":  {
+                  "sessionId":  "session-5106ed88-d8cb-4991-a65a-aea8a0bae440",
+                  "cwd":  "E:\\deepseek_memory",
+                  "agentPreset":  "standard-bash",
+                  "workspaceId":  "3de19a2c-31d2-4fc6-8059-c35d5decc5c7",
+                  "workspaceTitle":  "deepseek_memory",
+                  "firstSeq":  3,
+                  "envelope":  {
+                                   "protocol":  "dsh-codex-bridge/1",
+                                   "traceId":  "4833eb3a-a4cd-4745-8776-77a69bee699a",
+                                   "origin":  "codex",
+                                   "hop":  1,
+                                   "visited":  [
+                                                   "codex",
+                                                   "dsh"
+                                               ]
+                               },
+                  "session":  {
+                                  "version":  0,
+                                  "id":  "session-5106ed88-d8cb-4991-a65a-aea8a0bae440",
+                                  "createdAt":  1786986420210,
+                                  "cwd":  "E:\\deepseek_memory",
+                                  "agentPreset":  "standard-bash"
+                              },
+                  "assistantText":  "这两个标识符在 DeepSeek Harness（DSH）里**不存在**——我做了两道确认：\n\n- **全库检索**：在安装的 DSH checkout（`@deepseek-ai/dsh` 整棵树）里 grep `CHILD_WORKSPACE_OK`、`ROOT_WORKSPACE_OK`、`WORKSPACE_OK`、`CHILD_WORKSPACE`，均为 0 命中；\n- **公开网络检索**：`\"ROOT_WORKSPACE_OK\"`、`\"CHILD_WORKSPACE_OK\"` 都没有任何有意义的来源。\n\n所以答案是：**不存在\"subagent 用 CHILD_WORKSPACE_OK、root 用 ROOT_WORKSPACE_OK\"这种二元的插件文件权限**。DSH 的真实权限体系是这样组织的：\n\n## 1. 权限词汇是 `SandboxMode`，不是 workspace 标志\n\n定义在 [`dsh-sandbox/README.md`](C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\node_modules\\@deepseek-ai\\dsh-sandbox\\README.md)：\n\n- `read-only` — 只读（故障安全默认）\n- `workspace-write` — 只能写入**工作区根目录 + 平台临时区**（Windows 下临时区是按会话私有的子目录，见 [`dsh-base`](C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\node_modules\\@deepseek-ai\\dsh-base\\README.md)）\n- `danger-full-access` — 无限制，且**不再咨询审批**\n\n配套的批准策略是 `ask` / `never`，预设组合为 `workspace-write`+`ask` 和 `danger-full-access`+`never`（[`dsh-permission-presets`](C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\node_modules\\@deepseek-ai\\dsh-permission-presets\\README.md)）。升级是一条被拒命令的一次性重试：`sandbox_permissions`（取刚好够的最窄更宽档）+ `justification`，经 `ctx.approval` 征求用户批准，升级链 `read-only → workspace-write → danger-full-access`。\n\n## 2. subagent 与根 agent 没有不同的 workspace 权限\n\n- 每个会话只有一个**不可变的工作区根**：`SessionHeader.cwd`（[`dsh-session`](C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\node_modules\\@deepseek-ai\\dsh-session\\README.md)）；每次调用由 `ctx.sandboxPolicy.resolve({ session })` 把该会话的 mode + cwd 解成同一个 per-call 策略（[`dsh-sandbox-policy`](C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\node_modules\\@deepseek-ai\\dsh-sandbox-policy\\README.md)）。任何 agent 都只认这个根，没有\"子工作区\"这一档。\n- **subagent 运行在自己的 session**（子会话有独立的 header），但它并不因此获得更小或更大的工作区——文件沙箱按会话解析，和\"root 或 child\"无关（[`dsh-tool-subagent`](C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\node_modules\\@deepseek-ai\\dsh-tool-subagent\\README.md)）。本环境里根 agent 和所有 subagent 的工作区都是 `E:\\deepseek_memory`。\n- DSH 自己也明确说了：`toolFilter` 只改变子 agent 的**工具可见性**，不是父级派生出来的权限上限——\"security and authority are non-goals\"（[agent-scope 记录](../../../.agents/notes/implemented/architecture/2026-07-08-agent-scope-contexts.md)）。\n\n## 3. 插件也不声明这类常量\n\nDSH 插件是 Cordis 插件。宿主侧的文件/命令能力通过 host 服务（`fs`、`bash`、`subprocess`、`web`）走**调用会话**的策略解析（[`cordis-plugin-development`](C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\config\\agent-presets\\cordis\\skills\\cordis-plugin-development\\SKILL.md)），插件代码里没有 `*_WORKSPACE_OK` 这类权限标志位。\n\n---\n\n如果你是在**别的项目/文档**里看到这两个名字（它们有点像 Claude Code 插件生态或某个第三方 agent 框架的命名习惯），把出处发我，我可以帮你确认那个框架里正确的用法。否则在 DSH 里，判断依据就是：*文件落在哪个根目录 × 当前会话的 `SandboxMode` × 是否已获批准*，而不是 agent 层级。",
+                  "lastSeq":  3519
+              }
+}

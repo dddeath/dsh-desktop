@@ -5,11 +5,10 @@ import * as z from "zod/v4";
 import { assertMcpEntryAllowed, createEnvelope } from "./loop-guard.js";
 import { instanceStatus, request, restartInstance, runPluginCommand, startInstance, stopInstance } from "./dsh-client.js";
 
-const server = new McpServer({ name: "dsh-control", version: "0.1.3" }, {
+const server = new McpServer({ name: "dsh-control", version: "0.1.2" }, {
   instructions: [
     "Control the local DeepSeek Harness instance, conversations, plugins, and exact final LLM prompt traces.",
     "Every Codex-to-DSH conversation must use the bridge envelope returned by this server.",
-    "Every DSH session must be attached to the workspace matching its cwd; a durable default workspace is retained and ungrouped sessions are reconciled before listing.",
     "Hard loop rule: when DSH_CODEX_BRIDGE_ORIGIN=dsh, all DSH re-entry tools return loop_blocked.",
     "Prompt traces are read-only snapshots. Future memory plugins should modify prompt assembly through DSH systemPrompt contributions, not by mutating llm/stream requests.",
   ].join(" "),
@@ -56,12 +55,6 @@ server.registerTool("dsh_conversation_list", {
   inputSchema: {},
   annotations: { readOnlyHint: true, openWorldHint: false },
 }, async () => result(await request("/__dsh-codex-bridge/v1/sessions")));
-
-server.registerTool("dsh_workspace_status", {
-  description: "Enforce and report the DSH workspace invariant. Retains the default workspace and attaches every known session to the workspace matching its cwd.",
-  inputSchema: {},
-  annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
-}, async () => result(await request("/__dsh-codex-bridge/v1/workspace-invariant")));
 
 server.registerTool("dsh_conversation_get", {
   description: "Read the complete event log and latest assistant text for one DSH conversation.",

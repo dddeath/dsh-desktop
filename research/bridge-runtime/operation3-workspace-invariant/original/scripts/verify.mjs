@@ -25,13 +25,7 @@ try {
   const tools = await client.listTools();
   const conversationSend = tools.tools.find((entry) => entry.name === "dsh_conversation_send");
   const conversationRequired = conversationSend?.inputSchema?.required || [];
-  const missingCwd = await client.callTool({
-    name: "dsh_conversation_send",
-    arguments: { message: "workspace contract validation only" },
-  }, undefined, { timeout: 10000 });
-  const missingCwdRejected = missingCwd.isError === true;
   const status = await call("dsh_instance_status");
-  const workspaceInvariant = await call("dsh_workspace_status");
   const plugins = await call("dsh_plugin_list");
   const workspaces = await request("/__dsh-codex-bridge/v1/workspaces");
   const groupedSessionIds = new Set((workspaces.value || []).flatMap((workspace) => workspace.sessionIds || []));
@@ -50,12 +44,8 @@ try {
   const summary = {
     ok: Boolean(
       status.ok && status.running && status.bridge?.ok &&
-      tools.tools.length === 13 &&
+      tools.tools.length === 12 &&
       conversationRequired.includes("cwd") &&
-      missingCwdRejected &&
-      workspaceInvariant.ok && workspaceInvariant.value?.hardConstraint === true &&
-      workspaceInvariant.value?.defaultWorkspace?.id &&
-      workspaceInvariant.value?.ungroupedSessionIds?.length === 0 &&
       workspaces.ok && groupedSessionIds.has(prompt?.value?.sessionId) &&
       pluginItems.some((entry) => entry.name === "dsh-codex-bridge") &&
       prompt?.ok && prompt.value?.request?.system && Array.isArray(prompt.value?.request?.messages) &&
@@ -64,10 +54,8 @@ try {
     mcp: { toolCount: tools.tools.length, toolNames: tools.tools.map((entry) => entry.name) },
     sessionContract: {
       cwdRequired: conversationRequired.includes("cwd"),
-      missingCwdRejected,
       cwdDescription: conversationSend?.inputSchema?.properties?.cwd?.description || null,
     },
-    workspaceInvariant,
     workspaceGrouping: {
       workspaceCount: workspaces.value?.length || 0,
       sessionId: prompt?.value?.sessionId || null,

@@ -1,0 +1,7 @@
+BASELINE COMMAND: GET /__dsh-codex-bridge/v1/sessions + GET /__dsh-codex-bridge/v1/workspaces; subtract grouped ids from session ids
+BASELINE OUTPUT:
+SESSION_COUNT=59
+GROUPED_COUNT=19
+UNGROUPED_COUNT=40
+WORKSPACE_COUNT=4
+BASELINE EXIT_STATUS=0

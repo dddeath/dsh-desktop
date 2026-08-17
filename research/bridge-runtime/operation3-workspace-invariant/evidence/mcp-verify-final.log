@@ -1,0 +1,149 @@
+{
+  "ok": true,
+  "mcp": {
+    "toolCount": 13,
+    "toolNames": [
+      "dsh_instance_status",
+      "dsh_instance_start",
+      "dsh_instance_stop",
+      "dsh_instance_restart",
+      "dsh_conversation_list",
+      "dsh_workspace_status",
+      "dsh_conversation_get",
+      "dsh_conversation_send",
+      "dsh_prompt_trace_list",
+      "dsh_prompt_trace_get",
+      "dsh_plugin_list",
+      "dsh_plugin_plan",
+      "dsh_plugin_apply"
+    ]
+  },
+  "sessionContract": {
+    "cwdRequired": true,
+    "missingCwdRejected": true,
+    "cwdDescription": "Existing target workspace directory. Required for both new and continued sessions; it must match the session's bound cwd."
+  },
+  "workspaceInvariant": {
+    "ok": true,
+    "value": {
+      "hardConstraint": true,
+      "ready": true,
+      "defaultWorkspace": {
+        "id": "e3ddfbed-8da4-44b8-9d6e-f3b6d1052745",
+        "title": "默认工作区",
+        "path": "C:\\Users\\19739\\.dsh\\default-workspace",
+        "sessionIds": []
+      },
+      "totalSessions": 60,
+      "attached": 0,
+      "groupedSessions": 60,
+      "ungroupedSessionIds": [],
+      "failures": [],
+      "lastReconciledAt": "2026-08-17T17:15:22.254Z"
+    }
+  },
+  "workspaceGrouping": {
+    "workspaceCount": 5,
+    "sessionId": "session-5106ed88-d8cb-4991-a65a-aea8a0bae440",
+    "grouped": true,
+    "workspace": {
+      "id": "3de19a2c-31d2-4fc6-8059-c35d5decc5c7",
+      "title": "deepseek_memory",
+      "path": "E:\\deepseek_memory",
+      "sessionIds": [
+        "session-5106ed88-d8cb-4991-a65a-aea8a0bae440",
+        "cabf6ba8-94c3-4c6e-b9cc-8b23b145ed93",
+        "2c2bb76a-a1a1-487d-9741-77748c8889fa",
+        "a0777531-c846-4838-89f8-c9dc0d068eaa",
+        "616eecfc-5bd7-4796-969c-47aecfe05f6a",
+        "141948ef-5b12-4cb4-970d-36ed74488198",
+        "907461ec-a20f-4e83-95d4-74c9d9639845",
+        "1e7b9a31-5a5e-4942-87b6-11579c85d2a2",
+        "7f5e64f3-4b3e-4a0d-9f18-2bf1d5a5613e",
+        "e4d6fcf1-88b4-4e7e-a467-1083ec73cb1e",
+        "53ee0790-53e6-4f37-98eb-e72c157c6b31",
+        "f543bf1d-2ad3-4446-878f-b2e909953dc4",
+        "778a5bcb-0da7-4350-bd0c-5da5350c79f6",
+        "5181dc9a-6a92-4286-8f41-6e744114b2fb",
+        "8513b183-24eb-4db1-9ed8-5c88c7407a06",
+        "184bfc25-1eb8-42be-b1f1-abb8c0a2adf5",
+        "c2f57568-fac7-4394-9dba-49cf4600efd1",
+        "session-f1f6f416-3ef9-4a1f-a1f6-ed3ecb80bf5e",
+        "session-fd3e01ea-ab5b-403f-99a2-f8d02a3f123a",
+        "session-73035d25-be73-4fdd-bcad-9fa50874eabf",
+        "session-ee24d9c7-6f9f-4dee-8f5f-5ad43d911917",
+        "3db8ea0a-0671-4aa1-bce4-0099dc0aeffb",
+        "2a147922-c979-4cf3-9b31-afa9bac85788",
+        "session-bc14cbce-43b5-4aab-815e-2085b9df36f3",
+        "session-d8a9fb50-543c-41f0-8bd2-b0d1f7614a7e",
+        "session-5190697c-7593-4788-945c-b4868db1b6ce",
+        "session-81260c79-6a9e-4236-bd91-c17aa63c8d38",
+        "session-5a74102c-a65f-4e19-a51f-29e3d9ff20e8",
+        "session-65c55cea-6ecd-4263-842f-aa85f62c8754",
+        "session-6bee089f-7609-41ae-b0c3-1f47654fdec5",
+        "session-01919ca7-c6b8-428e-889e-b34656fb44ce",
+        "session-13eb387f-84dd-4802-93cd-c8cd5cfb1d79",
+        "session-2a6a2b64-4edf-4690-a44e-a55476f1fed1",
+        "session-aefd24b4-19c3-49ca-b26f-34433ae6d637"
+      ],
+      "isDefault": false
+    }
+  },
+  "instance": {
+    "ok": true,
+    "running": true,
+    "baseUrl": "http://127.0.0.1:3080",
+    "ownership": "external",
+    "pid": null,
+    "bridge": {
+      "ok": true,
+      "value": {
+        "version": "0.1.3",
+        "traceRoot": "C:\\Users\\19739\\.dsh\\codex-bridge\\prompt-traces",
+        "protocol": "dsh-codex-bridge/1",
+        "maxHops": 2,
+        "workspaceInvariant": {
+          "hardConstraint": true,
+          "ready": true,
+          "defaultWorkspace": {
+            "id": "e3ddfbed-8da4-44b8-9d6e-f3b6d1052745",
+            "title": "默认工作区",
+            "path": "C:\\Users\\19739\\.dsh\\default-workspace",
+            "sessionIds": []
+          },
+          "totalSessions": 60,
+          "attached": 0,
+          "groupedSessions": 60,
+          "ungroupedSessionIds": [],
+          "failures": [],
+          "lastReconciledAt": "2026-08-17T17:11:44.872Z"
+        }
+      }
+    },
+    "logPath": "C:\\Users\\19739\\.dsh\\codex-bridge\\dsh-web.log"
+  },
+  "plugin": {
+    "count": 17,
+    "bridgeInstalled": true
+  },
+  "prompt": {
+    "id": "254964b3-a1c3-4d63-a8a9-ba1782300a1d",
+    "sessionId": "session-5106ed88-d8cb-4991-a65a-aea8a0bae440",
+    "traceId": "4833eb3a-a4cd-4745-8776-77a69bee699a",
+    "provider": "opencode-go",
+    "model": "deepseek-v4-flash",
+    "systemChars": 6201,
+    "messageCount": 36,
+    "toolCount": 31
+  },
+  "conversation": {
+    "sessionId": "session-5106ed88-d8cb-4991-a65a-aea8a0bae440",
+    "assistantText": "这两个标识符在 DeepSeek Harness（DSH）里**不存在**——我做了两道确认：\n\n- **全库检索**：在安装的 DSH checkout（`@deepseek-ai/dsh` 整棵树）里 grep `CHILD_WORKSPACE_OK`、`ROOT_WORKSPACE_OK`、`WORKSPACE_OK`、`CHILD_WORKSPACE`，均为 0 命中；\n- **公开网络检索**：`\"ROOT_WORKSPACE_OK\"`、`\"CHILD_WORKSPACE_OK\"` 都没有任何有意义的来源。\n\n所以答案是：**不存在\"subagent 用 CHILD_WORKSPACE_OK、root 用 ROOT_WORKSPACE_OK\"这种二元的插件文件权限**。DSH 的真实权限体系是这样组织的：\n\n## 1. 权限词汇是 `SandboxMode`，不是 workspace 标志\n\n定义在 [`dsh-sandbox/README.md`](C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\node_modules\\@deepseek-ai\\dsh-sandbox\\README.md)：\n\n- `read-only` — 只读（故障安全默认）\n- `workspace-write` — 只能写入**工作区根目录 + 平台临时区**（Windows 下临时区是按会话私有的子目录，见 [`dsh-base`](C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\node_modules\\@deepseek-ai\\dsh-base\\README.md)）\n- `danger-full-access` — 无限制，且**不再咨询审批**\n\n配套的批准策略是 `ask` / `never`，预设组合为 `workspace-write`+`ask` 和 `danger-full-access`+`never`（[`dsh-permission-presets`](C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\node_modules\\@deepseek-ai\\dsh-permission-presets\\README.md)）。升级是一条被拒命令的一次性重试：`sandbox_permissions`（取刚好够的最窄更宽档）+ `justification`，经 `ctx.approval` 征求用户批准，升级链 `read-only → workspace-write → danger-full-access`。\n\n## 2. subagent 与根 agent 没有不同的 workspace 权限\n\n- 每个会话只有一个**不可变的工作区根**：`SessionHeader.cwd`（[`dsh-session`](C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\node_modules\\@deepseek-ai\\dsh-session\\README.md)）；每次调用由 `ctx.sandboxPolicy.resolve({ session })` 把该会话的 mode + cwd 解成同一个 per-call 策略（[`dsh-sandbox-policy`](C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\node_modules\\@deepseek-ai\\dsh-sandbox-policy\\README.md)）。任何 agent 都只认这个根，没有\"子工作区\"这一档。\n- **subagent 运行在自己的 session**（子会话有独立的 header），但它并不因此获得更小或更大的工作区——文件沙箱按会话解析，和\"root 或 child\"无关（[`dsh-tool-subagent`](C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\node_modules\\@deepseek-ai\\dsh-tool-subagent\\README.md)）。本环境里根 agent 和所有 subagent 的工作区都是 `E:\\deepseek_memory`。\n- DSH 自己也明确说了：`toolFilter` 只改变子 agent 的**工具可见性**，不是父级派生出来的权限上限——\"security and authority are non-goals\"（[agent-scope 记录](../../../.agents/notes/implemented/architecture/2026-07-08-agent-scope-contexts.md)）。\n\n## 3. 插件也不声明这类常量\n\nDSH 插件是 Cordis 插件。宿主侧的文件/命令能力通过 host 服务（`fs`、`bash`、`subprocess`、`web`）走**调用会话**的策略解析（[`cordis-plugin-development`](C:\\Users\\19739\\AppData\\Roaming\\npm\\node_modules\\@deepseek-ai\\dsh\\config\\agent-presets\\cordis\\skills\\cordis-plugin-development\\SKILL.md)），插件代码里没有 `*_WORKSPACE_OK` 这类权限标志位。\n\n---\n\n如果你是在**别的项目/文档**里看到这两个名字（它们有点像 Claude Code 插件生态或某个第三方 agent 框架的命名习惯），把出处发我，我可以帮你确认那个框架里正确的用法。否则在 DSH 里，判断依据就是：*文件落在哪个根目录 × 当前会话的 `SandboxMode` × 是否已获批准*，而不是 agent 层级。",
+    "lastSeq": 3520
+  },
+  "loopGuard": {
+    "ok": false,
+    "error": "loop_blocked",
+    "detail": "DSH-originated Codex work cannot re-enter DSH."
+  }
+}

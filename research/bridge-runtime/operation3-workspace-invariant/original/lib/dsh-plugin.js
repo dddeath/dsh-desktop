@@ -1,15 +1,13 @@
 import { randomUUID } from "node:crypto";
-import { mkdir } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { homedir } from "node:os";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { createEnvelope, enterBridge, normalizeEnvelope } from "./loop-guard.js";
 import { PromptTraceStore } from "./trace-store.js";
 import { query, readJsonBody, sendJson } from "./http-utils.js";
 import { installCodexResearchTool } from "./codex-research.js";
 import { assertWorkspaceMatch, resolveWorkspaceDirectory, WorkspaceContractError } from "./session-contract.js";
-import { ensureDefaultWorkspace, ensureSessionWorkspace, reconcileSessionWorkspaces, sessionHeader, workspaceForSession } from "./workspace-invariant.js";
 
 const hostPackage = process.env.DSH_HOST_PACKAGE_JSON || join(
   process.env.APPDATA || join(homedir(), "AppData", "Roaming"),
@@ -27,8 +25,6 @@ const [{ installModelSelection }, { createUserMessage }, { SessionId }, { define
 export const name = "dsh-codex-bridge";
 export const inject = ["webServer", "agents", "sessions", "sessionQuery", "agentDefaultModel", "tools", "shell", "credentials", "systemPrompt", "workspaceRegistry"];
 const BASE = "/__dsh-codex-bridge/v1";
-const DEFAULT_WORKSPACE_PATH = resolve(process.env.DSH_CODEX_DEFAULT_WORKSPACE || join(homedir(), ".dsh", "default-workspace"));
-const DEFAULT_WORKSPACE_TITLE = "默认工作区";
 
 function setupModel(ctx) {
   const selection = ctx.agentDefaultModel.currentSelection();
@@ -72,116 +68,11 @@ export function apply(ctx) {
   const traces = new PromptTraceStore();
   const sessionEnvelopes = new Map();
   const ownedHandles = new Map();
-  let invariantQueue = Promise.resolve();
-  let invariantState = {
-    hardConstraint: true,
-    ready: false,
-    defaultWorkspace: null,
-    totalSessions: 0,
-    groupedSessions: 0,
-    ungroupedSessionIds: [],
-    failures: [],
-    lastReconciledAt: null,
-  };
 
   async function ensureWorkspace(cwd) {
     const existing = await ctx.workspaceRegistry.resolveByPath(cwd);
     return existing || ctx.workspaceRegistry.create(cwd);
   }
-
-  function serializeInvariant(operation) {
-    const run = invariantQueue.then(operation, operation);
-    invariantQueue = run.then(() => undefined, () => undefined);
-    return run;
-  }
-
-  async function ensureDefault() {
-    await mkdir(DEFAULT_WORKSPACE_PATH, { recursive: true });
-    return ensureDefaultWorkspace(ctx.workspaceRegistry, DEFAULT_WORKSPACE_PATH, DEFAULT_WORKSPACE_TITLE);
-  }
-
-  async function reconcileAllSessions() {
-    return serializeInvariant(async () => {
-      const defaultWorkspace = await ensureDefault();
-      const records = await ctx.sessionQuery.listSessions();
-      const result = await reconcileSessionWorkspaces(ctx.workspaceRegistry, records);
-      invariantState = {
-        hardConstraint: true,
-        ready: result.failures.length === 0 && result.ungroupedSessionIds.length === 0,
-        defaultWorkspace: {
-          id: defaultWorkspace.id,
-          title: defaultWorkspace.title,
-          path: defaultWorkspace.path,
-          sessionIds: [...defaultWorkspace.sessionIds],
-        },
-        ...result,
-        lastReconciledAt: new Date().toISOString(),
-      };
-      return invariantState;
-    });
-  }
-
-  async function attachSessionInvariant(record) {
-    return serializeInvariant(async () => {
-      await ensureDefault();
-      const workspace = await ensureSessionWorkspace(ctx.workspaceRegistry, record);
-      const records = await ctx.sessionQuery.listSessions();
-      const ungroupedSessionIds = records
-        .map((candidate) => String(sessionHeader(candidate)?.id || ""))
-        .filter((id) => id && workspaceForSession(ctx.workspaceRegistry.list(), id) === undefined);
-      invariantState = {
-        ...invariantState,
-        ready: ungroupedSessionIds.length === 0,
-        totalSessions: records.length,
-        groupedSessions: records.length - ungroupedSessionIds.length,
-        ungroupedSessionIds,
-        failures: [],
-        lastReconciledAt: new Date().toISOString(),
-      };
-      return workspace;
-    });
-  }
-
-  function requireInvariantReady(state) {
-    if (state.ready) return state;
-    throw new WorkspaceContractError(
-      "workspace_invariant_failed",
-      `workspace invariant rejected the operation: ${state.ungroupedSessionIds.length} ungrouped session(s), ${state.failures.length} attachment failure(s)`,
-    );
-  }
-
-  const initialInvariant = reconcileAllSessions().catch((error) => {
-    invariantState = {
-      ...invariantState,
-      ready: false,
-      failures: [{ sessionId: null, cwd: null, code: error?.code || "workspace_invariant_failed", detail: String(error?.message || error) }],
-      lastReconciledAt: new Date().toISOString(),
-    };
-    return invariantState;
-  });
-
-  const offSessionCreated = ctx.on("session/created", (session) => {
-    const header = sessionHeader(session);
-    if (typeof header?.cwd !== "string" || header.cwd.trim().length === 0) {
-      throw new WorkspaceContractError("session_workspace_required", `session ${String(header?.id || "")} has no cwd; every session must belong to a workspace`);
-    }
-    void attachSessionInvariant({ header }).catch((error) => {
-      invariantState = {
-        ...invariantState,
-        ready: false,
-        failures: [{ sessionId: String(header.id), cwd: header.cwd, code: error?.code || "workspace_invariant_failed", detail: String(error?.message || error) }],
-        lastReconciledAt: new Date().toISOString(),
-      };
-      ctx.logger.warn(`workspace invariant could not attach session ${String(header.id)}: ${String(error?.message || error)}`);
-    });
-  }, { global: true });
-
-  const defaultWorkspaceTimer = setInterval(() => {
-    void serializeInvariant(ensureDefault).catch((error) => {
-      ctx.logger.warn(`workspace invariant could not retain the default workspace: ${String(error?.message || error)}`);
-    });
-  }, 60000);
-  defaultWorkspaceTimer.unref?.();
 
   const offPrompt = ctx.on("llm/stream", (options, next) => {
     const sid = options.sessionId === undefined ? "" : String(options.sessionId);
@@ -229,44 +120,26 @@ export function apply(ctx) {
 
   const routes = [
     ctx.webServer.register({
-      kind: "exact", path: `${BASE}/health`, async handler(req, res) {
+      kind: "exact", path: `${BASE}/health`, handler(req, res) {
         if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
-        await initialInvariant;
-        sendJson(res, 200, { ok: invariantState.ready, value: { version: "0.1.3", traceRoot: traces.root, protocol: "dsh-codex-bridge/1", maxHops: 2, workspaceInvariant: invariantState } });
+        sendJson(res, 200, { ok: true, value: { version: "0.1.2", traceRoot: traces.root, protocol: "dsh-codex-bridge/1", maxHops: 2 } });
       },
     }),
     ctx.webServer.register({
-      kind: "exact", path: `${BASE}/workspace-invariant`, async handler(req, res) {
+      kind: "exact", path: `${BASE}/workspaces`, handler(req, res) {
         if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
-        const value = await reconcileAllSessions();
-        sendJson(res, value.ready ? 200 : 409, { ok: value.ready, value });
-      },
-    }),
-    ctx.webServer.register({
-      kind: "exact", path: `${BASE}/workspaces`, async handler(req, res) {
-        if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
-        requireInvariantReady(await reconcileAllSessions());
         sendJson(res, 200, { ok: true, value: ctx.workspaceRegistry.list().map((workspace) => ({
           id: workspace.id,
           title: workspace.title,
           path: workspace.path,
           sessionIds: [...workspace.sessionIds],
-          isDefault: workspace.path === DEFAULT_WORKSPACE_PATH,
         })) });
       },
     }),
     ctx.webServer.register({
       kind: "exact", path: `${BASE}/sessions`, async handler(req, res) {
         if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
-        try {
-          requireInvariantReady(await reconcileAllSessions());
-          const records = await ctx.sessionQuery.listSessions();
-          const workspaces = ctx.workspaceRegistry.list();
-          sendJson(res, 200, { ok: true, value: records.map((record) => {
-            const workspace = workspaceForSession(workspaces, sessionHeader(record)?.id);
-            return { ...record, workspace: workspace ? { id: workspace.id, title: workspace.title, path: workspace.path } : null };
-          }) });
-        }
+        try { sendJson(res, 200, { ok: true, value: await ctx.sessionQuery.listSessions() }); }
         catch (error) { sendJson(res, 500, { ok: false, error: "sessions_failed", detail: error.message }); }
       },
     }),
@@ -289,14 +162,12 @@ export function apply(ctx) {
           const inbound = normalizeEnvelope(body.envelope, "codex");
           const route = enterBridge(inbound, "codex", "dsh");
           if (!route.ok) return sendJson(res, 409, route);
-          requireInvariantReady(await initialInvariant);
           const cwd = await resolveWorkspaceDirectory(body.cwd);
           const sessionId = String(body.sessionId || `session-${randomUUID()}`);
           sessionEnvelopes.set(sessionId, route.envelope);
-          await ensureWorkspace(cwd);
           const agent = await acquireAgent(sessionId, cwd);
-          const workspace = await attachSessionInvariant({ header: agent.session.header });
-          requireInvariantReady(invariantState);
+          const workspace = await ensureWorkspace(cwd);
+          await workspace.attachSession(sessionId);
           await agent.whenIdle();
           const firstSeq = agent.session.seq;
           agent.followup(createUserMessage({ content: [{ type: "text", text }], source: { kind: "user" } }));
@@ -343,8 +214,6 @@ export function apply(ctx) {
   ];
 
   return async () => {
-    clearInterval(defaultWorkspaceTimer);
-    offSessionCreated();
     for (const off of routes.reverse()) off();
     offResearch();
     offContext();

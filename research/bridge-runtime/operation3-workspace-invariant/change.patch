@@ -1,0 +1,498 @@
+diff --git a/plugins/dsh-codex-bridge/lib/dsh-plugin.js b/plugins/dsh-codex-bridge/lib/dsh-plugin.js
+index 46050ff..1558757 100644
+--- a/plugins/dsh-codex-bridge/lib/dsh-plugin.js
++++ b/plugins/dsh-codex-bridge/lib/dsh-plugin.js
+@@ -1,13 +1,15 @@
+ import { randomUUID } from "node:crypto";
++import { mkdir } from "node:fs/promises";
+ import { createRequire } from "node:module";
+ import { homedir } from "node:os";
+-import { join } from "node:path";
++import { join, resolve } from "node:path";
+ import { pathToFileURL } from "node:url";
+ import { createEnvelope, enterBridge, normalizeEnvelope } from "./loop-guard.js";
+ import { PromptTraceStore } from "./trace-store.js";
+ import { query, readJsonBody, sendJson } from "./http-utils.js";
+ import { installCodexResearchTool } from "./codex-research.js";
+ import { assertWorkspaceMatch, resolveWorkspaceDirectory, WorkspaceContractError } from "./session-contract.js";
++import { ensureDefaultWorkspace, ensureSessionWorkspace, reconcileSessionWorkspaces, sessionHeader, workspaceForSession } from "./workspace-invariant.js";
+ 
+ const hostPackage = process.env.DSH_HOST_PACKAGE_JSON || join(
+   process.env.APPDATA || join(homedir(), "AppData", "Roaming"),
+@@ -25,6 +27,8 @@ const [{ installModelSelection }, { createUserMessage }, { SessionId }, { define
+ export const name = "dsh-codex-bridge";
+ export const inject = ["webServer", "agents", "sessions", "sessionQuery", "agentDefaultModel", "tools", "shell", "credentials", "systemPrompt", "workspaceRegistry"];
+ const BASE = "/__dsh-codex-bridge/v1";
++const DEFAULT_WORKSPACE_PATH = resolve(process.env.DSH_CODEX_DEFAULT_WORKSPACE || join(homedir(), ".dsh", "default-workspace"));
++const DEFAULT_WORKSPACE_TITLE = "默认工作区";
+ 
+ function setupModel(ctx) {
+   const selection = ctx.agentDefaultModel.currentSelection();
+@@ -68,12 +72,117 @@ export function apply(ctx) {
+   const traces = new PromptTraceStore();
+   const sessionEnvelopes = new Map();
+   const ownedHandles = new Map();
++  let invariantQueue = Promise.resolve();
++  let invariantState = {
++    hardConstraint: true,
++    ready: false,
++    defaultWorkspace: null,
++    totalSessions: 0,
++    groupedSessions: 0,
++    ungroupedSessionIds: [],
++    failures: [],
++    lastReconciledAt: null,
++  };
+ 
+   async function ensureWorkspace(cwd) {
+     const existing = await ctx.workspaceRegistry.resolveByPath(cwd);
+     return existing || ctx.workspaceRegistry.create(cwd);
+   }
+ 
++  function serializeInvariant(operation) {
++    const run = invariantQueue.then(operation, operation);
++    invariantQueue = run.then(() => undefined, () => undefined);
++    return run;
++  }
++
++  async function ensureDefault() {
++    await mkdir(DEFAULT_WORKSPACE_PATH, { recursive: true });
++    return ensureDefaultWorkspace(ctx.workspaceRegistry, DEFAULT_WORKSPACE_PATH, DEFAULT_WORKSPACE_TITLE);
++  }
++
++  async function reconcileAllSessions() {
++    return serializeInvariant(async () => {
++      const defaultWorkspace = await ensureDefault();
++      const records = await ctx.sessionQuery.listSessions();
++      const result = await reconcileSessionWorkspaces(ctx.workspaceRegistry, records);
++      invariantState = {
++        hardConstraint: true,
++        ready: result.failures.length === 0 && result.ungroupedSessionIds.length === 0,
++        defaultWorkspace: {
++          id: defaultWorkspace.id,
++          title: defaultWorkspace.title,
++          path: defaultWorkspace.path,
++          sessionIds: [...defaultWorkspace.sessionIds],
++        },
++        ...result,
++        lastReconciledAt: new Date().toISOString(),
++      };
++      return invariantState;
++    });
++  }
++
++  async function attachSessionInvariant(record) {
++    return serializeInvariant(async () => {
++      await ensureDefault();
++      const workspace = await ensureSessionWorkspace(ctx.workspaceRegistry, record);
++      const records = await ctx.sessionQuery.listSessions();
++      const ungroupedSessionIds = records
++        .map((candidate) => String(sessionHeader(candidate)?.id || ""))
++        .filter((id) => id && workspaceForSession(ctx.workspaceRegistry.list(), id) === undefined);
++      invariantState = {
++        ...invariantState,
++        ready: ungroupedSessionIds.length === 0,
++        totalSessions: records.length,
++        groupedSessions: records.length - ungroupedSessionIds.length,
++        ungroupedSessionIds,
++        failures: [],
++        lastReconciledAt: new Date().toISOString(),
++      };
++      return workspace;
++    });
++  }
++
++  function requireInvariantReady(state) {
++    if (state.ready) return state;
++    throw new WorkspaceContractError(
++      "workspace_invariant_failed",
++      `workspace invariant rejected the operation: ${state.ungroupedSessionIds.length} ungrouped session(s), ${state.failures.length} attachment failure(s)`,
++    );
++  }
++
++  const initialInvariant = reconcileAllSessions().catch((error) => {
++    invariantState = {
++      ...invariantState,
++      ready: false,
++      failures: [{ sessionId: null, cwd: null, code: error?.code || "workspace_invariant_failed", detail: String(error?.message || error) }],
++      lastReconciledAt: new Date().toISOString(),
++    };
++    return invariantState;
++  });
++
++  const offSessionCreated = ctx.on("session/created", (session) => {
++    const header = sessionHeader(session);
++    if (typeof header?.cwd !== "string" || header.cwd.trim().length === 0) {
++      throw new WorkspaceContractError("session_workspace_required", `session ${String(header?.id || "")} has no cwd; every session must belong to a workspace`);
++    }
++    void attachSessionInvariant({ header }).catch((error) => {
++      invariantState = {
++        ...invariantState,
++        ready: false,
++        failures: [{ sessionId: String(header.id), cwd: header.cwd, code: error?.code || "workspace_invariant_failed", detail: String(error?.message || error) }],
++        lastReconciledAt: new Date().toISOString(),
++      };
++      ctx.logger.warn(`workspace invariant could not attach session ${String(header.id)}: ${String(error?.message || error)}`);
++    });
++  }, { global: true });
++
++  const defaultWorkspaceTimer = setInterval(() => {
++    void serializeInvariant(ensureDefault).catch((error) => {
++      ctx.logger.warn(`workspace invariant could not retain the default workspace: ${String(error?.message || error)}`);
++    });
++  }, 60000);
++  defaultWorkspaceTimer.unref?.();
++
+   const offPrompt = ctx.on("llm/stream", (options, next) => {
+     const sid = options.sessionId === undefined ? "" : String(options.sessionId);
+     traces.capture(options, sessionEnvelopes.get(sid));
+@@ -120,26 +229,44 @@ export function apply(ctx) {
+ 
+   const routes = [
+     ctx.webServer.register({
+-      kind: "exact", path: `${BASE}/health`, handler(req, res) {
++      kind: "exact", path: `${BASE}/health`, async handler(req, res) {
+         if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
+-        sendJson(res, 200, { ok: true, value: { version: "0.1.2", traceRoot: traces.root, protocol: "dsh-codex-bridge/1", maxHops: 2 } });
++        await initialInvariant;
++        sendJson(res, 200, { ok: invariantState.ready, value: { version: "0.1.3", traceRoot: traces.root, protocol: "dsh-codex-bridge/1", maxHops: 2, workspaceInvariant: invariantState } });
+       },
+     }),
+     ctx.webServer.register({
+-      kind: "exact", path: `${BASE}/workspaces`, handler(req, res) {
++      kind: "exact", path: `${BASE}/workspace-invariant`, async handler(req, res) {
+         if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
++        const value = await reconcileAllSessions();
++        sendJson(res, value.ready ? 200 : 409, { ok: value.ready, value });
++      },
++    }),
++    ctx.webServer.register({
++      kind: "exact", path: `${BASE}/workspaces`, async handler(req, res) {
++        if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
++        requireInvariantReady(await reconcileAllSessions());
+         sendJson(res, 200, { ok: true, value: ctx.workspaceRegistry.list().map((workspace) => ({
+           id: workspace.id,
+           title: workspace.title,
+           path: workspace.path,
+           sessionIds: [...workspace.sessionIds],
++          isDefault: workspace.path === DEFAULT_WORKSPACE_PATH,
+         })) });
+       },
+     }),
+     ctx.webServer.register({
+       kind: "exact", path: `${BASE}/sessions`, async handler(req, res) {
+         if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
+-        try { sendJson(res, 200, { ok: true, value: await ctx.sessionQuery.listSessions() }); }
++        try {
++          requireInvariantReady(await reconcileAllSessions());
++          const records = await ctx.sessionQuery.listSessions();
++          const workspaces = ctx.workspaceRegistry.list();
++          sendJson(res, 200, { ok: true, value: records.map((record) => {
++            const workspace = workspaceForSession(workspaces, sessionHeader(record)?.id);
++            return { ...record, workspace: workspace ? { id: workspace.id, title: workspace.title, path: workspace.path } : null };
++          }) });
++        }
+         catch (error) { sendJson(res, 500, { ok: false, error: "sessions_failed", detail: error.message }); }
+       },
+     }),
+@@ -162,12 +289,14 @@ export function apply(ctx) {
+           const inbound = normalizeEnvelope(body.envelope, "codex");
+           const route = enterBridge(inbound, "codex", "dsh");
+           if (!route.ok) return sendJson(res, 409, route);
++          requireInvariantReady(await initialInvariant);
+           const cwd = await resolveWorkspaceDirectory(body.cwd);
+           const sessionId = String(body.sessionId || `session-${randomUUID()}`);
+           sessionEnvelopes.set(sessionId, route.envelope);
++          await ensureWorkspace(cwd);
+           const agent = await acquireAgent(sessionId, cwd);
+-          const workspace = await ensureWorkspace(cwd);
+-          await workspace.attachSession(sessionId);
++          const workspace = await attachSessionInvariant({ header: agent.session.header });
++          requireInvariantReady(invariantState);
+           await agent.whenIdle();
+           const firstSeq = agent.session.seq;
+           agent.followup(createUserMessage({ content: [{ type: "text", text }], source: { kind: "user" } }));
+@@ -214,6 +343,8 @@ export function apply(ctx) {
+   ];
+ 
+   return async () => {
++    clearInterval(defaultWorkspaceTimer);
++    offSessionCreated();
+     for (const off of routes.reverse()) off();
+     offResearch();
+     offContext();
+diff --git a/plugins/dsh-codex-bridge/lib/mcp-server.js b/plugins/dsh-codex-bridge/lib/mcp-server.js
+index b1b53d5..0c6dc0c 100644
+--- a/plugins/dsh-codex-bridge/lib/mcp-server.js
++++ b/plugins/dsh-codex-bridge/lib/mcp-server.js
+@@ -5,10 +5,11 @@ import * as z from "zod/v4";
+ import { assertMcpEntryAllowed, createEnvelope } from "./loop-guard.js";
+ import { instanceStatus, request, restartInstance, runPluginCommand, startInstance, stopInstance } from "./dsh-client.js";
+ 
+-const server = new McpServer({ name: "dsh-control", version: "0.1.2" }, {
++const server = new McpServer({ name: "dsh-control", version: "0.1.3" }, {
+   instructions: [
+     "Control the local DeepSeek Harness instance, conversations, plugins, and exact final LLM prompt traces.",
+     "Every Codex-to-DSH conversation must use the bridge envelope returned by this server.",
++    "Every DSH session must be attached to the workspace matching its cwd; a durable default workspace is retained and ungrouped sessions are reconciled before listing.",
+     "Hard loop rule: when DSH_CODEX_BRIDGE_ORIGIN=dsh, all DSH re-entry tools return loop_blocked.",
+     "Prompt traces are read-only snapshots. Future memory plugins should modify prompt assembly through DSH systemPrompt contributions, not by mutating llm/stream requests.",
+   ].join(" "),
+@@ -56,6 +57,12 @@ server.registerTool("dsh_conversation_list", {
+   annotations: { readOnlyHint: true, openWorldHint: false },
+ }, async () => result(await request("/__dsh-codex-bridge/v1/sessions")));
+ 
++server.registerTool("dsh_workspace_status", {
++  description: "Enforce and report the DSH workspace invariant. Retains the default workspace and attaches every known session to the workspace matching its cwd.",
++  inputSchema: {},
++  annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
++}, async () => result(await request("/__dsh-codex-bridge/v1/workspace-invariant")));
++
+ server.registerTool("dsh_conversation_get", {
+   description: "Read the complete event log and latest assistant text for one DSH conversation.",
+   inputSchema: { sessionId: z.string().min(1) },
+diff --git a/plugins/dsh-codex-bridge/lib/workspace-invariant.js b/plugins/dsh-codex-bridge/lib/workspace-invariant.js
+new file mode 100644
+index 0000000..679b512
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/lib/workspace-invariant.js
+@@ -0,0 +1,74 @@
++export class WorkspaceInvariantError extends Error {
++  constructor(code, message) {
++    super(message);
++    this.name = "WorkspaceInvariantError";
++    this.code = code;
++  }
++}
++
++export function sessionHeader(record) {
++  return record?.header || record;
++}
++
++export function workspaceForSession(workspaces, sessionId) {
++  const id = String(sessionId || "");
++  return workspaces.find((workspace) => [...workspace.sessionIds].some((candidate) => String(candidate) === id));
++}
++
++export function ungroupedSessionIds(records, workspaces) {
++  return records
++    .map((record) => String(sessionHeader(record)?.id || ""))
++    .filter((id) => id && workspaceForSession(workspaces, id) === undefined);
++}
++
++export async function ensureDefaultWorkspace(workspaceRegistry, path, title = "默认工作区") {
++  const existing = await workspaceRegistry.resolveByPath(path);
++  return existing || workspaceRegistry.create(path, title);
++}
++
++export async function ensureSessionWorkspace(workspaceRegistry, record) {
++  const header = sessionHeader(record);
++  const sessionId = String(header?.id || "");
++  if (!sessionId) throw new WorkspaceInvariantError("session_id_required", "workspace invariant requires a session id");
++  if (typeof header?.cwd !== "string" || header.cwd.trim().length === 0) {
++    throw new WorkspaceInvariantError("session_workspace_required", `session ${sessionId} has no cwd and may not be created without a workspace`);
++  }
++  const workspace = await workspaceRegistry.resolveByPath(header.cwd)
++    || await workspaceRegistry.create(header.cwd);
++  await workspace.attachSession(sessionId);
++  if (![...workspace.sessionIds].some((candidate) => String(candidate) === sessionId)) {
++    throw new WorkspaceInvariantError("session_workspace_attach_failed", `session ${sessionId} was not retained by workspace ${workspace.path}`);
++  }
++  return workspace;
++}
++
++export async function reconcileSessionWorkspaces(workspaceRegistry, records) {
++  const before = workspaceRegistry.list();
++  const beforeUngrouped = new Set(ungroupedSessionIds(records, before));
++  const failures = [];
++  let attached = 0;
++
++  for (const record of records) {
++    const header = sessionHeader(record);
++    try {
++      await ensureSessionWorkspace(workspaceRegistry, record);
++      if (beforeUngrouped.has(String(header.id))) attached += 1;
++    } catch (error) {
++      failures.push({
++        sessionId: String(header?.id || ""),
++        cwd: header?.cwd || null,
++        code: error?.code || "workspace_invariant_failed",
++        detail: String(error?.message || error),
++      });
++    }
++  }
++
++  const after = workspaceRegistry.list();
++  return {
++    totalSessions: records.length,
++    attached,
++    groupedSessions: records.length - ungroupedSessionIds(records, after).length,
++    ungroupedSessionIds: ungroupedSessionIds(records, after),
++    failures,
++  };
++}
+diff --git a/plugins/dsh-codex-bridge/package-lock.json b/plugins/dsh-codex-bridge/package-lock.json
+index 272cfb4..3d0bd3b 100644
+--- a/plugins/dsh-codex-bridge/package-lock.json
++++ b/plugins/dsh-codex-bridge/package-lock.json
+@@ -1,12 +1,12 @@
+ {
+   "name": "dsh-codex-bridge",
+-  "version": "0.1.2",
++  "version": "0.1.3",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+       "name": "dsh-codex-bridge",
+-      "version": "0.1.2",
++      "version": "0.1.3",
+       "license": "MIT",
+       "dependencies": {
+         "@modelcontextprotocol/sdk": "^1.30.0",
+diff --git a/plugins/dsh-codex-bridge/package.json b/plugins/dsh-codex-bridge/package.json
+index 25bb6fe..2b15316 100644
+--- a/plugins/dsh-codex-bridge/package.json
++++ b/plugins/dsh-codex-bridge/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "dsh-codex-bridge",
+-  "version": "0.1.2",
++  "version": "0.1.3",
+   "description": "Bidirectional DSH/Codex bridge with prompt tracing and hard loop prevention.",
+   "type": "module",
+   "main": "./lib/dsh-plugin.js",
+diff --git a/plugins/dsh-codex-bridge/scripts/verify.mjs b/plugins/dsh-codex-bridge/scripts/verify.mjs
+index a504abe..1b31f92 100644
+--- a/plugins/dsh-codex-bridge/scripts/verify.mjs
++++ b/plugins/dsh-codex-bridge/scripts/verify.mjs
+@@ -25,7 +25,13 @@ try {
+   const tools = await client.listTools();
+   const conversationSend = tools.tools.find((entry) => entry.name === "dsh_conversation_send");
+   const conversationRequired = conversationSend?.inputSchema?.required || [];
++  const missingCwd = await client.callTool({
++    name: "dsh_conversation_send",
++    arguments: { message: "workspace contract validation only" },
++  }, undefined, { timeout: 10000 });
++  const missingCwdRejected = missingCwd.isError === true;
+   const status = await call("dsh_instance_status");
++  const workspaceInvariant = await call("dsh_workspace_status");
+   const plugins = await call("dsh_plugin_list");
+   const workspaces = await request("/__dsh-codex-bridge/v1/workspaces");
+   const groupedSessionIds = new Set((workspaces.value || []).flatMap((workspace) => workspace.sessionIds || []));
+@@ -44,8 +50,12 @@ try {
+   const summary = {
+     ok: Boolean(
+       status.ok && status.running && status.bridge?.ok &&
+-      tools.tools.length === 12 &&
++      tools.tools.length === 13 &&
+       conversationRequired.includes("cwd") &&
++      missingCwdRejected &&
++      workspaceInvariant.ok && workspaceInvariant.value?.hardConstraint === true &&
++      workspaceInvariant.value?.defaultWorkspace?.id &&
++      workspaceInvariant.value?.ungroupedSessionIds?.length === 0 &&
+       workspaces.ok && groupedSessionIds.has(prompt?.value?.sessionId) &&
+       pluginItems.some((entry) => entry.name === "dsh-codex-bridge") &&
+       prompt?.ok && prompt.value?.request?.system && Array.isArray(prompt.value?.request?.messages) &&
+@@ -54,8 +64,10 @@ try {
+     mcp: { toolCount: tools.tools.length, toolNames: tools.tools.map((entry) => entry.name) },
+     sessionContract: {
+       cwdRequired: conversationRequired.includes("cwd"),
++      missingCwdRejected,
+       cwdDescription: conversationSend?.inputSchema?.properties?.cwd?.description || null,
+     },
++    workspaceInvariant,
+     workspaceGrouping: {
+       workspaceCount: workspaces.value?.length || 0,
+       sessionId: prompt?.value?.sessionId || null,
+diff --git a/plugins/dsh-codex-bridge/test/workspace-invariant.test.js b/plugins/dsh-codex-bridge/test/workspace-invariant.test.js
+new file mode 100644
+index 0000000..c588ba5
+--- /dev/null
++++ b/plugins/dsh-codex-bridge/test/workspace-invariant.test.js
+@@ -0,0 +1,85 @@
++import assert from "node:assert/strict";
++import test from "node:test";
++import {
++  ensureDefaultWorkspace,
++  ensureSessionWorkspace,
++  reconcileSessionWorkspaces,
++  ungroupedSessionIds,
++  WorkspaceInvariantError,
++} from "../lib/workspace-invariant.js";
++
++function registryFixture(initial = []) {
++  const workspaces = initial.map((entry) => ({ ...entry, sessionIds: [...entry.sessionIds] }));
++  const headers = new Map();
++  const registry = {
++    headers,
++    list: () => workspaces,
++    async resolveByPath(path) { return workspaces.find((entry) => entry.path === path); },
++    async create(path, title) {
++      const workspace = {
++        id: `workspace-${workspaces.length + 1}`,
++        path,
++        title: title || path.split(/[\\/]/).at(-1),
++        sessionIds: [],
++        async attachSession(id) {
++          const header = headers.get(String(id));
++          if (!header || header.cwd !== path) throw new Error("cwd mismatch");
++          if (!this.sessionIds.includes(String(id))) this.sessionIds.unshift(String(id));
++        },
++      };
++      workspaces.unshift(workspace);
++      return workspace;
++    },
++  };
++  for (const workspace of workspaces) {
++    workspace.attachSession ||= async function attachSession(id) {
++      const header = headers.get(String(id));
++      if (!header || header.cwd !== this.path) throw new Error("cwd mismatch");
++      if (!this.sessionIds.includes(String(id))) this.sessionIds.unshift(String(id));
++    };
++  }
++  return registry;
++}
++
++test("creates and retains a default workspace", async () => {
++  const registry = registryFixture();
++  const workspace = await ensureDefaultWorkspace(registry, "C:\\default");
++  assert.equal(workspace.title, "默认工作区");
++  assert.equal(registry.list().length, 1);
++  assert.equal(await ensureDefaultWorkspace(registry, "C:\\default"), workspace);
++});
++
++test("hard rejects a session without cwd", async () => {
++  const registry = registryFixture();
++  await assert.rejects(
++    ensureSessionWorkspace(registry, { header: { id: "session-no-cwd" } }),
++    (error) => error instanceof WorkspaceInvariantError && error.code === "session_workspace_required",
++  );
++});
++
++test("reconciles every persisted session into its cwd workspace", async () => {
++  const registry = registryFixture();
++  const records = [
++    { header: { id: "session-a", cwd: "E:\\alpha" } },
++    { header: { id: "session-b", cwd: "E:\\beta" } },
++  ];
++  for (const record of records) registry.headers.set(record.header.id, record.header);
++  const result = await reconcileSessionWorkspaces(registry, records);
++  assert.deepEqual(result, {
++    totalSessions: 2,
++    attached: 2,
++    groupedSessions: 2,
++    ungroupedSessionIds: [],
++    failures: [],
++  });
++  assert.deepEqual(ungroupedSessionIds(records, registry.list()), []);
++});
++
++test("reports a workspace attachment failure as an invariant violation", async () => {
++  const registry = registryFixture();
++  const records = [{ header: { id: "session-missing-header", cwd: "E:\\alpha" } }];
++  const result = await reconcileSessionWorkspaces(registry, records);
++  assert.equal(result.groupedSessions, 0);
++  assert.deepEqual(result.ungroupedSessionIds, ["session-missing-header"]);
++  assert.equal(result.failures.length, 1);
++});
