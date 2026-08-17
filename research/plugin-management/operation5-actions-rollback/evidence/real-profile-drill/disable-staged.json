@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "stagedAt": "2026-08-17T11:22:38.942Z",
+  "result": "DISABLE STAGED",
+  "profileRoot": "C:\\Users\\19739\\.dsh\\profiles\\web",
+  "packageName": "dsh-notification",
+  "originalIndex": 9,
+  "liveRuntimeRestarted": false,
+  "backup": {
+    "path": "C:\\Users\\19739\\.dsh\\control-center\\snapshots\\2026-08-17T11-22-38-907Z-real-stage-disable-dsh-notification",
+    "manifestPath": "C:\\Users\\19739\\.dsh\\control-center\\snapshots\\2026-08-17T11-22-38-907Z-real-stage-disable-dsh-notification\\manifest.json",
+    "manifestSha256": "2AE0053DC421AF70A30BED99FB51F9EBB543D2EFCC6AD563FB9A9BCA244B0C08",
+    "files": [
+      {
+        "relativePath": "package.json",
+        "bytes": 2779,
+        "sha256": "CC8B82C9C5AFB4C616484292A41E59CB5D6008FB74BF79ADEE138D61C7E0CCEE"
+      },
+      {
+        "relativePath": "pnpm-lock.yaml",
+        "bytes": 29180,
+        "sha256": "6747E099BA23F07CB5D94D693D24DD0EA517B7AD2A3215DAC6E3DB42DE698131"
+      },
+      {
+        "relativePath": "cordis.yml",
+        "bytes": 223,
+        "sha256": "C300DCF2EBC5F02062D6591268D29D3DB6FE45E0CB138F5467276FE2BA06076E"
+      },
+      {
+        "relativePath": "cordis.patch.yml",
+        "bytes": 99,
+        "sha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354"
+      }
+    ]
+  },
+  "evidenceBackupPath": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\real-profile-drill\\backup",
+  "beforeHashes": {
+    "package.json": {
+      "relativePath": "package.json",
+      "bytes": 2779,
+      "sha256": "CC8B82C9C5AFB4C616484292A41E59CB5D6008FB74BF79ADEE138D61C7E0CCEE"
+    },
+    "pnpm-lock.yaml": {
+      "relativePath": "pnpm-lock.yaml",
+      "bytes": 29180,
+      "sha256": "6747E099BA23F07CB5D94D693D24DD0EA517B7AD2A3215DAC6E3DB42DE698131"
+    },
+    "cordis.yml": {
+      "relativePath": "cordis.yml",
+      "bytes": 223,
+      "sha256": "C300DCF2EBC5F02062D6591268D29D3DB6FE45E0CB138F5467276FE2BA06076E"
+    },
+    "cordis.patch.yml": {
+      "relativePath": "cordis.patch.yml",
+      "bytes": 99,
+      "sha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354"
+    }
+  },
+  "disabled": {
+    "action": "stage-disable",
+    "packageName": "dsh-notification",
+    "changed": true,
+    "beforeIndex": 9,
+    "afterIndex": -1,
+    "beforeSha256": "CC8B82C9C5AFB4C616484292A41E59CB5D6008FB74BF79ADEE138D61C7E0CCEE",
+    "afterSha256": "0ED71A7CF9DC2666B3C696762C6B4F312017DA75DE0F1B8DD660238A36C20642",
+    "restartRequired": true
+  },
+  "afterHashes": {
+    "package.json": {
+      "relativePath": "package.json",
+      "bytes": 1555,
+      "sha256": "0ED71A7CF9DC2666B3C696762C6B4F312017DA75DE0F1B8DD660238A36C20642"
+    },
+    "pnpm-lock.yaml": {
+      "relativePath": "pnpm-lock.yaml",
+      "bytes": 29180,
+      "sha256": "6747E099BA23F07CB5D94D693D24DD0EA517B7AD2A3215DAC6E3DB42DE698131"
+    },
+    "cordis.yml": {
+      "relativePath": "cordis.yml",
+      "bytes": 223,
+      "sha256": "C300DCF2EBC5F02062D6591268D29D3DB6FE45E0CB138F5467276FE2BA06076E"
+    },
+    "cordis.patch.yml": {
+      "relativePath": "cordis.patch.yml",
+      "bytes": 99,
+      "sha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354"
+    }
+  },
+  "nextStep": "Manual Harness restart, then verify dsh-notification is absent from the runtime inventory."
+}

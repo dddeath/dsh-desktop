@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "stagedAt": "2026-08-17T11:29:25.671Z",
+  "result": "DISABLE STAGED - ATTEMPT 2 STABLE",
+  "profileRoot": "C:\\Users\\19739\\.dsh\\profiles\\web",
+  "packageName": "dsh-notification",
+  "originalIndex": 16,
+  "liveRuntimeRestarted": false,
+  "marketBefore": {
+    "active": false,
+    "target": "github:vlln/whale-girl",
+    "seconds": 0,
+    "lastLine": "",
+    "phase": "linking",
+    "done": 70,
+    "total": null,
+    "currentPackage": "https://codeload.github.com/vlln/whale-girl/tar.gz/86ee730423b801970a6e799d6cd97e5fd9bf912c",
+    "downloaded": null,
+    "size": 3261758,
+    "ndjson": true,
+    "error": null,
+    "cancelling": false,
+    "pnpm": true,
+    "boot": "18192-1786964562003",
+    "restart": true,
+    "installed": {
+      "@dsh-external/dsh-client-ui-skin-maid-atelier": "github:Small-tailqwq/dsh-deep-whale#path:/maid-atelier",
+      "@liustack/modlens": "^3.17.3",
+      "dsh-arknights": "github:DocJlm/dsh-arknights#path:/skins/pramanix-eyjafjalla",
+      "dsh-at-file": "github:omdsh-dev/dsh-at-file",
+      "dsh-better-sidebar": "^0.12.2",
+      "dsh-codex-tools": "github:SPYQWER1/dsh-codex-tools#9519949dd340ff07a7ef8182692704d2487ce690",
+      "dsh-context": "^0.9.0",
+      "dsh-deep-whale": "github:Small-tailqwq/dsh-deep-whale",
+      "dsh-desktop-ui-compat": "link:E:/deepseek_harness/themes/desktop-ui-compat",
+      "dsh-find-plugin": "^0.3.6",
+      "dsh-maid-atelier-fix": "link:E:/deepseek_harness/themes/maid-atelier-fix",
+      "dsh-notification": "github:omdsh-dev/dsh-notification",
+      "dsh-open-in-vscode": "github:omdsh-dev/dsh-open-in-vscode",
+      "dsh-plugin-control-center": "link:E:/deepseek_harness/plugins/plugin-control-center",
+      "dshmarket": "^1.5.0",
+      "whale-girl": "github:vlln/whale-girl"
+    }
+  },
+  "marketAfter": {
+    "active": false,
+    "target": "github:vlln/whale-girl",
+    "seconds": 0,
+    "lastLine": "",
+    "phase": "linking",
+    "done": 70,
+    "total": null,
+    "currentPackage": "https://codeload.github.com/vlln/whale-girl/tar.gz/86ee730423b801970a6e799d6cd97e5fd9bf912c",
+    "downloaded": null,
+    "size": 3261758,
+    "ndjson": true,
+    "error": null,
+    "cancelling": false,
+    "pnpm": true,
+    "boot": "18192-1786964562003",
+    "restart": true,
+    "installed": {
+      "@dsh-external/dsh-client-ui-skin-maid-atelier": "github:Small-tailqwq/dsh-deep-whale#path:/maid-atelier",
+      "@liustack/modlens": "^3.17.3",
+      "dsh-arknights": "github:DocJlm/dsh-arknights#path:/skins/pramanix-eyjafjalla",
+      "dsh-at-file": "github:omdsh-dev/dsh-at-file",
+      "dsh-better-sidebar": "^0.12.2",
+      "dsh-codex-tools": "github:SPYQWER1/dsh-codex-tools#9519949dd340ff07a7ef8182692704d2487ce690",
+      "dsh-context": "^0.9.0",
+      "dsh-deep-whale": "github:Small-tailqwq/dsh-deep-whale",
+      "dsh-desktop-ui-compat": "link:E:/deepseek_harness/themes/desktop-ui-compat",
+      "dsh-find-plugin": "^0.3.6",
+      "dsh-maid-atelier-fix": "link:E:/deepseek_harness/themes/maid-atelier-fix",
+      "dsh-notification": "github:omdsh-dev/dsh-notification",
+      "dsh-open-in-vscode": "github:omdsh-dev/dsh-open-in-vscode",
+      "dsh-plugin-control-center": "link:E:/deepseek_harness/plugins/plugin-control-center",
+      "dshmarket": "^1.5.0",
+      "whale-girl": "github:vlln/whale-girl"
+    }
+  },
+  "backup": {
+    "path": "C:\\Users\\19739\\.dsh\\control-center\\snapshots\\2026-08-17T11-29-24-114Z-real-stage-disable-attempt-2-dsh-notification",
+    "manifestPath": "C:\\Users\\19739\\.dsh\\control-center\\snapshots\\2026-08-17T11-29-24-114Z-real-stage-disable-attempt-2-dsh-notification\\manifest.json",
+    "manifestSha256": "48103B4E48548438CE5E544084CCA0A8EB27CF06B4D0879781088080A12A867F",
+    "files": [
+      {
+        "relativePath": "package.json",
+        "bytes": 1644,
+        "sha256": "9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD"
+      },
+      {
+        "relativePath": "pnpm-lock.yaml",
+        "bytes": 29938,
+        "sha256": "BA8E4D3DEC6E2C0066FD52C809E49A52919D40341923BAADC6B70C7455992EF4"
+      },
+      {
+        "relativePath": "cordis.yml",
+        "bytes": 223,
+        "sha256": "C300DCF2EBC5F02062D6591268D29D3DB6FE45E0CB138F5467276FE2BA06076E"
+      },
+      {
+        "relativePath": "cordis.patch.yml",
+        "bytes": 99,
+        "sha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354"
+      }
+    ]
+  },
+  "evidenceBackupPath": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\real-profile-drill\\attempt-2-backup",
+  "beforeHashes": {
+    "package.json": {
+      "relativePath": "package.json",
+      "bytes": 1644,
+      "sha256": "9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD"
+    },
+    "pnpm-lock.yaml": {
+      "relativePath": "pnpm-lock.yaml",
+      "bytes": 29938,
+      "sha256": "BA8E4D3DEC6E2C0066FD52C809E49A52919D40341923BAADC6B70C7455992EF4"
+    },
+    "cordis.yml": {
+      "relativePath": "cordis.yml",
+      "bytes": 223,
+      "sha256": "C300DCF2EBC5F02062D6591268D29D3DB6FE45E0CB138F5467276FE2BA06076E"
+    },
+    "cordis.patch.yml": {
+      "relativePath": "cordis.patch.yml",
+      "bytes": 99,
+      "sha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354"
+    }
+  },
+  "preservedProfileFacts": {
+    "modlens": "^3.17.3",
+    "deepWhale": "github:Small-tailqwq/dsh-deep-whale",
+    "whaleGirl": "github:vlln/whale-girl",
+    "dependencyCount": 16,
+    "bundleCount": 17
+  },
+  "disabled": {
+    "action": "stage-disable",
+    "packageName": "dsh-notification",
+    "changed": true,
+    "beforeIndex": 16,
+    "afterIndex": -1,
+    "beforeSha256": "9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD",
+    "afterSha256": "26ED570729E14BDF4D3813CF7C00B31BC70E2AAE84050140A2D7C9183CDC232B",
+    "restartRequired": true
+  },
+  "afterHashes": {
+    "package.json": {
+      "relativePath": "package.json",
+      "bytes": 1616,
+      "sha256": "26ED570729E14BDF4D3813CF7C00B31BC70E2AAE84050140A2D7C9183CDC232B"
+    },
+    "pnpm-lock.yaml": {
+      "relativePath": "pnpm-lock.yaml",
+      "bytes": 29938,
+      "sha256": "BA8E4D3DEC6E2C0066FD52C809E49A52919D40341923BAADC6B70C7455992EF4"
+    },
+    "cordis.yml": {
+      "relativePath": "cordis.yml",
+      "bytes": 223,
+      "sha256": "C300DCF2EBC5F02062D6591268D29D3DB6FE45E0CB138F5467276FE2BA06076E"
+    },
+    "cordis.patch.yml": {
+      "relativePath": "cordis.patch.yml",
+      "bytes": 99,
+      "sha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354"
+    }
+  },
+  "nextStep": "Manual Harness restart, then verify dsh-notification is absent from the runtime inventory."
+}

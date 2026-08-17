@@ -1,0 +1,44 @@
+{
+    "name":  "dsh-profile-web",
+    "private":  true,
+    "dependencies":  {
+                         "@dsh-external/dsh-client-ui-skin-maid-atelier":  "github:Small-tailqwq/dsh-deep-whale#path:/maid-atelier",
+                         "@liustack/modlens":  "^3.16.7",
+                         "dsh-arknights":  "github:DocJlm/dsh-arknights#path:/skins/pramanix-eyjafjalla",
+                         "dsh-at-file":  "github:omdsh-dev/dsh-at-file",
+                         "dsh-better-sidebar":  "^0.12.2",
+                         "dsh-codex-tools":  "github:SPYQWER1/dsh-codex-tools#9519949dd340ff07a7ef8182692704d2487ce690",
+                         "dsh-context":  "^0.7.3",
+                         "dsh-desktop-ui-compat":  "link:E:/deepseek_harness/themes/desktop-ui-compat",
+                         "dsh-find-plugin":  "^0.3.6",
+                         "dsh-maid-atelier-fix":  "link:E:/deepseek_harness/themes/maid-atelier-fix",
+                         "dsh-notification":  "github:omdsh-dev/dsh-notification",
+                         "dsh-open-in-vscode":  "github:omdsh-dev/dsh-open-in-vscode",
+                         "dsh-plugin-control-center":  "link:E:/deepseek_harness/plugins/plugin-control-center",
+                         "dshmarket":  "^1.5.0",
+                         "whale-girl":  "github:vlln/whale-girl"
+                     },
+    "dsh":  {
+                "profile":  {
+                                "bundles":  [
+                                                "@deepseek-ai/dsh-base",
+                                                "@deepseek-ai/dsh-web-app",
+                                                "dshmarket",
+                                                "dsh-plugin-control-center",
+                                                "dsh-find-plugin",
+                                                "@liustack/modlens",
+                                                "dsh-at-file",
+                                                "dsh-better-sidebar",
+                                                "dsh-context",
+                                                "dsh-notification",
+                                                "dsh-open-in-vscode",
+                                                "whale-girl",
+                                                "@dsh-external/dsh-client-ui-skin-maid-atelier",
+                                                "dsh-maid-atelier-fix",
+                                                "dsh-codex-tools",
+                                                "dsh-desktop-ui-compat",
+                                                "dsh-arknights"
+                                            ]
+                            }
+            }
+}

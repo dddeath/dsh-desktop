@@ -1,34 +1,32 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-17T11:31:52.310Z",
+  "updated_at": "2026-08-17T19:23:46+08:00",
   "status": "awaiting_user_validation",
   "current_phase": "phase3",
-  "latest_result": "Phase 3 operation 4 real drill attempt 2 is stably staged: dsh-notification is removed from the settled profile while the new dsh-deep-whale, whale-girl, and ModLens changes are preserved; the old runtime remains active until manual restart.",
-  "next_action": "User manually restarts Harness and confirms desktop health plus dsh-notification installed-disabled state; then Codex verifies the stopped runtime and stages restore from the attempt-2 backup.",
+  "latest_result": "Phase 3 operation 4 real drill has staged dsh-notification disable after a verified backup; composed config and the control-center snapshot show it disabled, while the old runtime remains active until manual restart.",
+  "next_action": "User manually restarts Harness, then confirms dsh-notification is absent and the desktop remains healthy before the prepared restore is executed.",
   "blockers": [],
   "state_dir": "E:\\deepseek_harness\\.agent",
   "last_verification": {
-    "kind": "phase3_plugin_management_real_disable_staged_attempt_2",
+    "kind": "phase3_plugin_management_real_disable_staged",
     "phase": "phase3-operation4",
     "passed": true,
     "manual_gate_status": "awaiting_real_disable_restart",
-    "completed_at": "2026-08-17T11:31:52.310Z",
-    "evidence": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\real-profile-drill\\staged-verification-attempt-2.json",
+    "completed_at": "2026-08-17T19:23:46+08:00",
+    "evidence": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\real-profile-drill\\disable-staged.json",
     "outputs": {
       "package": "dsh-notification",
-      "original_bundle_index": 16,
+      "original_bundle_index": 9,
       "staged_bundle_index": -1,
-      "before_package_sha256": "9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD",
-      "disabled_package_sha256": "26ED570729E14BDF4D3813CF7C00B31BC70E2AAE84050140A2D7C9183CDC232B",
-      "backup_manifest_sha256": "48103B4E48548438CE5E544084CCA0A8EB27CF06B4D0879781088080A12A867F",
+      "before_package_sha256": "CC8B82C9C5AFB4C616484292A41E59CB5D6008FB74BF79ADEE138D61C7E0CCEE",
+      "disabled_package_sha256": "0ED71A7CF9DC2666B3C696762C6B4F312017DA75DE0F1B8DD660238A36C20642",
+      "backup_manifest_sha256": "2AE0053DC421AF70A30BED99FB51F9EBB543D2EFCC6AD563FB9A9BCA244B0C08",
       "lock_unchanged": true,
       "patch_unchanged": true,
-      "snapshot_disabled": true,
+      "composed_config_disabled": true,
       "active_runtime_still_old_graph": true,
       "listener_pid_before_restart": 18192,
-      "restart_automatic": false,
-      "market_inactive": true,
-      "market_error": null
+      "restart_automatic": false
     }
   },
   "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
@@ -600,7 +598,7 @@
       }
     },
     "operation4": {
-      "status": "real_disable_staged_attempt_2",
+      "status": "real_disable_staged",
       "started_at": "2026-08-17T19:06:22+08:00",
       "isolated_action_drills": "passed",
       "isolated_completed_at": "2026-08-17T19:10:39+08:00",
@@ -608,28 +606,17 @@
       "isolated_target": "dsh-notification",
       "version_pin_target": "dsh-context",
       "protected_guard_target": "dsh-codex-tools",
-      "live_profile_changed": true,
-      "real_profile_drill": "disable_staged_attempt_2_awaiting_restart",
+      "live_profile_changed": false,
+      "real_profile_drill": "disable_staged_awaiting_restart",
       "manual_gate_j": "awaiting_disable_restart_validation",
-      "real_disable_staged_at": "2026-08-17T11:31:52.310Z",
+      "real_disable_staged_at": "2026-08-17T19:23:46+08:00",
       "real_disable_package": "dsh-notification",
-      "real_disable_original_index": 16,
-      "real_disable_package_sha256": "26ED570729E14BDF4D3813CF7C00B31BC70E2AAE84050140A2D7C9183CDC232B",
-      "real_disable_backup": "C:\\Users\\19739\\.dsh\\control-center\\snapshots\\2026-08-17T11-29-24-114Z-real-stage-disable-attempt-2-dsh-notification",
-      "real_disable_backup_manifest_sha256": "48103B4E48548438CE5E544084CCA0A8EB27CF06B4D0879781088080A12A867F",
+      "real_disable_original_index": 9,
+      "real_disable_package_sha256": "0ED71A7CF9DC2666B3C696762C6B4F312017DA75DE0F1B8DD660238A36C20642",
+      "real_disable_backup": "C:\\Users\\19739\\.dsh\\control-center\\snapshots\\2026-08-17T11-22-38-907Z-real-stage-disable-dsh-notification",
+      "real_disable_backup_manifest_sha256": "2AE0053DC421AF70A30BED99FB51F9EBB543D2EFCC6AD563FB9A9BCA244B0C08",
       "real_disable_listener_pid_before_restart": 18192,
-      "restore_script": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\restore-real-drill.mjs",
-      "attempt1": {
-        "result": "overwritten_before_restart",
-        "user_restarted": false,
-        "conflict_evidence": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\real-profile-drill\\conflict-observed.json"
-      },
-      "real_disable_baseline_sha256": "9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD",
-      "preserved_profile_updates": {
-        "modlens": "^3.17.3",
-        "deep_whale": "github:Small-tailqwq/dsh-deep-whale",
-        "whale_girl": "github:vlln/whale-girl"
-      }
+      "restore_script": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\restore-real-drill.mjs"
     }
   }
 }

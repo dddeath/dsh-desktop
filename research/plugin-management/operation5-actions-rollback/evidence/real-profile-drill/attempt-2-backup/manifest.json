@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-17T11:29:24.134Z",
+  "action": "real-stage-disable-attempt-2",
+  "packageName": "dsh-notification",
+  "profileRoot": "C:\\Users\\19739\\.dsh\\profiles\\web",
+  "files": [
+    {
+      "relativePath": "package.json",
+      "bytes": 1644,
+      "sha256": "9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD"
+    },
+    {
+      "relativePath": "pnpm-lock.yaml",
+      "bytes": 29938,
+      "sha256": "BA8E4D3DEC6E2C0066FD52C809E49A52919D40341923BAADC6B70C7455992EF4"
+    },
+    {
+      "relativePath": "cordis.yml",
+      "bytes": 223,
+      "sha256": "C300DCF2EBC5F02062D6591268D29D3DB6FE45E0CB138F5467276FE2BA06076E"
+    },
+    {
+      "relativePath": "cordis.patch.yml",
+      "bytes": 99,
+      "sha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354"
+    }
+  ]
+}

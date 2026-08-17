@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-08-17T11:30:14.5463120Z",
+  "result": "PASS",
+  "checkpoint": "real disable staged attempt 2",
+  "commands": [
+    {
+      "command": "Get-FileHash SHA256 <profile files>",
+      "exitStatus": 0
+    },
+    {
+      "command": "GET /__dsh-plugin-control-center/snapshot",
+      "exitStatus": 0
+    },
+    {
+      "command": "GET /dsh-market/status",
+      "exitStatus": 0
+    },
+    {
+      "command": "GET /",
+      "exitStatus": 0
+    },
+    {
+      "command": "Get-NetTCPConnection 127.0.0.1:3080",
+      "exitStatus": 0
+    }
+  ],
+  "outputs": {
+    "packageSha256": "26ED570729E14BDF4D3813CF7C00B31BC70E2AAE84050140A2D7C9183CDC232B",
+    "lockSha256": "BA8E4D3DEC6E2C0066FD52C809E49A52919D40341923BAADC6B70C7455992EF4",
+    "patchSha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354",
+    "snapshotNotificationInBundle": false,
+    "snapshotNotificationBundleIndex": -1,
+    "activeBootStillContainsNotification": true,
+    "marketActive": false,
+    "marketError": null,
+    "listenerPid": 18192,
+    "httpStatus": 200
+  },
+  "interpretation": "Disk and snapshot are disabled; the currently running boot graph still contains the plugin until restart."
+}

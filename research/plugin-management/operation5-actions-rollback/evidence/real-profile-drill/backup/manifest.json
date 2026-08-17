@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-17T11:22:38.921Z",
+  "action": "real-stage-disable",
+  "packageName": "dsh-notification",
+  "profileRoot": "C:\\Users\\19739\\.dsh\\profiles\\web",
+  "files": [
+    {
+      "relativePath": "package.json",
+      "bytes": 2779,
+      "sha256": "CC8B82C9C5AFB4C616484292A41E59CB5D6008FB74BF79ADEE138D61C7E0CCEE"
+    },
+    {
+      "relativePath": "pnpm-lock.yaml",
+      "bytes": 29180,
+      "sha256": "6747E099BA23F07CB5D94D693D24DD0EA517B7AD2A3215DAC6E3DB42DE698131"
+    },
+    {
+      "relativePath": "cordis.yml",
+      "bytes": 223,
+      "sha256": "C300DCF2EBC5F02062D6591268D29D3DB6FE45E0CB138F5467276FE2BA06076E"
+    },
+    {
+      "relativePath": "cordis.patch.yml",
+      "bytes": 99,
+      "sha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354"
+    }
+  ]
+}

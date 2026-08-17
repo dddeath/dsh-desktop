@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-08-17T11:29:24.112Z",
+  "result": "ATTEMPT 1 OVERWRITTEN BEFORE RESTART",
+  "reason": "dshmarket completed an already-running profile update after attempt 1 was staged",
+  "userRestartedAfterAttempt1": false,
+  "attempt1Record": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\real-profile-drill\\disable-staged.json",
+  "attempt1DisabledPackageSha256": "0ED71A7CF9DC2666B3C696762C6B4F312017DA75DE0F1B8DD660238A36C20642",
+  "settledPackageSha256": "9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD",
+  "settledProfilePreserved": {
+    "modlens": "^3.17.3",
+    "deepWhale": "github:Small-tailqwq/dsh-deep-whale",
+    "whaleGirl": "github:vlln/whale-girl",
+    "dependencyCount": 16,
+    "bundleCount": 17
+  },
+  "marketStatus": {
+    "active": false,
+    "target": "github:vlln/whale-girl",
+    "seconds": 0,
+    "lastLine": "",
+    "phase": "linking",
+    "done": 70,
+    "total": null,
+    "currentPackage": "https://codeload.github.com/vlln/whale-girl/tar.gz/86ee730423b801970a6e799d6cd97e5fd9bf912c",
+    "downloaded": null,
+    "size": 3261758,
+    "ndjson": true,
+    "error": null,
+    "cancelling": false,
+    "pnpm": true,
+    "boot": "18192-1786964562003",
+    "restart": true,
+    "installed": {
+      "@dsh-external/dsh-client-ui-skin-maid-atelier": "github:Small-tailqwq/dsh-deep-whale#path:/maid-atelier",
+      "@liustack/modlens": "^3.17.3",
+      "dsh-arknights": "github:DocJlm/dsh-arknights#path:/skins/pramanix-eyjafjalla",
+      "dsh-at-file": "github:omdsh-dev/dsh-at-file",
+      "dsh-better-sidebar": "^0.12.2",
+      "dsh-codex-tools": "github:SPYQWER1/dsh-codex-tools#9519949dd340ff07a7ef8182692704d2487ce690",
+      "dsh-context": "^0.9.0",
+      "dsh-deep-whale": "github:Small-tailqwq/dsh-deep-whale",
+      "dsh-desktop-ui-compat": "link:E:/deepseek_harness/themes/desktop-ui-compat",
+      "dsh-find-plugin": "^0.3.6",
+      "dsh-maid-atelier-fix": "link:E:/deepseek_harness/themes/maid-atelier-fix",
+      "dsh-notification": "github:omdsh-dev/dsh-notification",
+      "dsh-open-in-vscode": "github:omdsh-dev/dsh-open-in-vscode",
+      "dsh-plugin-control-center": "link:E:/deepseek_harness/plugins/plugin-control-center",
+      "dshmarket": "^1.5.0",
+      "whale-girl": "github:vlln/whale-girl"
+    }
+  }
+}
