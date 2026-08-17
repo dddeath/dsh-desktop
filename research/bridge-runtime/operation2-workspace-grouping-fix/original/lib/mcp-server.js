@@ -5,7 +5,7 @@ import * as z from "zod/v4";
 import { assertMcpEntryAllowed, createEnvelope } from "./loop-guard.js";
 import { instanceStatus, request, restartInstance, runPluginCommand, startInstance, stopInstance } from "./dsh-client.js";
 
-const server = new McpServer({ name: "dsh-control", version: "0.1.2" }, {
+const server = new McpServer({ name: "dsh-control", version: "0.1.1" }, {
   instructions: [
     "Control the local DeepSeek Harness instance, conversations, plugins, and exact final LLM prompt traces.",
     "Every Codex-to-DSH conversation must use the bridge envelope returned by this server.",
@@ -63,7 +63,7 @@ server.registerTool("dsh_conversation_get", {
 }, async ({ sessionId }) => result(await request(`/__dsh-codex-bridge/v1/session?id=${encodeURIComponent(sessionId)}`)));
 
 server.registerTool("dsh_conversation_send", {
-  description: "Create or continue a DSH conversation in the explicit cwd workspace, attach it to the matching DSH workspace group, and wait for its agent response. Always pass the real target directory in cwd; a path written only inside message does not set the workspace. The default DSH agent preset is mounted so workspace and shell tools are available. Captures the exact final provider prompt. Nested Codex/DSH re-entry is blocked.",
+  description: "Create or continue a DSH conversation in the explicit cwd workspace and wait for its agent response. Always pass the real target directory in cwd; a path written only inside message does not set the workspace. The default DSH agent preset is mounted so workspace and shell tools are available. Captures the exact final provider prompt. Nested Codex/DSH re-entry is blocked.",
   inputSchema: {
     message: z.string().min(1).max(200000),
     sessionId: z.string().min(1).optional(),

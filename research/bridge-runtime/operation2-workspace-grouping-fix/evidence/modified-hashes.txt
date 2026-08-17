@@ -1,0 +1,5 @@
+﻿73ECF5388F2EE2A8B98087FC9FD7CF2EBBF08C587D5A4A728F7C8EF9CCDF79D5 E:\deepseek_harness\plugins\dsh-codex-bridge\lib\dsh-plugin.js
+3D1AF38A15816A656205E829802FF324DCF2202FD9E238138C15D231F318611A E:\deepseek_harness\plugins\dsh-codex-bridge\lib\mcp-server.js
+D4704BA13C82EDF13636DDBBD70E225ECFC18F1DCDF77FF44DEE6CAC2BA06709 E:\deepseek_harness\plugins\dsh-codex-bridge\scripts\verify.mjs
+54FA8FE19FE2F62A2284871C1E9E3B8B1D69DF9166D704D35CA31997C03965F1 E:\deepseek_harness\plugins\dsh-codex-bridge\package.json
+C82547F288CC548F7D4FF37D86363FD5266D3162E9A1AF134C188B6B39E0EF4F E:\deepseek_harness\plugins\dsh-codex-bridge\package-lock.json

@@ -1,0 +1,5 @@
+BASELINE_SESSION=session-contract-812c5f1c-451b-42c9-ab93-3cda3a9d76ae
+BASELINE_CWD=E:\deepseek_harness
+BASELINE_AGENT_PRESET=standard-bash
+BASELINE_GROUPED=False
+ROOT_CAUSE=bridge session id absent from workspaceRegistry workspace.sessionIds

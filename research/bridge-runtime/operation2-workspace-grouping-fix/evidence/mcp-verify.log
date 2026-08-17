@@ -1,0 +1,86 @@
+{
+  "ok": true,
+  "mcp": {
+    "toolCount": 12,
+    "toolNames": [
+      "dsh_instance_status",
+      "dsh_instance_start",
+      "dsh_instance_stop",
+      "dsh_instance_restart",
+      "dsh_conversation_list",
+      "dsh_conversation_get",
+      "dsh_conversation_send",
+      "dsh_prompt_trace_list",
+      "dsh_prompt_trace_get",
+      "dsh_plugin_list",
+      "dsh_plugin_plan",
+      "dsh_plugin_apply"
+    ]
+  },
+  "sessionContract": {
+    "cwdRequired": true,
+    "cwdDescription": "Existing target workspace directory. Required for both new and continued sessions; it must match the session's bound cwd."
+  },
+  "workspaceGrouping": {
+    "workspaceCount": 3,
+    "sessionId": "session-grouping-59b70de8-c4a7-4e78-b4ad-e7c9a624d90e",
+    "grouped": true,
+    "workspace": {
+      "id": "372a4ff5-a179-4477-9b54-799ccc456474",
+      "title": "deepseek_harness",
+      "path": "E:\\deepseek_harness",
+      "sessionIds": [
+        "session-grouping-59b70de8-c4a7-4e78-b4ad-e7c9a624d90e",
+        "session-29bc0c0d-d3e4-4ccb-a896-83a995be3590",
+        "session-478dfb4a-2cbc-4b5d-a733-83d4b07ecddd",
+        "session-5e427748-8988-4753-b660-7c2773207730",
+        "session-8bc3dbb9-796c-4db4-9e30-0e677c9c9a5b",
+        "session-3231777a-5355-4170-972c-a52ab9444b81",
+        "session-9898c3e8-59b6-48f1-bf51-6dddd26c1e0a",
+        "session-cdd14410-2b1d-487b-ae7e-2884bb577f0e"
+      ]
+    }
+  },
+  "instance": {
+    "ok": true,
+    "running": true,
+    "baseUrl": "http://127.0.0.1:3080",
+    "ownership": "external",
+    "pid": null,
+    "bridge": {
+      "ok": true,
+      "value": {
+        "version": "0.1.2",
+        "traceRoot": "C:\\Users\\19739\\.dsh\\codex-bridge\\prompt-traces",
+        "protocol": "dsh-codex-bridge/1",
+        "maxHops": 2
+      }
+    },
+    "logPath": "C:\\Users\\19739\\.dsh\\codex-bridge\\dsh-web.log"
+  },
+  "plugin": {
+    "count": 16,
+    "bridgeInstalled": true
+  },
+  "prompt": {
+    "id": "a9f77e11-0aeb-40ff-96c8-3adeb87b9ded",
+    "sessionId": "session-grouping-59b70de8-c4a7-4e78-b4ad-e7c9a624d90e",
+    "traceId": "trace-session-grouping-59b70de8-c4a7-4e78-b4ad-e7c9a624d90e",
+    "provider": "opencode-go",
+    "model": "deepseek-v4-flash",
+    "systemChars": 6202,
+    "messageCount": 2,
+    "toolCount": 31
+  },
+  "conversation": {
+    "sessionId": "session-grouping-59b70de8-c4a7-4e78-b4ad-e7c9a624d90e",
+    "assistantText": "WORKSPACE_GROUPING_OK",
+    "lastSeq": 27
+  },
+  "loopGuard": {
+    "ok": false,
+    "error": "loop_blocked",
+    "detail": "DSH-originated Codex work cannot re-enter DSH."
+  }
+}
+VERIFY_EXIT=0

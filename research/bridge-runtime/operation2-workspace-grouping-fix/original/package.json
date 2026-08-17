@@ -1,6 +1,6 @@
 {
   "name": "dsh-codex-bridge",
-  "version": "0.1.2",
+  "version": "0.1.1",
   "description": "Bidirectional DSH/Codex bridge with prompt tracing and hard loop prevention.",
   "type": "module",
   "main": "./lib/dsh-plugin.js",

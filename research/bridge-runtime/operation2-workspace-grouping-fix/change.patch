@@ -1,0 +1,167 @@
+diff --git a/plugins/dsh-codex-bridge/lib/dsh-plugin.js b/plugins/dsh-codex-bridge/lib/dsh-plugin.js
+index 3e48825..46050ff 100644
+--- a/plugins/dsh-codex-bridge/lib/dsh-plugin.js
++++ b/plugins/dsh-codex-bridge/lib/dsh-plugin.js
+@@ -23,7 +23,7 @@ const [{ installModelSelection }, { createUserMessage }, { SessionId }, { define
+ ]);
+ 
+ export const name = "dsh-codex-bridge";
+-export const inject = ["webServer", "agents", "sessions", "sessionQuery", "agentDefaultModel", "tools", "shell", "credentials", "systemPrompt"];
++export const inject = ["webServer", "agents", "sessions", "sessionQuery", "agentDefaultModel", "tools", "shell", "credentials", "systemPrompt", "workspaceRegistry"];
+ const BASE = "/__dsh-codex-bridge/v1";
+ 
+ function setupModel(ctx) {
+@@ -69,6 +69,11 @@ export function apply(ctx) {
+   const sessionEnvelopes = new Map();
+   const ownedHandles = new Map();
+ 
++  async function ensureWorkspace(cwd) {
++    const existing = await ctx.workspaceRegistry.resolveByPath(cwd);
++    return existing || ctx.workspaceRegistry.create(cwd);
++  }
++
+   const offPrompt = ctx.on("llm/stream", (options, next) => {
+     const sid = options.sessionId === undefined ? "" : String(options.sessionId);
+     traces.capture(options, sessionEnvelopes.get(sid));
+@@ -117,7 +122,18 @@ export function apply(ctx) {
+     ctx.webServer.register({
+       kind: "exact", path: `${BASE}/health`, handler(req, res) {
+         if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
+-        sendJson(res, 200, { ok: true, value: { version: "0.1.1", traceRoot: traces.root, protocol: "dsh-codex-bridge/1", maxHops: 2 } });
++        sendJson(res, 200, { ok: true, value: { version: "0.1.2", traceRoot: traces.root, protocol: "dsh-codex-bridge/1", maxHops: 2 } });
++      },
++    }),
++    ctx.webServer.register({
++      kind: "exact", path: `${BASE}/workspaces`, handler(req, res) {
++        if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
++        sendJson(res, 200, { ok: true, value: ctx.workspaceRegistry.list().map((workspace) => ({
++          id: workspace.id,
++          title: workspace.title,
++          path: workspace.path,
++          sessionIds: [...workspace.sessionIds],
++        })) });
+       },
+     }),
+     ctx.webServer.register({
+@@ -150,6 +166,8 @@ export function apply(ctx) {
+           const sessionId = String(body.sessionId || `session-${randomUUID()}`);
+           sessionEnvelopes.set(sessionId, route.envelope);
+           const agent = await acquireAgent(sessionId, cwd);
++          const workspace = await ensureWorkspace(cwd);
++          await workspace.attachSession(sessionId);
+           await agent.whenIdle();
+           const firstSeq = agent.session.seq;
+           agent.followup(createUserMessage({ content: [{ type: "text", text }], source: { kind: "user" } }));
+@@ -160,6 +178,8 @@ export function apply(ctx) {
+             sessionId,
+             cwd: agent.session.header.cwd,
+             agentPreset: agent.session.header.agentPreset || null,
++            workspaceId: workspace.id,
++            workspaceTitle: workspace.title,
+             firstSeq,
+             envelope: route.envelope,
+             session: snapshot.session,
+diff --git a/plugins/dsh-codex-bridge/lib/mcp-server.js b/plugins/dsh-codex-bridge/lib/mcp-server.js
+index 43a4f57..b1b53d5 100644
+--- a/plugins/dsh-codex-bridge/lib/mcp-server.js
++++ b/plugins/dsh-codex-bridge/lib/mcp-server.js
+@@ -5,7 +5,7 @@ import * as z from "zod/v4";
+ import { assertMcpEntryAllowed, createEnvelope } from "./loop-guard.js";
+ import { instanceStatus, request, restartInstance, runPluginCommand, startInstance, stopInstance } from "./dsh-client.js";
+ 
+-const server = new McpServer({ name: "dsh-control", version: "0.1.1" }, {
++const server = new McpServer({ name: "dsh-control", version: "0.1.2" }, {
+   instructions: [
+     "Control the local DeepSeek Harness instance, conversations, plugins, and exact final LLM prompt traces.",
+     "Every Codex-to-DSH conversation must use the bridge envelope returned by this server.",
+@@ -63,7 +63,7 @@ server.registerTool("dsh_conversation_get", {
+ }, async ({ sessionId }) => result(await request(`/__dsh-codex-bridge/v1/session?id=${encodeURIComponent(sessionId)}`)));
+ 
+ server.registerTool("dsh_conversation_send", {
+-  description: "Create or continue a DSH conversation in the explicit cwd workspace and wait for its agent response. Always pass the real target directory in cwd; a path written only inside message does not set the workspace. The default DSH agent preset is mounted so workspace and shell tools are available. Captures the exact final provider prompt. Nested Codex/DSH re-entry is blocked.",
++  description: "Create or continue a DSH conversation in the explicit cwd workspace, attach it to the matching DSH workspace group, and wait for its agent response. Always pass the real target directory in cwd; a path written only inside message does not set the workspace. The default DSH agent preset is mounted so workspace and shell tools are available. Captures the exact final provider prompt. Nested Codex/DSH re-entry is blocked.",
+   inputSchema: {
+     message: z.string().min(1).max(200000),
+     sessionId: z.string().min(1).optional(),
+diff --git a/plugins/dsh-codex-bridge/package-lock.json b/plugins/dsh-codex-bridge/package-lock.json
+index 3b99734..272cfb4 100644
+--- a/plugins/dsh-codex-bridge/package-lock.json
++++ b/plugins/dsh-codex-bridge/package-lock.json
+@@ -1,12 +1,12 @@
+ {
+   "name": "dsh-codex-bridge",
+-  "version": "0.1.1",
++  "version": "0.1.2",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+       "name": "dsh-codex-bridge",
+-      "version": "0.1.1",
++      "version": "0.1.2",
+       "license": "MIT",
+       "dependencies": {
+         "@modelcontextprotocol/sdk": "^1.30.0",
+diff --git a/plugins/dsh-codex-bridge/package.json b/plugins/dsh-codex-bridge/package.json
+index 1fb287a..25bb6fe 100644
+--- a/plugins/dsh-codex-bridge/package.json
++++ b/plugins/dsh-codex-bridge/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "dsh-codex-bridge",
+-  "version": "0.1.1",
++  "version": "0.1.2",
+   "description": "Bidirectional DSH/Codex bridge with prompt tracing and hard loop prevention.",
+   "type": "module",
+   "main": "./lib/dsh-plugin.js",
+diff --git a/plugins/dsh-codex-bridge/scripts/verify.mjs b/plugins/dsh-codex-bridge/scripts/verify.mjs
+index 08a800c..a504abe 100644
+--- a/plugins/dsh-codex-bridge/scripts/verify.mjs
++++ b/plugins/dsh-codex-bridge/scripts/verify.mjs
+@@ -4,6 +4,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
+ import { fileURLToPath } from "node:url";
+ import { dirname, join, resolve } from "node:path";
+ import { assertMcpEntryAllowed } from "../lib/loop-guard.js";
++import { request } from "../lib/dsh-client.js";
+ 
+ const here = dirname(fileURLToPath(import.meta.url));
+ const packageRoot = resolve(here, "..");
+@@ -26,13 +27,16 @@ try {
+   const conversationRequired = conversationSend?.inputSchema?.required || [];
+   const status = await call("dsh_instance_status");
+   const plugins = await call("dsh_plugin_list");
++  const workspaces = await request("/__dsh-codex-bridge/v1/workspaces");
++  const groupedSessionIds = new Set((workspaces.value || []).flatMap((workspace) => workspace.sessionIds || []));
+   const traces = await call("dsh_prompt_trace_list", { limit: 50 });
+   const candidates = (traces.value || []).filter((entry) => entry.provider === "opencode-go").slice(0, 20);
+   const loadedPrompts = [];
+   for (const candidate of candidates) loadedPrompts.push(await call("dsh_prompt_trace_get", { id: candidate.id }));
+   const prompt = loadedPrompts
+     .filter((entry) => entry.ok)
+-    .sort((a, b) => (b.value.request?.tools?.length || 0) - (a.value.request?.tools?.length || 0))[0] || null;
++    .sort((a, b) => Number(groupedSessionIds.has(b.value.sessionId)) - Number(groupedSessionIds.has(a.value.sessionId))
++      || (b.value.request?.tools?.length || 0) - (a.value.request?.tools?.length || 0))[0] || null;
+   const sessionId = prompt?.value?.sessionId;
+   const conversation = sessionId ? await call("dsh_conversation_get", { sessionId }) : null;
+   const dshOriginGuard = assertMcpEntryAllowed({ DSH_CODEX_BRIDGE_ORIGIN: "dsh" });
+@@ -42,6 +46,7 @@ try {
+       status.ok && status.running && status.bridge?.ok &&
+       tools.tools.length === 12 &&
+       conversationRequired.includes("cwd") &&
++      workspaces.ok && groupedSessionIds.has(prompt?.value?.sessionId) &&
+       pluginItems.some((entry) => entry.name === "dsh-codex-bridge") &&
+       prompt?.ok && prompt.value?.request?.system && Array.isArray(prompt.value?.request?.messages) &&
+       dshOriginGuard.ok === false && dshOriginGuard.error === "loop_blocked"
+@@ -51,6 +56,12 @@ try {
+       cwdRequired: conversationRequired.includes("cwd"),
+       cwdDescription: conversationSend?.inputSchema?.properties?.cwd?.description || null,
+     },
++    workspaceGrouping: {
++      workspaceCount: workspaces.value?.length || 0,
++      sessionId: prompt?.value?.sessionId || null,
++      grouped: groupedSessionIds.has(prompt?.value?.sessionId),
++      workspace: (workspaces.value || []).find((entry) => entry.sessionIds?.includes(prompt?.value?.sessionId)) || null,
++    },
+     instance: status,
+     plugin: { count: pluginItems.length, bridgeInstalled: pluginItems.some((entry) => entry.name === "dsh-codex-bridge") },
+     prompt: prompt?.ok ? {

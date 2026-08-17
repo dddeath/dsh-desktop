@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "status": 200,
+  "sessionId": "session-grouping-59b70de8-c4a7-4e78-b4ad-e7c9a624d90e",
+  "cwd": "E:\\deepseek_harness",
+  "agentPreset": "standard-bash",
+  "assistantText": "WORKSPACE_GROUPING_OK",
+  "responseWorkspace": {
+    "id": "372a4ff5-a179-4477-9b54-799ccc456474",
+    "title": "deepseek_harness"
+  },
+  "registryWorkspace": {
+    "id": "372a4ff5-a179-4477-9b54-799ccc456474",
+    "title": "deepseek_harness",
+    "path": "E:\\deepseek_harness",
+    "sessionIds": [
+      "session-grouping-59b70de8-c4a7-4e78-b4ad-e7c9a624d90e",
+      "session-29bc0c0d-d3e4-4ccb-a896-83a995be3590",
+      "session-478dfb4a-2cbc-4b5d-a733-83d4b07ecddd",
+      "session-5e427748-8988-4753-b660-7c2773207730",
+      "session-8bc3dbb9-796c-4db4-9e30-0e677c9c9a5b",
+      "session-3231777a-5355-4170-972c-a52ab9444b81",
+      "session-9898c3e8-59b6-48f1-bf51-6dddd26c1e0a",
+      "session-cdd14410-2b1d-487b-ae7e-2884bb577f0e"
+    ]
+  }
+}
+INTEGRATION_EXIT=0

@@ -4,7 +4,6 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
 import { assertMcpEntryAllowed } from "../lib/loop-guard.js";
-import { request } from "../lib/dsh-client.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const packageRoot = resolve(here, "..");
@@ -27,16 +26,13 @@ try {
   const conversationRequired = conversationSend?.inputSchema?.required || [];
   const status = await call("dsh_instance_status");
   const plugins = await call("dsh_plugin_list");
-  const workspaces = await request("/__dsh-codex-bridge/v1/workspaces");
-  const groupedSessionIds = new Set((workspaces.value || []).flatMap((workspace) => workspace.sessionIds || []));
   const traces = await call("dsh_prompt_trace_list", { limit: 50 });
   const candidates = (traces.value || []).filter((entry) => entry.provider === "opencode-go").slice(0, 20);
   const loadedPrompts = [];
   for (const candidate of candidates) loadedPrompts.push(await call("dsh_prompt_trace_get", { id: candidate.id }));
   const prompt = loadedPrompts
     .filter((entry) => entry.ok)
-    .sort((a, b) => Number(groupedSessionIds.has(b.value.sessionId)) - Number(groupedSessionIds.has(a.value.sessionId))
-      || (b.value.request?.tools?.length || 0) - (a.value.request?.tools?.length || 0))[0] || null;
+    .sort((a, b) => (b.value.request?.tools?.length || 0) - (a.value.request?.tools?.length || 0))[0] || null;
   const sessionId = prompt?.value?.sessionId;
   const conversation = sessionId ? await call("dsh_conversation_get", { sessionId }) : null;
   const dshOriginGuard = assertMcpEntryAllowed({ DSH_CODEX_BRIDGE_ORIGIN: "dsh" });
@@ -46,7 +42,6 @@ try {
       status.ok && status.running && status.bridge?.ok &&
       tools.tools.length === 12 &&
       conversationRequired.includes("cwd") &&
-      workspaces.ok && groupedSessionIds.has(prompt?.value?.sessionId) &&
       pluginItems.some((entry) => entry.name === "dsh-codex-bridge") &&
       prompt?.ok && prompt.value?.request?.system && Array.isArray(prompt.value?.request?.messages) &&
       dshOriginGuard.ok === false && dshOriginGuard.error === "loop_blocked"
@@ -55,12 +50,6 @@ try {
     sessionContract: {
       cwdRequired: conversationRequired.includes("cwd"),
       cwdDescription: conversationSend?.inputSchema?.properties?.cwd?.description || null,
-    },
-    workspaceGrouping: {
-      workspaceCount: workspaces.value?.length || 0,
-      sessionId: prompt?.value?.sessionId || null,
-      grouped: groupedSessionIds.has(prompt?.value?.sessionId),
-      workspace: (workspaces.value || []).find((entry) => entry.sessionIds?.includes(prompt?.value?.sessionId)) || null,
     },
     instance: status,
     plugin: { count: pluginItems.length, bridgeInstalled: pluginItems.some((entry) => entry.name === "dsh-codex-bridge") },

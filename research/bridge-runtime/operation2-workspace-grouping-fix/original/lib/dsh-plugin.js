@@ -23,7 +23,7 @@ const [{ installModelSelection }, { createUserMessage }, { SessionId }, { define
 ]);
 
 export const name = "dsh-codex-bridge";
-export const inject = ["webServer", "agents", "sessions", "sessionQuery", "agentDefaultModel", "tools", "shell", "credentials", "systemPrompt", "workspaceRegistry"];
+export const inject = ["webServer", "agents", "sessions", "sessionQuery", "agentDefaultModel", "tools", "shell", "credentials", "systemPrompt"];
 const BASE = "/__dsh-codex-bridge/v1";
 
 function setupModel(ctx) {
@@ -68,11 +68,6 @@ export function apply(ctx) {
   const traces = new PromptTraceStore();
   const sessionEnvelopes = new Map();
   const ownedHandles = new Map();
-
-  async function ensureWorkspace(cwd) {
-    const existing = await ctx.workspaceRegistry.resolveByPath(cwd);
-    return existing || ctx.workspaceRegistry.create(cwd);
-  }
 
   const offPrompt = ctx.on("llm/stream", (options, next) => {
     const sid = options.sessionId === undefined ? "" : String(options.sessionId);
@@ -122,18 +117,7 @@ export function apply(ctx) {
     ctx.webServer.register({
       kind: "exact", path: `${BASE}/health`, handler(req, res) {
         if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
-        sendJson(res, 200, { ok: true, value: { version: "0.1.2", traceRoot: traces.root, protocol: "dsh-codex-bridge/1", maxHops: 2 } });
-      },
-    }),
-    ctx.webServer.register({
-      kind: "exact", path: `${BASE}/workspaces`, handler(req, res) {
-        if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
-        sendJson(res, 200, { ok: true, value: ctx.workspaceRegistry.list().map((workspace) => ({
-          id: workspace.id,
-          title: workspace.title,
-          path: workspace.path,
-          sessionIds: [...workspace.sessionIds],
-        })) });
+        sendJson(res, 200, { ok: true, value: { version: "0.1.1", traceRoot: traces.root, protocol: "dsh-codex-bridge/1", maxHops: 2 } });
       },
     }),
     ctx.webServer.register({
@@ -166,8 +150,6 @@ export function apply(ctx) {
           const sessionId = String(body.sessionId || `session-${randomUUID()}`);
           sessionEnvelopes.set(sessionId, route.envelope);
           const agent = await acquireAgent(sessionId, cwd);
-          const workspace = await ensureWorkspace(cwd);
-          await workspace.attachSession(sessionId);
           await agent.whenIdle();
           const firstSeq = agent.session.seq;
           agent.followup(createUserMessage({ content: [{ type: "text", text }], source: { kind: "user" } }));
@@ -178,8 +160,6 @@ export function apply(ctx) {
             sessionId,
             cwd: agent.session.header.cwd,
             agentPreset: agent.session.header.agentPreset || null,
-            workspaceId: workspace.id,
-            workspaceTitle: workspace.title,
             firstSeq,
             envelope: route.envelope,
             session: snapshot.session,
