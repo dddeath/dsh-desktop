@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "completedAt": "2026-08-17T11:49:01.7079623Z",
+  "result": "PASS",
+  "operation": "Phase 3 operation 4 real start-stop drill",
+  "manualAcceptance": {
+    "received": true,
+    "text": "验收通过",
+    "gate": "J"
+  },
+  "changedField": "web profile dsh.profile.bundles entry dsh-notification",
+  "commands": [
+    {
+      "command": "GET / after disabled restart",
+      "input": "127.0.0.1:3080",
+      "literalOutput": "HTTP 200; bootContainsNotification=false; listener PID=3720",
+      "exitStatus": 0
+    },
+    {
+      "command": "node restore-real-drill.mjs",
+      "input": "attempt-2-backup/manifest.json",
+      "literalOutput": "RESTORE STAGED FROM SETTLED ATTEMPT-2 BASELINE; package 26ED5707... -> 9A9DFD65...",
+      "exitStatus": 0
+    },
+    {
+      "command": "Restart Harness (manual)",
+      "input": "restored web profile",
+      "literalOutput": "User acceptance: 验收通过",
+      "exitStatus": 0
+    },
+    {
+      "command": "GET / after restored restart",
+      "input": "127.0.0.1:3080",
+      "literalOutput": "HTTP 200; bootContainsNotification=True; listener PID=45288",
+      "exitStatus": 0
+    },
+    {
+      "command": "GET /dsh-market/installed",
+      "input": "dsh-notification",
+      "literalOutput": "state=live; bundle=True; hot=True",
+      "exitStatus": 0
+    },
+    {
+      "command": "node restore-real-drill.mjs (idempotency probe)",
+      "input": "already restored profile",
+      "literalOutput": "RESTORE ALREADY APPLIED; profileChanged=false",
+      "exitStatus": 0
+    }
+  ],
+  "behaviors": {
+    "disabled": {
+      "packageSha256": "26ED570729E14BDF4D3813CF7C00B31BC70E2AAE84050140A2D7C9183CDC232B",
+      "bundleIndex": -1,
+      "snapshotInBundle": false,
+      "bootContainsNotification": false,
+      "listenerPid": 3720,
+      "httpStatus": 200
+    },
+    "restored": {
+      "packageSha256": "9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD",
+      "lockSha256": "BA8E4D3DEC6E2C0066FD52C809E49A52919D40341923BAADC6B70C7455992EF4",
+      "patchSha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354",
+      "bundleIndex": 16,
+      "snapshotInBundle": true,
+      "bootContainsNotification": true,
+      "listenerPid": 45288,
+      "listenerChangedFromDisabledRuntime": true,
+      "marketActive": false,
+      "marketError": null,
+      "activation": {
+        "state": "live",
+        "reasons": [
+          "已热加载(bundle patch)/ live via its bundle patch"
+        ],
+        "bundle": true,
+        "hot": true
+      },
+      "httpStatus": 200
+    }
+  },
+  "preservedProfile": {
+    "modlens": "^3.17.3",
+    "deepWhale": "github:Small-tailqwq/dsh-deep-whale",
+    "whaleGirl": "github:vlln/whale-girl"
+  },
+  "artifacts": {
+    "modifiedArtifact": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\real-profile-drill\\disabled-profile-attempt-2",
+    "patch": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\real-profile-drill\\real-profile-drill.patch",
+    "verification": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\real-profile-drill\\final-verification.json",
+    "rollback": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\restore-real-drill.mjs",
+    "acceptanceImage": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\real-profile-drill\\acceptance-disabled-runtime.png"
+  }
+}

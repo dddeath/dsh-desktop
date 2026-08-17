@@ -139,3 +139,26 @@ market active                : false
 ```
 
 ModLens、dsh-deep-whale 与 whale-girl 的插件市场更新均保持不变。下一步为第二次人工重启，验证通知插件恢复运行。
+
+## 最终结果：人工验收 J 通过
+
+真实启停演练闭环完成：`停用暂存 → 人工重启 → 停用运行态核验 → 基线恢复 → 人工重启 → 恢复运行态核验`。
+
+```text
+disabled bundle index        : -1
+disabled boot contains       : false
+disabled listener PID        : 3720
+restored bundle index        : 16
+restored boot contains       : true
+restored activation          : live
+restored listener PID        : 45288
+final package SHA-256        : 9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD
+rollback idempotency         : PASS
+```
+
+修改态产物：`E:\deepseek_harness\research\plugin-management\operation5-actions-rollback\evidence\real-profile-drill\disabled-profile-attempt-2`
+差异：`E:\deepseek_harness\research\plugin-management\operation5-actions-rollback\evidence\real-profile-drill\real-profile-drill.patch`
+最终验证：`E:\deepseek_harness\research\plugin-management\operation5-actions-rollback\evidence\real-profile-drill\final-verification.json`
+可执行回滚：`E:\deepseek_harness\research\plugin-management\operation5-actions-rollback\restore-real-drill.mjs`
+
+最终 profile 保留 ModLens、dsh-deep-whale 与 whale-girl 的现有更新；阶段 3 人工验收 J 通过。

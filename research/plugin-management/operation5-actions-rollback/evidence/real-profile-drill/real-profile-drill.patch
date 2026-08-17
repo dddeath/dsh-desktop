@@ -1,0 +1,14 @@
+diff --git a/research/plugin-management/operation5-actions-rollback/evidence/real-profile-drill/attempt-2-backup/package.json b/research/plugin-management/operation5-actions-rollback/evidence/real-profile-drill/disabled-profile-attempt-2/package.json
+index 6e9793c..7c30163 100644
+--- a/research/plugin-management/operation5-actions-rollback/evidence/real-profile-drill/attempt-2-backup/package.json
++++ b/research/plugin-management/operation5-actions-rollback/evidence/real-profile-drill/disabled-profile-attempt-2/package.json
+@@ -37,8 +37,7 @@
+         "dsh-maid-atelier-fix",
+         "dsh-codex-tools",
+         "dsh-desktop-ui-compat",
+-        "dsh-arknights",
+-        "dsh-notification"
++        "dsh-arknights"
+       ]
+     }
+   }

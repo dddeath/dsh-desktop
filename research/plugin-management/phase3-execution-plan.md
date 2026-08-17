@@ -1,6 +1,6 @@
 # 阶段 3：插件结构与管理优化执行计划
 
-状态：已启动
+状态：已完成（人工验收 J 通过）
 
 阶段 2 固定点：`4c7244ed0779804cf81cab5a8c4618f8126550c4`
 
@@ -58,6 +58,10 @@
 ### 人工验收 J
 
 验收后阶段 3 完成，进入发布与收尾。
+
+验收结果：通过。真实 web profile 已完成“停用 → 重启核验 → 恢复 → 重启核验”闭环；最终配置恢复到插件市场更新后的稳定基线。
+
+最终证据：`operation5-actions-rollback/evidence/real-profile-drill/final-verification.json`。
 
 ## 验证分工
 
