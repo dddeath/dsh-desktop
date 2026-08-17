@@ -1,11 +1,14 @@
-# v0.2.0 发布就绪报告
+# v0.2.0 发布完成报告
 
-- 状态：READY TO PUBLISH
-- 回滚点：`2f1b940f562b4d08b279444b84a547ddfe3822aa`
+- 状态：COMPLETED
+- 发布提交：`e339c1bc0cce00a1a1536a1e36cdf3b32f4db2dd`
+- 远端标签：`v0.2.0`
+- 标签对象：`a34e2e2c4aee27cdea3149825ba8856946b273ab`
+- 维护分支：已推送
 - 构建：exit 0
 - 验证：PASS
 - 便携版：`6622B6C7066853F33858A4BBAF42035772C8F664C5ABDC5042A36624915A958E`
 - 安装版：`E0CA067904A6A8623FA3B9BAF773A0320FB4C2F4D45AF83D0A2036FD7B91564D`
 - 回滚：PASS
 - 签名：NotSigned
-- 下一步：提交、创建 `v0.2.0` 标签并推送
+- GitHub Release 附件：未上传；产物保留在本机 `desktop/dist`

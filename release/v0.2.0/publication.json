@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "publishedAt": "2026-08-17T12:18:42.371Z",
+  "result": "PASS",
+  "channel": "git-tag-and-local-artifacts",
+  "remote": "https://github.com/dddeath/dsh-desktop.git",
+  "branch": "codex/phase1-ui-complete-phase2-ready",
+  "branchPush": true,
+  "tag": "v0.2.0",
+  "tagPush": true,
+  "tagObject": "a34e2e2c4aee27cdea3149825ba8856946b273ab",
+  "peeledCommit": "e339c1bc0cce00a1a1536a1e36cdf3b32f4db2dd",
+  "githubReleaseUploaded": false,
+  "artifactsRemainLocal": true,
+  "artifactManifest": "E:\\deepseek_harness\\release\\v0.2.0\\artifact-manifest.json"
+}
