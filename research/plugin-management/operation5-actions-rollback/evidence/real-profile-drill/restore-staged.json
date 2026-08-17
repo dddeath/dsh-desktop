@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "stagedAt": "2026-08-17T11:43:40.698Z",
+  "result": "RESTORE STAGED FROM SETTLED ATTEMPT-2 BASELINE",
+  "packageName": "dsh-notification",
+  "originalIndex": 16,
+  "liveRuntimeRestarted": false,
+  "restored": {
+    "action": "restore",
+    "manifestPath": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\real-profile-drill\\attempt-2-backup\\manifest.json",
+    "beforeSha256": "26ED570729E14BDF4D3813CF7C00B31BC70E2AAE84050140A2D7C9183CDC232B",
+    "afterSha256": "9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD",
+    "restoredFiles": [
+      "package.json",
+      "pnpm-lock.yaml",
+      "cordis.yml",
+      "cordis.patch.yml"
+    ],
+    "restartRequired": true
+  },
+  "restoredHashes": {
+    "package.json": {
+      "relativePath": "package.json",
+      "bytes": 1644,
+      "sha256": "9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD"
+    },
+    "pnpm-lock.yaml": {
+      "relativePath": "pnpm-lock.yaml",
+      "bytes": 29938,
+      "sha256": "BA8E4D3DEC6E2C0066FD52C809E49A52919D40341923BAADC6B70C7455992EF4"
+    },
+    "cordis.yml": {
+      "relativePath": "cordis.yml",
+      "bytes": 223,
+      "sha256": "C300DCF2EBC5F02062D6591268D29D3DB6FE45E0CB138F5467276FE2BA06076E"
+    },
+    "cordis.patch.yml": {
+      "relativePath": "cordis.patch.yml",
+      "bytes": 99,
+      "sha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354"
+    }
+  },
+  "preservedProfileFacts": {
+    "modlens": "^3.17.3",
+    "deepWhale": "github:Small-tailqwq/dsh-deep-whale",
+    "whaleGirl": "github:vlln/whale-girl",
+    "dependencyCount": 16,
+    "bundleCount": 17
+  },
+  "nextStep": "Manual Harness restart, then verify dsh-notification is active again."
+}

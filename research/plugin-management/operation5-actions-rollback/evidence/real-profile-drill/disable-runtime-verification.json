@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-08-17T11:43:40.4931422Z",
+  "result": "PASS",
+  "checkpoint": "disabled runtime after manual restart",
+  "inputs": {
+    "acceptanceImage": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\real-profile-drill\\acceptance-disabled-runtime.png",
+    "acceptanceImageSha256": "DA5F7A56C3AA58164D05669482D1FFE4C659549A927FEF66011795B4EBC34FC8"
+  },
+  "commands": [
+    {
+      "command": "GET /",
+      "literalOutput": "HTTP 200; boot manifest omits dsh-notification",
+      "exitStatus": 0
+    },
+    {
+      "command": "GET /__dsh-plugin-control-center/snapshot",
+      "literalOutput": "dsh-notification inBundle=false, bundleIndex=-1",
+      "exitStatus": 0
+    },
+    {
+      "command": "GET /dsh-market/status",
+      "literalOutput": "active=False; error=",
+      "exitStatus": 0
+    },
+    {
+      "command": "Get-NetTCPConnection 127.0.0.1:3080",
+      "literalOutput": "PID 3720",
+      "exitStatus": 0
+    }
+  ],
+  "outputs": {
+    "packageSha256": "26ED570729E14BDF4D3813CF7C00B31BC70E2AAE84050140A2D7C9183CDC232B",
+    "bundleIndex": -1,
+    "snapshotInBundle": false,
+    "snapshotBundleIndex": -1,
+    "bootContainsNotification": false,
+    "listenerPid": 3720,
+    "listenerPidChangedFromBaseline": true,
+    "marketActive": false,
+    "marketError": null,
+    "httpStatus": 200
+  }
+}

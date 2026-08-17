@@ -112,3 +112,30 @@ listener PID before restart   : 18192
 保留的新配置：`@liustack/modlens ^3.17.3`、`dsh-deep-whale`、`whale-girl`。恢复脚本只会恢复尝试 2 的稳定基线。
 
 证据：`evidence/real-profile-drill/disable-staged-attempt-2.json`、`staged-verification-attempt-2.json`、`conflict-observed.json`。下一步为人工重启后验证停用运行态。
+
+## 真实启停演练：停用运行态通过，恢复已暂存
+
+人工重启后的停用运行态已通过截图与服务端运行清单双重核验：
+
+```text
+acceptance image SHA-256     : DA5F7A56C3AA58164D05669482D1FFE4C659549A927FEF66011795B4EBC34FC8
+disabled package SHA-256     : 26ED570729E14BDF4D3813CF7C00B31BC70E2AAE84050140A2D7C9183CDC232B
+new listener PID             : 3720
+listener PID changed         : true
+boot contains notification   : false
+snapshot inBundle            : false
+```
+
+随后执行 `restore-real-drill.mjs`，逐文件恢复尝试 2 的稳定备份：
+
+```text
+restored bundle index        : 16
+restored package SHA-256     : 9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD
+restored lock SHA-256        : BA8E4D3DEC6E2C0066FD52C809E49A52919D40341923BAADC6B70C7455992EF4
+restored patch SHA-256       : 803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354
+snapshot inBundle            : true
+current boot still disabled  : true
+market active                : false
+```
+
+ModLens、dsh-deep-whale 与 whale-girl 的插件市场更新均保持不变。下一步为第二次人工重启，验证通知插件恢复运行。

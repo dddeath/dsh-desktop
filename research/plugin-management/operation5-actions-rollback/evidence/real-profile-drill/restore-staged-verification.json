@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-08-17T11:44:02.4289519Z",
+  "result": "PASS",
+  "checkpoint": "restore staged awaiting second manual restart",
+  "commands": [
+    {
+      "command": "node restore-real-drill.mjs",
+      "literalOutput": "RESTORE STAGED FROM SETTLED ATTEMPT-2 BASELINE",
+      "exitStatus": 0
+    },
+    {
+      "command": "GET /__dsh-plugin-control-center/snapshot",
+      "literalOutput": "dsh-notification inBundle=true, bundleIndex=16",
+      "exitStatus": 0
+    },
+    {
+      "command": "GET /",
+      "literalOutput": "HTTP 200; current boot manifest still omits dsh-notification until restart",
+      "exitStatus": 0
+    },
+    {
+      "command": "GET /dsh-market/status",
+      "literalOutput": "active=False; error=",
+      "exitStatus": 0
+    }
+  ],
+  "outputs": {
+    "packageSha256": "9A9DFD65830D2B148E289B8F5A7813009E78EF6C5BF05FD157B74A455E6A6FBD",
+    "lockSha256": "BA8E4D3DEC6E2C0066FD52C809E49A52919D40341923BAADC6B70C7455992EF4",
+    "patchSha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354",
+    "bundleIndex": 16,
+    "snapshotInBundle": true,
+    "snapshotBundleIndex": 16,
+    "bootContainsNotification": false,
+    "listenerPid": 3720,
+    "marketActive": false,
+    "marketError": null,
+    "modlens": "^3.17.3",
+    "deepWhale": "github:Small-tailqwq/dsh-deep-whale",
+    "whaleGirl": "github:vlln/whale-girl",
+    "httpStatus": 200
+  }
+}

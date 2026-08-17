@@ -1,0 +1,305 @@
+{
+  "ok": true,
+  "value": {
+    "schemaVersion": 1,
+    "generatedAt": "2026-08-17T11:44:00.218Z",
+    "profile": "web",
+    "profileRoot": "C:\\Users\\19739\\.dsh\\profiles\\web",
+    "files": [
+      {
+        "relativePath": "package.json",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\package.json",
+        "exists": true,
+        "bytes": 1644,
+        "modifiedAt": "2026-08-17T11:25:47.958Z",
+        "sha256": "9a9dfd65830d2b148e289b8f5a7813009e78ef6c5bf05fd157b74a455e6a6fbd"
+      },
+      {
+        "relativePath": "pnpm-lock.yaml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\pnpm-lock.yaml",
+        "exists": true,
+        "bytes": 29938,
+        "modifiedAt": "2026-08-17T11:25:55.957Z",
+        "sha256": "ba8e4d3dec6e2c0066fd52c809e49a52919d40341923baadc6b70c7455992ef4"
+      },
+      {
+        "relativePath": "cordis.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\cordis.yml",
+        "exists": true,
+        "bytes": 223,
+        "modifiedAt": "2026-08-17T11:23:08.199Z",
+        "sha256": "c300dcf2ebc5f02062d6591268d29d3db6fe45e0cb138f5467276fe2ba06076e"
+      },
+      {
+        "relativePath": "cordis.patch.yml",
+        "absolutePath": "C:\\Users\\19739\\.dsh\\profiles\\web\\cordis.patch.yml",
+        "exists": true,
+        "bytes": 99,
+        "modifiedAt": "2026-08-17T00:52:02.822Z",
+        "sha256": "803b183c9b487a26981feea690d22c942a8de4899d6e671e03429763c949d354"
+      }
+    ],
+    "plugins": [
+      {
+        "name": "@dsh-external/dsh-client-ui-skin-maid-atelier",
+        "source": "github:Small-tailqwq/dsh-deep-whale#path:/maid-atelier",
+        "bundleIndex": 11,
+        "inBundle": true,
+        "group": "UI/皮肤",
+        "sensitivity": "中",
+        "recommendation": "保留当前",
+        "capabilities": [
+          "主题切换",
+          "全局样式"
+        ],
+        "protected": false,
+        "protectedReason": null
+      },
+      {
+        "name": "@liustack/modlens",
+        "source": "^3.17.3",
+        "bundleIndex": 5,
+        "inBundle": true,
+        "group": "模型/视觉",
+        "sensitivity": "高",
+        "recommendation": "保留并观察更新",
+        "capabilities": [
+          "图片读取",
+          "外部进程"
+        ],
+        "protected": false,
+        "protectedReason": null
+      },
+      {
+        "name": "dsh-arknights",
+        "source": "github:DocJlm/dsh-arknights#path:/skins/pramanix-eyjafjalla",
+        "bundleIndex": 15,
+        "inBundle": true,
+        "group": "UI/皮肤",
+        "sensitivity": "中",
+        "recommendation": "按需启用",
+        "capabilities": [
+          "主题切换",
+          "全局样式"
+        ],
+        "protected": false,
+        "protectedReason": null
+      },
+      {
+        "name": "dsh-at-file",
+        "source": "github:omdsh-dev/dsh-at-file",
+        "bundleIndex": 6,
+        "inBundle": true,
+        "group": "工作区",
+        "sensitivity": "中",
+        "recommendation": "保留",
+        "capabilities": [
+          "文件检索",
+          "路径读取"
+        ],
+        "protected": false,
+        "protectedReason": null
+      },
+      {
+        "name": "dsh-better-sidebar",
+        "source": "^0.12.2",
+        "bundleIndex": 7,
+        "inBundle": true,
+        "group": "工作区/UI",
+        "sensitivity": "高",
+        "recommendation": "保留，单独更新",
+        "capabilities": [
+          "文件操作",
+          "终端",
+          "Git",
+          "浏览器"
+        ],
+        "protected": false,
+        "protectedReason": null
+      },
+      {
+        "name": "dsh-codex-tools",
+        "source": "github:SPYQWER1/dsh-codex-tools#9519949dd340ff07a7ef8182692704d2487ce690",
+        "bundleIndex": 13,
+        "inBundle": true,
+        "group": "工具",
+        "sensitivity": "高",
+        "recommendation": "固定版本",
+        "capabilities": [
+          "视觉识别",
+          "图片生成",
+          "联网搜索"
+        ],
+        "protected": true,
+        "protectedReason": "已验收并固定提交的视觉与生图工具链"
+      },
+      {
+        "name": "dsh-context",
+        "source": "^0.9.0",
+        "bundleIndex": 8,
+        "inBundle": true,
+        "group": "对话/可观测",
+        "sensitivity": "中",
+        "recommendation": "保留并观察更新",
+        "capabilities": [
+          "上下文读取",
+          "会话展示"
+        ],
+        "protected": false,
+        "protectedReason": null
+      },
+      {
+        "name": "dsh-deep-whale",
+        "source": "github:Small-tailqwq/dsh-deep-whale",
+        "bundleIndex": -1,
+        "inBundle": false,
+        "group": "依赖/其他",
+        "sensitivity": "中",
+        "recommendation": "观察",
+        "capabilities": [
+          "能力未分类"
+        ],
+        "protected": false,
+        "protectedReason": null
+      },
+      {
+        "name": "dsh-desktop-ui-compat",
+        "source": "link:E:/deepseek_harness/themes/desktop-ui-compat",
+        "bundleIndex": 14,
+        "inBundle": true,
+        "group": "UI/核心",
+        "sensitivity": "中",
+        "recommendation": "保留",
+        "capabilities": [
+          "全局布局",
+          "设置页扩展"
+        ],
+        "protected": true,
+        "protectedReason": "已验收的跨主题 UI 核心"
+      },
+      {
+        "name": "dsh-find-plugin",
+        "source": "^0.3.6",
+        "bundleIndex": 4,
+        "inBundle": true,
+        "group": "市场/发现",
+        "sensitivity": "中",
+        "recommendation": "按需启用",
+        "capabilities": [
+          "GitHub 搜索",
+          "联网"
+        ],
+        "protected": false,
+        "protectedReason": null
+      },
+      {
+        "name": "dsh-maid-atelier-fix",
+        "source": "link:E:/deepseek_harness/themes/maid-atelier-fix",
+        "bundleIndex": 12,
+        "inBundle": true,
+        "group": "UI/皮肤适配",
+        "sensitivity": "中",
+        "recommendation": "随皮肤启用",
+        "capabilities": [
+          "全局样式",
+          "角色布局"
+        ],
+        "protected": false,
+        "protectedReason": null
+      },
+      {
+        "name": "dsh-notification",
+        "source": "github:omdsh-dev/dsh-notification",
+        "bundleIndex": 16,
+        "inBundle": true,
+        "group": "系统支持",
+        "sensitivity": "低",
+        "recommendation": "保留",
+        "capabilities": [
+          "系统通知"
+        ],
+        "protected": false,
+        "protectedReason": null
+      },
+      {
+        "name": "dsh-open-in-vscode",
+        "source": "github:omdsh-dev/dsh-open-in-vscode",
+        "bundleIndex": 9,
+        "inBundle": true,
+        "group": "工作区",
+        "sensitivity": "中",
+        "recommendation": "按需启用",
+        "capabilities": [
+          "启动外部编辑器"
+        ],
+        "protected": false,
+        "protectedReason": null
+      },
+      {
+        "name": "dsh-plugin-control-center",
+        "source": "link:E:/deepseek_harness/plugins/plugin-control-center",
+        "bundleIndex": 3,
+        "inBundle": true,
+        "group": "依赖/其他",
+        "sensitivity": "中",
+        "recommendation": "观察",
+        "capabilities": [
+          "能力未分类"
+        ],
+        "protected": true,
+        "protectedReason": "管理与恢复入口自身"
+      },
+      {
+        "name": "dshmarket",
+        "source": "^1.5.0",
+        "bundleIndex": 2,
+        "inBundle": true,
+        "group": "市场/管理",
+        "sensitivity": "高",
+        "recommendation": "保留，隔离更新",
+        "capabilities": [
+          "依赖写入",
+          "安装",
+          "更新",
+          "卸载"
+        ],
+        "protected": true,
+        "protectedReason": "复用的包操作服务"
+      },
+      {
+        "name": "whale-girl",
+        "source": "github:vlln/whale-girl",
+        "bundleIndex": 10,
+        "inBundle": true,
+        "group": "桌宠",
+        "sensitivity": "中",
+        "recommendation": "保留并观察",
+        "capabilities": [
+          "运行状态读取",
+          "全局覆盖层"
+        ],
+        "protected": false,
+        "protectedReason": null
+      }
+    ],
+    "protectedPackages": [
+      {
+        "name": "dsh-plugin-control-center",
+        "reason": "管理与恢复入口自身"
+      },
+      {
+        "name": "dshmarket",
+        "reason": "复用的包操作服务"
+      },
+      {
+        "name": "dsh-desktop-ui-compat",
+        "reason": "已验收的跨主题 UI 核心"
+      },
+      {
+        "name": "dsh-codex-tools",
+        "reason": "已验收并固定提交的视觉与生图工具链"
+      }
+    ],
+    "actionMode": "preview-only"
+  }
+}
