@@ -294,35 +294,10 @@ function waitPortFree(port, tries = 30) {
       const sock = net.connect({ host: "127.0.0.1", port, timeout: 500 });
       sock.once("connect", () => { sock.destroy(); if (left > 0) setTimeout(() => attempt(left - 1), 500); else resolve(false); });
       sock.once("error", () => resolve(true));
-      // A timeout is not evidence that the port is free. Keep polling instead
-      // of racing a new DSH process into an existing listener.
-      sock.once("timeout", () => {
-        sock.destroy();
-        if (left > 0) setTimeout(() => attempt(left - 1), 500);
-        else resolve(false);
-      });
+      sock.once("timeout", () => { sock.destroy(); resolve(true); });
     };
     attempt(tries);
   });
-}
-
-async function stopDshWebForRestart() {
-  const results = [];
-  const managedStop = await killChild();
-  if (managedStop) results.push(managedStop);
-
-  // Ownership can change outside Electron (for example the Codex bridge may
-  // replace the process while this window remains open). Never trust the old
-  // `attached` flag here: re-discover verified DSH Web command lines on every
-  // restart and stop the process that currently owns the service.
-  for (let pass = 1; pass <= 2; pass += 1) {
-    const pids = await findDshWebPids();
-    log(`restart stop pass ${pass}; verified dsh web pids: ${pids.join(", ") || "none"}`);
-    for (const pid of pids) results.push(await terminateProcessTree(pid));
-    if (await waitPortFree(DEFAULT_PORT, 10)) return { results, portFreed: true };
-  }
-
-  return { results, portFreed: false };
 }
 
 // ------------------------------------------------------- safe-shutdown helpers
@@ -426,11 +401,19 @@ async function restartHarness() {
   await setRestartPhase("backup", { sessionQuiet: quiet });
   const backupPath = backupSessions();
   await setRestartPhase("stopping", { sessionQuiet: quiet, backupPath });
-  const stopped = await stopDshWebForRestart();
-  const stopResults = stopped.results;
+  const stopResults = [];
+  const managedStop = await killChild();
+  if (managedStop) stopResults.push(managedStop);
+  if (attached) {
+    const pids = await findDshWebPids();
+    log(`stopping external dsh web pids: ${pids.join(", ") || "none"}`);
+    for (const pid of pids) {
+      stopResults.push(await terminateProcessTree(pid));
+    }
+  }
   attached = false;
   await setRestartPhase("reconnecting", { mode: "managed", sessionQuiet: quiet, backupPath });
-  const portFreed = stopped.portFreed || await waitPortFree(DEFAULT_PORT);
+  const portFreed = await waitPortFree(DEFAULT_PORT);
   try {
     if (!portFreed) {
       const detail = stopResults.map((item) => `pid ${item.pid}: ${item.code ?? "error"} ${item.detail || ""}`.trim()).join("; ");

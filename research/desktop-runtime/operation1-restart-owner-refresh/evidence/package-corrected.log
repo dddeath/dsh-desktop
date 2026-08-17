@@ -1,0 +1,14 @@
+  • electron-builder  version=26.15.3 os=10.0.26200
+  • loaded configuration  file=package.json ("build" field)
+  • executing @electron/rebuild  electronVersion=37.10.3 arch=x64 buildFromSource=false workspaceRoot=E:\deepseek_harness\desktop projectDir=./ appDir=./
+  • installing native dependencies  arch=x64
+  • completed installing native dependencies
+  • packaging       platform=win32 arch=x64 electron=37.10.3 appOutDir=dist-restart-fix\win-unpacked
+  • downloaded      label=electron progress=100%
+  • downloaded electron zip extracted successfully  output=E:\deepseek_harness\desktop\dist-restart-fix\win-unpacked
+  • searching for node modules  pm=npm searchDir=E:\deepseek_harness\desktop
+  • searching for node modules  pm=traversal searchDir=E:\deepseek_harness\desktop
+  • using manual traversal of node_modules to build dependency tree
+  • no node modules returned while searching directories  searchDirectories=[""]
+  • updating asar integrity executable resource  executablePath=dist-restart-fix\win-unpacked\DeepSeek Harness Desktop.exe
+  • signing with signtool.exe  path=dist-restart-fix\win-unpacked\DeepSeek Harness Desktop.exe

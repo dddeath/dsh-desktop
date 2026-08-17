@@ -1,0 +1,13 @@
+BASELINE_DSH_PID=33956
+{"id":1,"result":{"result":{"type":"string","value":"dsh-desktop://restart"}}}
+TRIGGER_EXIT=0
+MODIFIED_DSH_PID=46264
+OLD_PID_ALIVE=False
+ROOT_STATUS=200 DSH_BOOT=True
+BRIDGE_STATUS=200
+
+
+ProcessId       : 46264
+ParentProcessId : 43264
+CommandLine     : "C:\Program Files\nodejs\node.exe" C:\Users\19739\AppData\Roaming\npm\node_modules\@deepseek-ai\dsh\l
+                  ib\bin.js web --port 3080

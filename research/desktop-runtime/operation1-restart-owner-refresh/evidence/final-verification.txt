@@ -1,0 +1,12 @@
+COMMAND: C:\Program Files\nodejs\node.exe --check E:\deepseek_harness\desktop\main.js
+SYNTAX_EXIT=0
+COMMAND: C:\Program Files\nodejs\node.exe --test E:\deepseek_harness\research\desktop-runtime\operation1-restart-owner-refresh\verify-restart-source.test.cjs
+TESTS=3 PASS=3 FAIL=0
+TEST_EXIT=0
+LISTENER_PID=46264
+ROOT_STATUS=200 DSH_BOOT=True
+BRIDGE_STATUS=200
+DESKTOP_STATUS={"desktop":true,"desktopVersion":"0.2.0","dshVersion":"0.1.0-rc.6","host":"127.0.0.1","port":3080,"mode":"managed","phase":"ready","canRestart":true}
+STATUS_EXIT=0
+ORIGINAL_SHA256=9D2DEEAE18702DDCE1569FC680FB602EF343BA51A196D79AFF6FF13E99B9E56B
+MODIFIED_SHA256=C5BFAFF3100F85D6A9CB5A094ABCEAE24EBA7C3044FA6324ACC13E2AEA53823E

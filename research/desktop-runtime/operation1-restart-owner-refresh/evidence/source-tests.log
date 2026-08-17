@@ -1,0 +1,11 @@
+✔ recognizes the detached bridge DSH web command (0.6992ms)
+✔ restart refreshes ownership instead of trusting attached state (0.228ms)
+✔ a connect timeout is not treated as a free port (0.1318ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 74.4482
