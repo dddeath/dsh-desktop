@@ -1,13 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { createRequire } from "node:module";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { createEnvelope, enterBridge, normalizeEnvelope } from "./loop-guard.js";
 import { PromptTraceStore } from "./trace-store.js";
 import { query, readJsonBody, sendJson } from "./http-utils.js";
 import { installCodexResearchTool } from "./codex-research.js";
-import { assertWorkspaceMatch, resolveWorkspaceDirectory, WorkspaceContractError } from "./session-contract.js";
 
 const hostPackage = process.env.DSH_HOST_PACKAGE_JSON || join(
   process.env.APPDATA || join(homedir(), "AppData", "Roaming"),
@@ -31,21 +30,6 @@ function setupModel(ctx) {
   return {
     selection,
     setup(agentCtx) { installModelSelection(agentCtx, { current: selection, assembled: undefined }); },
-  };
-}
-
-async function composeAgent(ctx, presetId) {
-  const model = setupModel(ctx);
-  const presets = ctx.get("agentPresets");
-  if (presets === undefined) return model;
-  const resolvedPreset = (await presets.resolve(presetId)).id;
-  return {
-    selection: model.selection,
-    agentPreset: resolvedPreset,
-    async setup(agentCtx) {
-      model.setup(agentCtx);
-      await presets.mount(agentCtx, resolvedPreset);
-    },
   };
 }
 
@@ -85,29 +69,18 @@ export function apply(ctx) {
   async function acquireAgent(sessionId, cwd) {
     const id = SessionId(sessionId);
     let agent = ctx.agents.get(id);
-    if (agent) {
-      assertWorkspaceMatch(sessionId, cwd, agent.session.header.cwd);
-      return agent;
-    }
-    if (ownedHandles.has(sessionId)) {
-      agent = ownedHandles.get(sessionId).agent;
-      assertWorkspaceMatch(sessionId, cwd, agent.session.header.cwd);
-      return agent;
-    }
+    if (agent) return agent;
+    if (ownedHandles.has(sessionId)) return ownedHandles.get(sessionId).agent;
     const records = await ctx.sessionQuery.listSessions();
-    const record = records.find((candidate) => String(candidate.header.id) === sessionId);
-    if (record) assertWorkspaceMatch(sessionId, cwd, record.header.cwd);
-    const composition = await composeAgent(ctx, record?.header?.agentPreset);
-    const handle = record
-      ? await ctx.agents.resume({ resumeSessionId: id, setup: composition.setup })
+    const persisted = records.some((record) => String(record.header.id) === sessionId);
+    const model = setupModel(ctx);
+    const handle = persisted
+      ? await ctx.agents.resume({ resumeSessionId: id, setup: model.setup })
       : await ctx.agents.create({
           sessionId: id,
-          meta: {
-            cwd,
-            ...(composition.agentPreset === undefined ? {} : { agentPreset: composition.agentPreset }),
-          },
-          agentOptions: { provider: composition.selection.provider, model: composition.selection.model },
-          setup: composition.setup,
+          meta: { cwd: resolve(cwd || process.cwd()) },
+          agentOptions: { provider: model.selection.provider, model: model.selection.model },
+          setup: model.setup,
         });
     ownedHandles.set(sessionId, handle);
     return handle.agent;
@@ -117,7 +90,7 @@ export function apply(ctx) {
     ctx.webServer.register({
       kind: "exact", path: `${BASE}/health`, handler(req, res) {
         if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
-        sendJson(res, 200, { ok: true, value: { version: "0.1.1", traceRoot: traces.root, protocol: "dsh-codex-bridge/1", maxHops: 2 } });
+        sendJson(res, 200, { ok: true, value: { version: "0.1.0", traceRoot: traces.root, protocol: "dsh-codex-bridge/1", maxHops: 2 } });
       },
     }),
     ctx.webServer.register({
@@ -146,10 +119,9 @@ export function apply(ctx) {
           const inbound = normalizeEnvelope(body.envelope, "codex");
           const route = enterBridge(inbound, "codex", "dsh");
           if (!route.ok) return sendJson(res, 409, route);
-          const cwd = await resolveWorkspaceDirectory(body.cwd);
           const sessionId = String(body.sessionId || `session-${randomUUID()}`);
           sessionEnvelopes.set(sessionId, route.envelope);
-          const agent = await acquireAgent(sessionId, cwd);
+          const agent = await acquireAgent(sessionId, body.cwd);
           await agent.whenIdle();
           const firstSeq = agent.session.seq;
           agent.followup(createUserMessage({ content: [{ type: "text", text }], source: { kind: "user" } }));
@@ -158,8 +130,6 @@ export function apply(ctx) {
           const snapshot = summarizeSession(await ctx.sessionQuery.readSession(SessionId(sessionId)));
           sendJson(res, 200, { ok: true, value: {
             sessionId,
-            cwd: agent.session.header.cwd,
-            agentPreset: agent.session.header.agentPreset || null,
             firstSeq,
             envelope: route.envelope,
             session: snapshot.session,
@@ -167,12 +137,7 @@ export function apply(ctx) {
             lastSeq: snapshot.lastSeq,
           } });
         } catch (error) {
-          const workspaceError = error instanceof WorkspaceContractError;
-          sendJson(res, workspaceError ? error.statusCode : 500, {
-            ok: false,
-            error: workspaceError ? error.code : "conversation_failed",
-            detail: String(error?.message || error).slice(0, 1000),
-          });
+          sendJson(res, 500, { ok: false, error: "conversation_failed", detail: String(error?.message || error).slice(0, 1000) });
         }
       },
     }),

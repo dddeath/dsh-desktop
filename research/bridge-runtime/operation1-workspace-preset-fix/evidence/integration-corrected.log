@@ -1,0 +1,68 @@
+{
+  "ok": true,
+  "sessionId": "session-contract-812c5f1c-451b-42c9-ab93-3cda3a9d76ae",
+  "missing": {
+    "status": 400,
+    "body": {
+      "ok": false,
+      "error": "workspace_required",
+      "detail": "cwd must name the target workspace; mentioning a path only in the prompt does not bind the session workspace."
+    }
+  },
+  "created": {
+    "status": 200,
+    "cwd": "E:\\deepseek_harness",
+    "agentPreset": "standard-bash",
+    "assistantText": "SESSION_CONTRACT_OK"
+  },
+  "tools": {
+    "count": 31,
+    "requiredPresent": [
+      "bash",
+      "read",
+      "write"
+    ],
+    "names": [
+      "ask_user_question",
+      "bash",
+      "codex_research",
+      "create_goal",
+      "edit",
+      "exit_plan_mode",
+      "find_dsh_plugin",
+      "get_goal",
+      "glob",
+      "grep",
+      "image_gen",
+      "image_vision",
+      "interrupt_agent",
+      "job_kill",
+      "job_list",
+      "job_output",
+      "list_agents",
+      "modlens_read_image",
+      "pwsh",
+      "ralph",
+      "read",
+      "read_image",
+      "send_message",
+      "skill",
+      "subagent",
+      "subagent_fork",
+      "todo_write",
+      "update_goal",
+      "web_search",
+      "workflow",
+      "write"
+    ]
+  },
+  "conflict": {
+    "status": 400,
+    "body": {
+      "ok": false,
+      "error": "workspace_conflict",
+      "detail": "session session-contract-812c5f1c-451b-42c9-ab93-3cda3a9d76ae is bound to E:\\deepseek_harness, not E:\\deepseek_memory; create a new session for the target workspace."
+    }
+  }
+}
+INTEGRATION_EXIT=0

@@ -1,0 +1,6 @@
+BASELINE_SESSION=session-d8a9fb50-543c-41f0-8bd2-b0d1f7614a7e
+BASELINE_CWD=E:\deepseek_memory
+BASELINE_AGENT_PRESET=<absent>
+BASELINE_TOOL_COUNT=6
+BASELINE_TOOLS=codex_research,find_dsh_plugin,image_gen,image_vision,modlens_read_image,web_search
+OBSERVED_UNKNOWN_TOOLS=read_file,list_directory,fs_read,read,cat

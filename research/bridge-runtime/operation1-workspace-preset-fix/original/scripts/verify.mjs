@@ -22,8 +22,6 @@ async function call(name, args = {}) {
 
 try {
   const tools = await client.listTools();
-  const conversationSend = tools.tools.find((entry) => entry.name === "dsh_conversation_send");
-  const conversationRequired = conversationSend?.inputSchema?.required || [];
   const status = await call("dsh_instance_status");
   const plugins = await call("dsh_plugin_list");
   const traces = await call("dsh_prompt_trace_list", { limit: 50 });
@@ -41,16 +39,11 @@ try {
     ok: Boolean(
       status.ok && status.running && status.bridge?.ok &&
       tools.tools.length === 12 &&
-      conversationRequired.includes("cwd") &&
       pluginItems.some((entry) => entry.name === "dsh-codex-bridge") &&
       prompt?.ok && prompt.value?.request?.system && Array.isArray(prompt.value?.request?.messages) &&
       dshOriginGuard.ok === false && dshOriginGuard.error === "loop_blocked"
     ),
     mcp: { toolCount: tools.tools.length, toolNames: tools.tools.map((entry) => entry.name) },
-    sessionContract: {
-      cwdRequired: conversationRequired.includes("cwd"),
-      cwdDescription: conversationSend?.inputSchema?.properties?.cwd?.description || null,
-    },
     instance: status,
     plugin: { count: pluginItems.length, bridgeInstalled: pluginItems.some((entry) => entry.name === "dsh-codex-bridge") },
     prompt: prompt?.ok ? {

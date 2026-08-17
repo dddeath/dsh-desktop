@@ -1,0 +1,66 @@
+{
+  "ok": true,
+  "mcp": {
+    "toolCount": 12,
+    "toolNames": [
+      "dsh_instance_status",
+      "dsh_instance_start",
+      "dsh_instance_stop",
+      "dsh_instance_restart",
+      "dsh_conversation_list",
+      "dsh_conversation_get",
+      "dsh_conversation_send",
+      "dsh_prompt_trace_list",
+      "dsh_prompt_trace_get",
+      "dsh_plugin_list",
+      "dsh_plugin_plan",
+      "dsh_plugin_apply"
+    ]
+  },
+  "sessionContract": {
+    "cwdRequired": true,
+    "cwdDescription": "Existing target workspace directory. Required for both new and continued sessions; it must match the session's bound cwd."
+  },
+  "instance": {
+    "ok": true,
+    "running": true,
+    "baseUrl": "http://127.0.0.1:3080",
+    "ownership": "external",
+    "pid": null,
+    "bridge": {
+      "ok": true,
+      "value": {
+        "version": "0.1.1",
+        "traceRoot": "C:\\Users\\19739\\.dsh\\codex-bridge\\prompt-traces",
+        "protocol": "dsh-codex-bridge/1",
+        "maxHops": 2
+      }
+    },
+    "logPath": "C:\\Users\\19739\\.dsh\\codex-bridge\\dsh-web.log"
+  },
+  "plugin": {
+    "count": 16,
+    "bridgeInstalled": true
+  },
+  "prompt": {
+    "id": "4396e111-8629-48d5-a663-70f200bd2f22",
+    "sessionId": "session-contract-3190bc7a-291e-44e8-9cc2-21316abb40ae",
+    "traceId": "create-bfa316c4-99f0-4e6e-834f-840b49597d42",
+    "provider": "opencode-go",
+    "model": "deepseek-v4-flash",
+    "systemChars": 6202,
+    "messageCount": 2,
+    "toolCount": 31
+  },
+  "conversation": {
+    "sessionId": "session-contract-3190bc7a-291e-44e8-9cc2-21316abb40ae",
+    "assistantText": "SESSION_CONTRACT_OK",
+    "lastSeq": 53
+  },
+  "loopGuard": {
+    "ok": false,
+    "error": "loop_blocked",
+    "detail": "DSH-originated Codex work cannot re-enter DSH."
+  }
+}
+MCP_VERIFY_EXIT=0
