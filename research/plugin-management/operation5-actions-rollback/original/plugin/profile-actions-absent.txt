@@ -1,0 +1,1 @@
+Baseline condition: plugins/plugin-control-center/lib/profile-actions.js did not exist.

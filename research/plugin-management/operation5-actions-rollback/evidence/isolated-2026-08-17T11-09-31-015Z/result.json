@@ -1,0 +1,115 @@
+{
+  "result": "PASS",
+  "fixtureProfile": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\isolated-2026-08-17T11-09-31-015Z\\profile",
+  "liveProfileChanged": false,
+  "packageName": "dsh-notification",
+  "originalIndex": 9,
+  "backup": {
+    "path": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\isolated-2026-08-17T11-09-31-015Z\\backups\\2026-08-17T11-09-31-030Z-operation4-isolated-drill-dsh-notification",
+    "manifestPath": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\isolated-2026-08-17T11-09-31-015Z\\backups\\2026-08-17T11-09-31-030Z-operation4-isolated-drill-dsh-notification\\manifest.json",
+    "manifestSha256": "92E4AD4DA90DC35F960C025B2DEEE8613B7835940D9255F67A0803CEB4C7941B",
+    "files": [
+      {
+        "relativePath": "package.json",
+        "bytes": 2779,
+        "sha256": "CC8B82C9C5AFB4C616484292A41E59CB5D6008FB74BF79ADEE138D61C7E0CCEE"
+      },
+      {
+        "relativePath": "pnpm-lock.yaml",
+        "bytes": 29180,
+        "sha256": "6747E099BA23F07CB5D94D693D24DD0EA517B7AD2A3215DAC6E3DB42DE698131"
+      },
+      {
+        "relativePath": "cordis.patch.yml",
+        "bytes": 99,
+        "sha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354"
+      }
+    ]
+  },
+  "disabled": {
+    "action": "stage-disable",
+    "packageName": "dsh-notification",
+    "changed": true,
+    "beforeIndex": 9,
+    "afterIndex": -1,
+    "beforeSha256": "CC8B82C9C5AFB4C616484292A41E59CB5D6008FB74BF79ADEE138D61C7E0CCEE",
+    "afterSha256": "0ED71A7CF9DC2666B3C696762C6B4F312017DA75DE0F1B8DD660238A36C20642",
+    "restartRequired": true
+  },
+  "enabled": {
+    "action": "stage-enable",
+    "packageName": "dsh-notification",
+    "changed": true,
+    "beforeIndex": -1,
+    "afterIndex": 9,
+    "beforeSha256": "0ED71A7CF9DC2666B3C696762C6B4F312017DA75DE0F1B8DD660238A36C20642",
+    "afterSha256": "67E8EA7E1BE5EB325C9C333DE25E853C5C1E6BA17411D9E3D0862C4B16D1D83A",
+    "restartRequired": true
+  },
+  "pinned": {
+    "action": "pin-version",
+    "packageName": "dsh-context",
+    "beforeSpec": "^0.7.3",
+    "afterSpec": "0.7.3",
+    "beforeSha256": "67E8EA7E1BE5EB325C9C333DE25E853C5C1E6BA17411D9E3D0862C4B16D1D83A",
+    "afterSha256": "286B2AEF7E38C99E798EA818971638D5B85A724041CB44CF85137465A28BDA0E",
+    "installRequired": true,
+    "restartRequired": true
+  },
+  "update": {
+    "packageName": "dsh-context",
+    "known": true,
+    "kind": "npm",
+    "current": "0.7.3",
+    "latest": "0.10.2",
+    "updateAvailable": true
+  },
+  "protectionGuard": "protected package: dsh-codex-tools",
+  "driftGuard": "profile package drift: expected 0000000000000000000000000000000000000000000000000000000000000000, got 286B2AEF7E38C99E798EA818971638D5B85A724041CB44CF85137465A28BDA0E",
+  "restored": {
+    "action": "restore",
+    "manifestPath": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\isolated-2026-08-17T11-09-31-015Z\\backups\\2026-08-17T11-09-31-030Z-operation4-isolated-drill-dsh-notification\\manifest.json",
+    "beforeSha256": "286B2AEF7E38C99E798EA818971638D5B85A724041CB44CF85137465A28BDA0E",
+    "afterSha256": "CC8B82C9C5AFB4C616484292A41E59CB5D6008FB74BF79ADEE138D61C7E0CCEE",
+    "restoredFiles": [
+      "package.json",
+      "pnpm-lock.yaml",
+      "cordis.patch.yml"
+    ],
+    "restartRequired": true
+  },
+  "baselineHashes": {
+    "package.json": {
+      "relativePath": "package.json",
+      "bytes": 2779,
+      "sha256": "CC8B82C9C5AFB4C616484292A41E59CB5D6008FB74BF79ADEE138D61C7E0CCEE"
+    },
+    "pnpm-lock.yaml": {
+      "relativePath": "pnpm-lock.yaml",
+      "bytes": 29180,
+      "sha256": "6747E099BA23F07CB5D94D693D24DD0EA517B7AD2A3215DAC6E3DB42DE698131"
+    },
+    "cordis.patch.yml": {
+      "relativePath": "cordis.patch.yml",
+      "bytes": 99,
+      "sha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354"
+    }
+  },
+  "restoredHashes": {
+    "package.json": {
+      "relativePath": "package.json",
+      "bytes": 2779,
+      "sha256": "CC8B82C9C5AFB4C616484292A41E59CB5D6008FB74BF79ADEE138D61C7E0CCEE"
+    },
+    "pnpm-lock.yaml": {
+      "relativePath": "pnpm-lock.yaml",
+      "bytes": 29180,
+      "sha256": "6747E099BA23F07CB5D94D693D24DD0EA517B7AD2A3215DAC6E3DB42DE698131"
+    },
+    "cordis.patch.yml": {
+      "relativePath": "cordis.patch.yml",
+      "bytes": 99,
+      "sha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354"
+    }
+  }
+}

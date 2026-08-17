@@ -1,0 +1,10 @@
+{
+    "result":  "ROLLBACK PASS",
+    "probe":  "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\rollback-probe-final-20260817191133\\plugin-control-center",
+    "actionEngineRemoved":  true,
+    "stateRestored":  true,
+    "profileChanged":  false,
+    "packageSha256":  "839F974F5FBA9CDD375F3B4B620F12A5EB59F8968C40A512023D37378722A173",
+    "readmeSha256":  "435187229F5971910D323A7E77604CA5FB0245915F0096E26B27AB5AE1766ACB",
+    "stateSha256":  "90D3EDF3FA282452ABD9B89F80A58549FF42A6509BD277598AAFF7A3D542D80B"
+}

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-17T11:09:31.037Z",
+  "action": "operation4-isolated-drill",
+  "packageName": "dsh-notification",
+  "profileRoot": "E:\\deepseek_harness\\research\\plugin-management\\operation5-actions-rollback\\evidence\\isolated-2026-08-17T11-09-31-015Z\\profile",
+  "files": [
+    {
+      "relativePath": "package.json",
+      "bytes": 2779,
+      "sha256": "CC8B82C9C5AFB4C616484292A41E59CB5D6008FB74BF79ADEE138D61C7E0CCEE"
+    },
+    {
+      "relativePath": "pnpm-lock.yaml",
+      "bytes": 29180,
+      "sha256": "6747E099BA23F07CB5D94D693D24DD0EA517B7AD2A3215DAC6E3DB42DE698131"
+    },
+    {
+      "relativePath": "cordis.patch.yml",
+      "bytes": 99,
+      "sha256": "803B183C9B487A26981FEEA690D22C942A8DE4899D6E671E03429763C949D354"
+    }
+  ]
+}

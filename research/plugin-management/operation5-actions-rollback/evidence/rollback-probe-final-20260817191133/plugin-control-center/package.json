@@ -8,7 +8,6 @@
   "exports": {
     ".": "./lib/index.js",
     "./client": "./lib/client.js",
-    "./profile-actions": "./lib/profile-actions.js",
     "./package.json": "./package.json"
   },
   "dsh": {

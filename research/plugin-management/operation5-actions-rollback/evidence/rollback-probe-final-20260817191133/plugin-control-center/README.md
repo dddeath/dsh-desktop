@@ -7,6 +7,5 @@ DeepSeek Harness 的已安装插件管理视图。
 - 写入边界：操作 3 只创建安全快照与动作计划，不修改 profile，不自动重启
 - 保护包：本插件、`dshmarket`、`dsh-desktop-ui-compat`、`dsh-codex-tools`
 - 预演入口：计划启停、更新、卸载与恢复；保护包的全部变更入口锁定
-- 隔离动作引擎：`./profile-actions` 提供带哈希护栏的 bundle 启停、版本锁定、备份和恢复
 
 真实启停、更新和恢复演练留到阶段 3 操作 4，由用户逐项决定。
