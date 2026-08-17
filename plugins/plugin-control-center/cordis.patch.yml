@@ -1,0 +1,5 @@
+# Installed-plugin management surface. Package mutation remains owned by
+# dshmarket; this plugin only aggregates state and prepares guarded plans.
+- insert:
+    - id: plugin-control-center
+      name: 'dsh-plugin-control-center'

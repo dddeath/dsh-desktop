@@ -1,0 +1,19 @@
+{
+    "checkedAt":  "2026-08-17T08:54:54.3497763+08:00",
+    "trigger":  "Ctrl+Shift+R native menu accelerator",
+    "desktopPid":  41852,
+    "oldListenerPid":  43832,
+    "newListenerPid":  43832,
+    "httpStatus":  200,
+    "snapshotJson":  false,
+    "success":  false,
+    "events":  [
+                   {
+                       "at":  "2026-08-17T08:52:55.0664615+08:00",
+                       "state":  "43832/200/False",
+                       "listenerPid":  43832,
+                       "httpStatus":  200,
+                       "snapshotJson":  false
+                   }
+               ]
+}

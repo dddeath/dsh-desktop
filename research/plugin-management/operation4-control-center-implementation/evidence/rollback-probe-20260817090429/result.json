@@ -1,0 +1,8 @@
+{
+    "probe":  "E:\\deepseek_harness\\research\\plugin-management\\operation4-control-center-implementation\\evidence\\rollback-probe-20260817090429",
+    "profile_package_sha256":  "B47943F6F707DA9A34B106D3353169A63C540A4505912010C64544E7FE8CF1D6",
+    "profile_lock_sha256":  "386782CE50A4C6E32AEE8E9BDE3B84C46046FB83380654B927651C26950DA771",
+    "profile_patch_sha256":  "9374D4607541E9FDDFCCC1B0B2E841BA10CA2D595D9B0C7AA3B53844FE23A5C8",
+    "state_sha256":  "1CB877BDFF81A60197B305166FA2267EADE5884A61E07F70247288FDA516F0C2",
+    "plugin_removed":  true
+}

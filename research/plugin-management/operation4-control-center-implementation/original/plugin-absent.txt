@@ -1,0 +1,1 @@
+Baseline condition: E:\deepseek_harness\plugins\plugin-control-center did not exist.

@@ -1,0 +1,552 @@
+diff --git a/plugins/plugin-control-center/package.json b/plugins/plugin-control-center/package.json
+new file mode 100644
+index 0000000..4046b0b
+--- /dev/null
++++ b/plugins/plugin-control-center/package.json
+@@ -0,0 +1,27 @@
++{
++  "name": "dsh-plugin-control-center",
++  "version": "0.1.0",
++  "description": "Theme-neutral installed-plugin control center for DeepSeek Harness.",
++  "private": true,
++  "type": "module",
++  "main": "lib/index.js",
++  "exports": {
++    ".": "./lib/index.js",
++    "./client": "./lib/client.js",
++    "./package.json": "./package.json"
++  },
++  "dsh": {
++    "bundle": {
++      "patch": "./cordis.patch.yml"
++    },
++    "client": {
++      "inject": [
++        "@deepseek-ai/dsh-client-runtime",
++        "@deepseek-ai/dsh-client-ui-settings",
++        "@deepseek-ai/dsh-client-ui-settings-plugins",
++        "@deepseek-ai/dsh-api-remotes"
++      ],
++      "platform": "web"
++    }
++  }
++}
+diff --git a/plugins/plugin-control-center/cordis.patch.yml b/plugins/plugin-control-center/cordis.patch.yml
+new file mode 100644
+index 0000000..92908f5
+--- /dev/null
++++ b/plugins/plugin-control-center/cordis.patch.yml
+@@ -0,0 +1,5 @@
++# Installed-plugin management surface. Package mutation remains owned by
++# dshmarket; this plugin only aggregates state and prepares guarded plans.
++- insert:
++    - id: plugin-control-center
++      name: 'dsh-plugin-control-center'
+diff --git a/plugins/plugin-control-center/lib/index.js b/plugins/plugin-control-center/lib/index.js
+new file mode 100644
+index 0000000..0f2791e
+--- /dev/null
++++ b/plugins/plugin-control-center/lib/index.js
+@@ -0,0 +1,206 @@
++import crypto from "node:crypto";
++import fs from "node:fs";
++import os from "node:os";
++import path from "node:path";
++
++export const inject = ["webServer"];
++
++const BASE = "/__dsh-plugin-control-center";
++const PROFILE_FILES = ["package.json", "pnpm-lock.yaml", "cordis.yml", "cordis.patch.yml"];
++const PROTECTED = new Map([
++  ["dsh-plugin-control-center", "管理与恢复入口自身"],
++  ["dshmarket", "复用的包操作服务"],
++  ["dsh-desktop-ui-compat", "已验收的跨主题 UI 核心"],
++  ["dsh-codex-tools", "已验收并固定提交的视觉与生图工具链"],
++]);
++const POLICY = {
++  "@dsh-external/dsh-client-ui-skin-maid-atelier": ["UI/皮肤", "中", "保留当前", ["主题切换", "全局样式"]],
++  "@liustack/modlens": ["模型/视觉", "高", "保留并观察更新", ["图片读取", "外部进程"]],
++  "dsh-arknights": ["UI/皮肤", "中", "按需启用", ["主题切换", "全局样式"]],
++  "dsh-at-file": ["工作区", "中", "保留", ["文件检索", "路径读取"]],
++  "dsh-better-sidebar": ["工作区/UI", "高", "保留，单独更新", ["文件操作", "终端", "Git", "浏览器"]],
++  "dsh-codex-tools": ["工具", "高", "固定版本", ["视觉识别", "图片生成", "联网搜索"]],
++  "dsh-context": ["对话/可观测", "中", "保留并观察更新", ["上下文读取", "会话展示"]],
++  "dsh-desktop-ui-compat": ["UI/核心", "中", "保留", ["全局布局", "设置页扩展"]],
++  "dsh-find-plugin": ["市场/发现", "中", "按需启用", ["GitHub 搜索", "联网"]],
++  "dsh-maid-atelier-fix": ["UI/皮肤适配", "中", "随皮肤启用", ["全局样式", "角色布局"]],
++  "dsh-notification": ["系统支持", "低", "保留", ["系统通知"]],
++  "dsh-open-in-vscode": ["工作区", "中", "按需启用", ["启动外部编辑器"]],
++  "dshmarket": ["市场/管理", "高", "保留，隔离更新", ["依赖写入", "安装", "更新", "卸载"]],
++  "whale-girl": ["桌宠", "中", "保留并观察", ["运行状态读取", "全局覆盖层"]],
++};
++
++function profileRoot() {
++  return process.env.DSH_PROFILE_ROOT || path.join(os.homedir(), ".dsh", "profiles", process.env.DSH_PROFILE || "web");
++}
++
++function sha256(file) {
++  return crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
++}
++
++function fileRecord(root, relativePath) {
++  const absolutePath = path.join(root, relativePath);
++  try {
++    const stat = fs.statSync(absolutePath);
++    return { relativePath, absolutePath, exists: true, bytes: stat.size, modifiedAt: stat.mtime.toISOString(), sha256: sha256(absolutePath) };
++  } catch {
++    return { relativePath, absolutePath, exists: false, bytes: 0, modifiedAt: null, sha256: null };
++  }
++}
++
++function readProfile(root) {
++  try { return JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8")); }
++  catch { return { dependencies: {}, dsh: { profile: { bundles: [] } } }; }
++}
++
++function policyFor(name) {
++  const row = POLICY[name] || ["依赖/其他", "中", "观察", ["能力未分类"]];
++  return {
++    group: row[0],
++    sensitivity: row[1],
++    recommendation: row[2],
++    capabilities: row[3],
++    protected: PROTECTED.has(name),
++    protectedReason: PROTECTED.get(name) || null,
++  };
++}
++
++function snapshot() {
++  const root = profileRoot();
++  const profile = readProfile(root);
++  const dependencies = profile.dependencies || {};
++  const bundles = profile.dsh?.profile?.bundles || [];
++  return {
++    schemaVersion: 1,
++    generatedAt: new Date().toISOString(),
++    profile: path.basename(root),
++    profileRoot: root,
++    files: PROFILE_FILES.map((name) => fileRecord(root, name)),
++    plugins: Object.keys(dependencies).sort().map((name) => ({
++      name,
++      source: dependencies[name],
++      bundleIndex: bundles.indexOf(name),
++      inBundle: bundles.includes(name),
++      ...policyFor(name),
++    })),
++    protectedPackages: Array.from(PROTECTED, ([name, reason]) => ({ name, reason })),
++    actionMode: "preview-only",
++  };
++}
++
++function snapshotsRoot() {
++  return path.join(os.homedir(), ".dsh", "control-center", "snapshots");
++}
++
++function createSafetySnapshot(action, packageName) {
++  const root = profileRoot();
++  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
++  const destination = path.join(snapshotsRoot(), `${stamp}-${action}-${packageName.replace(/[^a-zA-Z0-9._-]+/g, "_")}`);
++  fs.mkdirSync(destination, { recursive: true });
++  const files = [];
++  for (const relativePath of PROFILE_FILES) {
++    const source = path.join(root, relativePath);
++    if (!fs.existsSync(source)) continue;
++    fs.copyFileSync(source, path.join(destination, relativePath));
++    files.push(fileRecord(destination, relativePath));
++  }
++  const manifest = {
++    schemaVersion: 1,
++    createdAt: new Date().toISOString(),
++    action,
++    packageName,
++    profileRoot: root,
++    profileUnchanged: true,
++    files,
++  };
++  const manifestPath = path.join(destination, "manifest.json");
++  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
++  return { path: destination, manifestPath, manifestSha256: sha256(manifestPath), files };
++}
++
++function sendJson(res, statusCode, value) {
++  const body = JSON.stringify(value);
++  res.statusCode = statusCode;
++  res.setHeader("Content-Type", "application/json; charset=utf-8");
++  res.setHeader("Cache-Control", "no-store");
++  res.setHeader("Content-Length", Buffer.byteLength(body));
++  res.end(body);
++}
++
++function readJsonBody(req) {
++  return new Promise((resolve, reject) => {
++    let body = "";
++    let settled = false;
++    req.setEncoding("utf8");
++    req.on("data", (chunk) => {
++      if (settled) return;
++      body += chunk;
++      if (body.length > 65536) {
++        settled = true;
++        reject(new Error("request body exceeds 64 KiB"));
++      }
++    });
++    req.on("end", () => {
++      if (settled) return;
++      try { resolve(body ? JSON.parse(body) : {}); }
++      catch { reject(new Error("invalid JSON body")); }
++    });
++    req.on("error", reject);
++  });
++}
++
++export function apply(ctx) {
++  const offSnapshot = ctx.webServer.register({
++    kind: "exact",
++    path: `${BASE}/snapshot`,
++    handler(req, res) {
++      if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
++      try { sendJson(res, 200, { ok: true, value: snapshot() }); }
++      catch (error) { sendJson(res, 500, { ok: false, error: "snapshot_failed", detail: error.message }); }
++    },
++  });
++
++  const offPlan = ctx.webServer.register({
++    kind: "exact",
++    path: `${BASE}/plan`,
++    async handler(req, res) {
++      if (req.method !== "POST") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
++      try {
++        const body = await readJsonBody(req);
++        const allowed = new Set(["stage-enable", "stage-disable", "update", "remove", "restore"]);
++        const action = String(body.action || "");
++        const packageName = String(body.name || "");
++        if (!allowed.has(action) || !packageName) return sendJson(res, 400, { ok: false, error: "invalid_action" });
++        const current = snapshot();
++        const plugin = current.plugins.find((item) => item.name === packageName);
++        if (!plugin) return sendJson(res, 404, { ok: false, error: "package_not_found" });
++        if (plugin.protected) {
++          return sendJson(res, 409, { ok: false, error: "protected_package", detail: plugin.protectedReason });
++        }
++        const backup = createSafetySnapshot(action, packageName);
++        sendJson(res, 200, {
++          ok: true,
++          value: {
++            action,
++            packageName,
++            protected: plugin.protected,
++            protectedReason: plugin.protectedReason,
++            execute: false,
++            profileChanged: false,
++            restartRequired: true,
++            backup,
++            nextStep: "操作 4 人工决定",
++            restoreCommand: `dsh.cmd plugin --profile ${current.profile} install --offline --frozen-lockfile`,
++          },
++        });
++      } catch (error) {
++        sendJson(res, 500, { ok: false, error: "plan_failed", detail: error.message });
++      }
++    },
++  });
++
++  return () => {
++    offPlan();
++    offSnapshot();
++  };
++}
+diff --git a/plugins/plugin-control-center/lib/client.js b/plugins/plugin-control-center/lib/client.js
+new file mode 100644
+index 0000000..3834623
+--- /dev/null
++++ b/plugins/plugin-control-center/lib/client.js
+@@ -0,0 +1,273 @@
++window.__ModuleLoader__.load({
++  id: "dsh-plugin-control-center",
++  factory: (require) => {
++    const module = { exports: {} };
++    const exports = module.exports;
++    const React = require("react");
++    const h = React.createElement;
++    const { useEffect, useMemo, useState } = React;
++
++    const BASE = "/__dsh-plugin-control-center";
++    const STYLE_ID = "dsh-plugin-control-center";
++    const CSS = `
++[data-dsh-plugin-control-center] { color: var(--dsh-text, inherit); text-shadow: none !important; filter: none !important; }
++[data-dsh-plugin-control-center] * { box-sizing: border-box; text-shadow: none !important; filter: none !important; }
++.dcc-shell { display: grid; gap: 16px; padding: 4px 2px 18px; }
++.dcc-hero, .dcc-toolbar, .dcc-card, .dcc-action { color: inherit; background: color-mix(in srgb, var(--dsh-surface, Canvas) 94%, transparent); border: 1px solid color-mix(in srgb, currentColor 16%, transparent); border-radius: 14px; }
++.dcc-hero { padding: 18px; display: grid; gap: 14px; }
++.dcc-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
++.dcc-heading h2, .dcc-heading p, .dcc-card h3, .dcc-card p { margin: 0; }
++.dcc-heading h2 { font-size: 20px; }
++.dcc-muted { opacity: .7; font-size: 13px; }
++.dcc-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
++.dcc-metric { padding: 10px 12px; border-radius: 10px; background: color-mix(in srgb, currentColor 6%, transparent); }
++.dcc-metric b, .dcc-metric span { display: block; }
++.dcc-metric b { font-size: 18px; }
++.dcc-metric span { opacity: .68; font-size: 12px; margin-top: 2px; }
++.dcc-toolbar { padding: 12px; display: grid; grid-template-columns: minmax(160px, 1fr) repeat(3, minmax(110px, auto)); gap: 9px; align-items: center; }
++.dcc-field, .dcc-button { min-height: 36px; border: 1px solid color-mix(in srgb, currentColor 20%, transparent); border-radius: 9px; color: inherit; background: color-mix(in srgb, var(--dsh-surface, Canvas) 96%, transparent); padding: 7px 10px; font: inherit; }
++.dcc-button { cursor: pointer; font-weight: 600; }
++.dcc-button:hover:not(:disabled) { background: color-mix(in srgb, currentColor 10%, transparent); }
++.dcc-button:disabled { opacity: .48; cursor: not-allowed; }
++.dcc-primary { border-color: color-mix(in srgb, var(--dsh-accent, currentColor) 58%, transparent); }
++.dcc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
++.dcc-card { padding: 14px; display: grid; gap: 11px; min-width: 0; }
++.dcc-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
++.dcc-card h3 { font-size: 15px; overflow-wrap: anywhere; }
++.dcc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
++.dcc-tag { border: 1px solid color-mix(in srgb, currentColor 18%, transparent); border-radius: 999px; padding: 3px 8px; font-size: 12px; background: color-mix(in srgb, currentColor 5%, transparent); }
++.dcc-tag[data-tone='good'] { color: var(--dsh-success, #237a4b); }
++.dcc-tag[data-tone='warn'] { color: var(--dsh-warning, #946200); }
++.dcc-tag[data-tone='bad'] { color: var(--dsh-danger, #b42318); }
++.dcc-source { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; overflow-wrap: anywhere; opacity: .78; }
++.dcc-details { display: grid; gap: 8px; border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent); padding-top: 10px; }
++.dcc-detail-row { display: grid; grid-template-columns: 88px 1fr; gap: 8px; font-size: 13px; }
++.dcc-detail-row > span:first-child { opacity: .65; }
++.dcc-actions { display: flex; flex-wrap: wrap; gap: 7px; }
++.dcc-action { padding: 14px; display: grid; gap: 10px; }
++.dcc-action pre { margin: 0; padding: 10px; border-radius: 8px; overflow: auto; background: color-mix(in srgb, currentColor 7%, transparent); white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; }
++.dcc-check { display: flex; gap: 7px; align-items: center; font-size: 13px; }
++.dcc-empty, .dcc-error { padding: 18px; border: 1px dashed color-mix(in srgb, currentColor 24%, transparent); border-radius: 12px; }
++.dcc-error { color: var(--dsh-danger, #b42318); }
++@media (max-width: 760px) { .dcc-grid { grid-template-columns: 1fr; } .dcc-summary { grid-template-columns: repeat(2, 1fr); } .dcc-toolbar { grid-template-columns: 1fr; } }
++`;
++
++    function fetchJson(url, options) {
++      return fetch(url, { cache: "no-store", ...options }).then(async (response) => {
++        const data = await response.json().catch(() => ({}));
++        if (!response.ok || data.ok === false) throw new Error(data.detail || data.error || `${response.status} ${response.statusText}`);
++        return data.value === undefined ? data : data.value;
++      });
++    }
++
++    function statusOf(plugin, installed, inventory, update) {
++      const liveRows = inventory.filter((row) => row.moduleName === plugin.name);
++      if (liveRows.some((row) => row.fiberPhase === "failed")) return "failed";
++      const activation = installed.activation?.[plugin.name];
++      if (activation?.state === "restart") return "pending-restart";
++      if (activation?.state === "live" || liveRows.some((row) => row.enabled && row.fiberPhase === "active")) return "running";
++      if (plugin.inBundle) return "installed-disabled";
++      if (update?.kind === "dependency") return "dependency-only";
++      return "installed-disabled";
++    }
++
++    const STATUS_LABEL = {
++      running: "运行中",
++      "pending-restart": "待重启",
++      failed: "加载失败",
++      "installed-disabled": "已安装未启用",
++      "dependency-only": "仅依赖",
++    };
++
++    function ControlCenterTab({ loadInventory }) {
++      const [data, setData] = useState(null);
++      const [error, setError] = useState("");
++      const [loading, setLoading] = useState(true);
++      const [query, setQuery] = useState("");
++      const [group, setGroup] = useState("all");
++      const [status, setStatus] = useState("all");
++      const [sensitivity, setSensitivity] = useState("all");
++      const [updatesOnly, setUpdatesOnly] = useState(false);
++      const [expanded, setExpanded] = useState({});
++      const [action, setAction] = useState(null);
++      const [confirmText, setConfirmText] = useState("");
++      const [planResult, setPlanResult] = useState(null);
++      const [planning, setPlanning] = useState(false);
++
++      const reload = async () => {
++        setLoading(true);
++        setError("");
++        try {
++          const [inventoryValue, installed, runtime, updates, control] = await Promise.all([
++            loadInventory(),
++            fetchJson("/dsh-market/installed").catch(() => ({ installed: {}, activation: {} })),
++            fetchJson("/dsh-market/status").catch(() => ({})),
++            fetchJson("/dsh-market/updates").catch(() => ({ updates: {} })),
++            fetchJson(`${BASE}/snapshot`),
++          ]);
++          const inventory = inventoryValue.entries || [];
++          const updateMap = updates.updates || {};
++          const plugins = control.plugins.map((plugin) => ({
++            ...plugin,
++            current: updateMap[plugin.name]?.current || null,
++            latest: updateMap[plugin.name]?.latest || null,
++            updateAvailable: updateMap[plugin.name]?.updateAvailable === true,
++            activation: installed.activation?.[plugin.name] || null,
++            runtimeRows: inventory.filter((row) => row.moduleName === plugin.name),
++            status: statusOf(plugin, installed, inventory, updateMap[plugin.name]),
++          }));
++          setData({ control, installed, runtime, plugins, checkedAt: new Date().toISOString() });
++        } catch (loadError) {
++          setError(loadError.message || String(loadError));
++        } finally {
++          setLoading(false);
++        }
++      };
++
++      useEffect(() => { reload(); }, []);
++
++      const groups = useMemo(() => Array.from(new Set((data?.plugins || []).map((item) => item.group))).sort(), [data]);
++      const filtered = useMemo(() => (data?.plugins || []).filter((plugin) => {
++        const needle = query.trim().toLowerCase();
++        if (needle && !`${plugin.name} ${plugin.capabilities.join(" ")} ${plugin.recommendation}`.toLowerCase().includes(needle)) return false;
++        if (group !== "all" && plugin.group !== group) return false;
++        if (status !== "all" && plugin.status !== status) return false;
++        if (sensitivity !== "all" && plugin.sensitivity !== sensitivity) return false;
++        if (updatesOnly && !plugin.updateAvailable) return false;
++        return true;
++      }), [data, query, group, status, sensitivity, updatesOnly]);
++
++      const openAction = (plugin, kind) => {
++        setAction({ plugin, kind });
++        setConfirmText("");
++        setPlanResult(null);
++      };
++
++      const submitPlan = async () => {
++        if (!action) return;
++        setPlanning(true);
++        setPlanResult(null);
++        try {
++          const value = await fetchJson(`${BASE}/plan`, {
++            method: "POST",
++            headers: { "Content-Type": "application/json" },
++            body: JSON.stringify({ action: action.kind, name: action.plugin.name }),
++          });
++          setPlanResult(value);
++        } catch (planError) {
++          setPlanResult({ error: planError.message || String(planError) });
++        } finally {
++          setPlanning(false);
++        }
++      };
++
++      const summary = data ? {
++        running: data.plugins.filter((item) => item.status === "running").length,
++        pending: data.plugins.filter((item) => item.status === "pending-restart").length,
++        updates: data.plugins.filter((item) => item.updateAvailable).length,
++        total: data.plugins.length,
++      } : { running: 0, pending: 0, updates: 0, total: 0 };
++
++      return h("section", { className: "dcc-shell", "data-dsh-plugin-control-center": "true" },
++        h("header", { className: "dcc-hero" },
++          h("div", { className: "dcc-heading" },
++            h("div", null,
++              h("h2", null, "插件管理中心"),
++              h("p", { className: "dcc-muted" }, "聚合运行状态、来源、版本与风险；本阶段操作只生成备份和执行计划。")
++            ),
++            h("button", { className: "dcc-button dcc-primary", type: "button", disabled: loading, onClick: reload, "data-control-refresh": "true" }, loading ? "核验中…" : "运行核验")
++          ),
++          h("div", { className: "dcc-summary", "data-control-summary": "true" },
++            [[summary.running, "运行中"], [summary.pending, "待重启"], [summary.updates, "可更新"], [summary.total, "已纳管"]].map(([value, label]) =>
++              h("div", { className: "dcc-metric", key: label }, h("b", null, value), h("span", null, label))
++            )
++          ),
++          data ? h("p", { className: "dcc-muted" }, `配置：${data.control.profile} · 最后核验：${new Date(data.checkedAt).toLocaleString()} · 模式：只预演`) : null
++        ),
++        h("div", { className: "dcc-toolbar" },
++          h("input", { className: "dcc-field", value: query, onChange: (event) => setQuery(event.target.value), placeholder: "搜索插件、能力或建议", "aria-label": "搜索插件" }),
++          h("select", { className: "dcc-field", value: group, onChange: (event) => setGroup(event.target.value), "aria-label": "按分组筛选" }, h("option", { value: "all" }, "全部分组"), groups.map((value) => h("option", { value, key: value }, value))),
++          h("select", { className: "dcc-field", value: status, onChange: (event) => setStatus(event.target.value), "aria-label": "按状态筛选" }, h("option", { value: "all" }, "全部状态"), Object.entries(STATUS_LABEL).map(([value, label]) => h("option", { value, key: value }, label))),
++          h("label", { className: "dcc-check" }, h("input", { type: "checkbox", checked: updatesOnly, onChange: (event) => setUpdatesOnly(event.target.checked) }), "仅看更新")
++        ),
++        h("div", { className: "dcc-toolbar" },
++          h("select", { className: "dcc-field", value: sensitivity, onChange: (event) => setSensitivity(event.target.value), "aria-label": "按敏感度筛选" }, h("option", { value: "all" }, "全部敏感度"), ["高", "中", "低"].map((value) => h("option", { value, key: value }, `${value}敏感度`))),
++          h("span", { className: "dcc-muted" }, `当前显示 ${filtered.length} / ${summary.total}`)
++        ),
++        error ? h("div", { className: "dcc-error", role: "alert" }, `加载失败：${error}`) : null,
++        !error && !loading && filtered.length === 0 ? h("div", { className: "dcc-empty" }, "当前筛选条件下没有插件。") : null,
++        h("div", { className: "dcc-grid" }, filtered.map((plugin) => {
++          const open = !!expanded[plugin.name];
++          const tone = plugin.status === "running" ? "good" : plugin.status === "failed" ? "bad" : "warn";
++          const local = /^(link|file):/.test(plugin.source);
++          return h("article", { className: "dcc-card", key: plugin.name, "data-plugin-management-card": "true", "data-plugin-name": plugin.name, "data-plugin-status": plugin.status },
++            h("div", { className: "dcc-card-head" },
++              h("div", null, h("h3", null, plugin.name), h("p", { className: "dcc-muted" }, plugin.current || plugin.source)),
++              h("button", { className: "dcc-button", type: "button", onClick: () => setExpanded((current) => ({ ...current, [plugin.name]: !open })), "aria-expanded": open }, open ? "收起" : "详情")
++            ),
++            h("div", { className: "dcc-tags" },
++              h("span", { className: "dcc-tag", "data-tone": tone }, STATUS_LABEL[plugin.status]),
++              h("span", { className: "dcc-tag" }, plugin.group),
++              h("span", { className: "dcc-tag" }, `${plugin.sensitivity}敏感度`),
++              local ? h("span", { className: "dcc-tag" }, "本地链接") : null,
++              plugin.protected ? h("span", { className: "dcc-tag" }, "受保护") : null,
++              plugin.updateAvailable ? h("span", { className: "dcc-tag", "data-tone": "warn" }, `可更新 ${plugin.latest}`) : null
++            ),
++            h("p", { className: "dcc-source", title: plugin.source }, plugin.source),
++            open ? h("div", { className: "dcc-details" },
++              h("div", { className: "dcc-detail-row" }, h("span", null, "能力"), h("span", null, plugin.capabilities.join("、"))),
++              h("div", { className: "dcc-detail-row" }, h("span", null, "装载位置"), h("span", null, plugin.inBundle ? `bundle #${plugin.bundleIndex}` : "未加入 bundle")),
++              h("div", { className: "dcc-detail-row" }, h("span", null, "运行实例"), h("span", null, plugin.runtimeRows.length ? plugin.runtimeRows.map((row) => `${row.entryId}:${row.fiberPhase}`).join("；") : "未发现")),
++              h("div", { className: "dcc-detail-row" }, h("span", null, "使用建议"), h("span", null, plugin.recommendation)),
++              plugin.protected ? h("div", { className: "dcc-detail-row" }, h("span", null, "保护原因"), h("span", null, plugin.protectedReason)) : null
++            ) : null,
++            h("div", { className: "dcc-actions" },
++              h("button", { className: "dcc-button", type: "button", disabled: plugin.protected, title: plugin.protectedReason || "", onClick: () => openAction(plugin, plugin.status === "running" ? "stage-disable" : "stage-enable") }, plugin.status === "running" ? "计划停用" : "计划启用"),
++              h("button", { className: "dcc-button", type: "button", disabled: plugin.protected || !plugin.updateAvailable, title: plugin.protectedReason || (!plugin.updateAvailable ? "当前无可用更新" : ""), onClick: () => openAction(plugin, "update") }, "计划更新"),
++              h("button", { className: "dcc-button", type: "button", disabled: plugin.protected, title: plugin.protectedReason || "", onClick: () => openAction(plugin, "remove") }, "卸载预演"),
++              h("button", { className: "dcc-button", type: "button", disabled: plugin.protected, title: plugin.protectedReason || "", onClick: () => openAction(plugin, "restore") }, "恢复预演")
++            )
++          );
++        })),
++        action ? h("aside", { className: "dcc-action", "data-action-dialog": "true" },
++          h("div", { className: "dcc-heading" }, h("div", null, h("h3", null, `操作预演：${action.plugin.name}`), h("p", { className: "dcc-muted" }, `动作：${action.kind}。将先保存配置快照，不会修改 profile，也不会自动重启。`)), h("button", { className: "dcc-button", type: "button", onClick: () => setAction(null) }, "关闭")),
++          ["update", "remove", "restore"].includes(action.kind) ? h("label", null, h("span", { className: "dcc-muted" }, `输入插件名 ${action.plugin.name} 以确认`), h("input", { className: "dcc-field", value: confirmText, onChange: (event) => setConfirmText(event.target.value), "aria-label": "输入插件名确认" })) : null,
++          h("button", { className: "dcc-button dcc-primary", type: "button", disabled: planning || (["update", "remove", "restore"].includes(action.kind) && confirmText !== action.plugin.name), onClick: submitPlan }, planning ? "生成中…" : "生成备份与计划"),
++          planResult ? h("pre", { "data-action-preview": "true" }, planResult.error ? `错误：${planResult.error}` : `备份：${planResult.backup.path}\n清单 SHA-256：${planResult.backup.manifestSha256}\nprofileChanged：${planResult.profileChanged}\nexecute：${planResult.execute}\n下一步：${planResult.nextStep}`) : null
++        ) : null
++      );
++    }
++
++    const inject = ["slots", "remote", "remote.pluginInventory"];
++    function apply(ctx) {
++      if (typeof document === "undefined") return;
++      if (!document.querySelector(`style[data-plugin='${STYLE_ID}']`)) {
++        const style = document.createElement("style");
++        style.dataset.plugin = STYLE_ID;
++        style.textContent = CSS;
++        document.head.appendChild(style);
++      }
++      const loadInventory = async () => {
++        const result = await ctx.remote.pluginInventory.list();
++        if (!result.ok) throw new Error(`pluginInventory.list failed: ${result.error.code}: ${result.error.message}`);
++        return result.value;
++      };
++      const dispose = ctx.slots.inject("settings.plugins.tab", () => ctx.slots.register({
++        name: "settings.plugins.tab",
++        id: "manage",
++        order: 20,
++        label: () => /zh/i.test(document.documentElement.lang || navigator.language || "zh") ? "管理中心" : "Control center",
++        inject: () => ({ loadInventory }),
++      }, ControlCenterTab));
++      return () => {
++        dispose?.();
++        document.querySelector(`style[data-plugin='${STYLE_ID}']`)?.remove();
++      };
++    }
++
++    exports.inject = inject;
++    exports.name = "dsh-plugin-control-center";
++    exports.apply = apply;
++    return module.exports;
++  },
++});
+diff --git a/plugins/plugin-control-center/README.md b/plugins/plugin-control-center/README.md
+new file mode 100644
+index 0000000..9509d57
+--- /dev/null
++++ b/plugins/plugin-control-center/README.md
+@@ -0,0 +1,11 @@
++# dsh-plugin-control-center
++
++DeepSeek Harness 的已安装插件管理视图。
++
++- 入口：设置 → 插件 → 管理中心
++- 读取：官方 Loader inventory、`dshmarket` 已安装/状态/更新接口、profile 文件哈希
++- 写入边界：操作 3 只创建安全快照与动作计划，不修改 profile，不自动重启
++- 保护包：本插件、`dshmarket`、`dsh-desktop-ui-compat`、`dsh-codex-tools`
++- 预演入口：计划启停、更新、卸载与恢复；保护包的全部变更入口锁定
++
++真实启停、更新和恢复演练留到阶段 3 操作 4，由用户逐项决定。
