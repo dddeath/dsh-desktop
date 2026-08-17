@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-08-17T12:15:53.9085629Z",
+  "result": "PASS",
+  "version": "0.2.0",
+  "buildExit": 0,
+  "commands": [
+    {
+      "command": "parse desktop/package.json",
+      "literalOutput": "version=0.2.0",
+      "exitStatus": 0
+    },
+    {
+      "command": "node --check desktop\\main.js",
+      "literalOutput": "no output",
+      "exitStatus": 0
+    },
+    {
+      "command": "node --check desktop\\dsh-process.js",
+      "literalOutput": "no output",
+      "exitStatus": 0
+    },
+    {
+      "command": "node --check themes\\maid-atelier-fix\\lib\\client.js",
+      "literalOutput": "no output",
+      "exitStatus": 0
+    },
+    {
+      "command": "node --check themes\\desktop-ui-compat\\lib\\client.js",
+      "literalOutput": "no output",
+      "exitStatus": 0
+    },
+    {
+      "command": "node --check plugins\\plugin-control-center\\lib\\client.js",
+      "literalOutput": "no output",
+      "exitStatus": 0
+    },
+    {
+      "command": "node --check plugins\\plugin-control-center\\lib\\profile-actions.js",
+      "literalOutput": "no output",
+      "exitStatus": 0
+    },
+    {
+      "command": "verify PE headers and minimum sizes",
+      "literalOutput": "portable=MZ; installer=MZ; unpacked=MZ; size gates=PASS",
+      "exitStatus": 0
+    },
+    {
+      "command": "asar list desktop/dist/win-unpacked/resources/app.asar",
+      "literalOutput": "main.js,dsh-process.js,icon.ico,icon.png,package.json present",
+      "exitStatus": 0
+    },
+    {
+      "command": "GET http://127.0.0.1:3080/",
+      "literalOutput": "HTTP 200",
+      "exitStatus": 0
+    },
+    {
+      "command": "npm.cmd run pack",
+      "literalOutput": "BUILD_EXIT=0; portable and nsis targets built",
+      "exitStatus": 0
+    }
+  ],
+  "checks": {
+    "packageVersion": "0.2.0",
+    "syntaxFiles": 6,
+    "portablePe": "MZ",
+    "installerPe": "MZ",
+    "asarRequiredFiles": 5,
+    "httpStatus": 200,
+    "artifactCount": 5
+  },
+  "manifest": "E:\\deepseek_harness\\release\\v0.2.0\\artifact-manifest.json",
+  "rollback": "E:\\deepseek_harness\\release\\v0.2.0\\rollback.ps1"
+}

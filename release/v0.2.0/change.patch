@@ -1,0 +1,179 @@
+diff --git a/.agent/PLAN.json b/.agent/PLAN.json
+index c947285..26b79ff 100644
+--- a/.agent/PLAN.json
++++ b/.agent/PLAN.json
+@@ -86 +86 @@
+-      "status": "in_progress",
++      "status": "completed",
+@@ -102 +102,3 @@
+-      "execution_plan": "research/plugin-management/phase3-execution-plan.md"
++      "execution_plan": "research/plugin-management/phase3-execution-plan.md",
++      "completed_at": "2026-08-17T12:12:00.553Z",
++      "completion_evidence": "research/plugin-management/operation5-actions-rollback/evidence/real-profile-drill/final-verification.json"
+@@ -107 +109 @@
+-      "status": "pending",
++      "status": "ready_to_publish",
+@@ -112,2 +114,4 @@
+-        "固定 Git 提交与产物哈希",
+-        "推送维护分支并记录恢复方法"
++        "固定桌面版本、Git 提交与发布标签",
++        "构建 Windows x64 便携版和 NSIS 安装版",
++        "记录产物 SHA-256、PE 结构、构建日志和运行健康状态",
++        "生成 README、CHANGELOG、发布说明和可执行回滚"
+@@ -119,2 +123,13 @@
+-      "rollback_point": "待阶段 3 完成后回填",
+-      "requires_verification": false
++      "rollback_point": "2f1b940f562b4d08b279444b84a547ddfe3822aa",
++      "requires_verification": false,
++      "started_at": "2026-08-17T12:12:00.553Z",
++      "release_version": "0.2.0",
++      "release_tag": "v0.2.0",
++      "version": "0.2.0",
++      "tag": "v0.2.0",
++      "verification": "release/v0.2.0/verification.json",
++      "artifact_manifest": "release/v0.2.0/artifact-manifest.json",
++      "rollback": "release/v0.2.0/rollback.ps1",
++      "known_limitations": [
++        "Windows executables are not Authenticode signed"
++      ]
+diff --git a/.agent/STATE.json b/.agent/STATE.json
+index 02cbf1e..3434563 100644
+--- a/.agent/STATE.json
++++ b/.agent/STATE.json
+@@ -3,5 +3,5 @@
+-  "updated_at": "2026-08-17T12:00:26.621Z",
+-  "status": "awaiting_user_validation",
+-  "current_phase": "post_phase3_control_center_ui",
+-  "latest_result": "Control-center UI 0.1.1 is staged: status chips and detail controls use fixed visual contracts, expanded details use a unified panel, and source maintenance mode is explicit.",
+-  "next_action": "User refreshes or restarts Harness, checks the management-center card grid, expands one market plugin and one local-link plugin, and accepts or reports visual adjustments.",
++  "updated_at": "2026-08-17T12:17:12.333Z",
++  "status": "release_ready_to_publish",
++  "current_phase": "P4",
++  "latest_result": "v0.2.0 Windows portable and NSIS artifacts passed syntax, PE, ASAR, HTTP, hash, and isolated rollback verification; release metadata is ready for commit, tag, and push.",
++  "next_action": "Commit release metadata, create and push the immutable v0.2.0 tag, then record the published commit in project state.",
+@@ -11,2 +11,2 @@
+-    "kind": "control_center_visual_and_maintenance_mode_staged",
+-    "phase": "post-phase3",
++    "kind": "v0.2.0_release_verification",
++    "phase": "P4",
+@@ -14,3 +14,3 @@
+-    "manual_gate_status": "awaiting_ui_validation",
+-    "completed_at": "2026-08-17T11:58:51.529Z",
+-    "evidence": "E:\\deepseek_harness\\research\\plugin-management\\operation6-control-center-visual-community-customization\\verification.json",
++    "manual_gate_status": "accepted_by_progression",
++    "completed_at": "2026-08-17T12:15:53.9085629Z",
++    "evidence": "E:\\deepseek_harness\\release\\v0.2.0\\verification.json",
+@@ -18,9 +18,8 @@
+-      "version": "0.1.1",
+-      "original_client_sha256": "386D19B7B44CBDD176C6D3D18245AC6B913F656C7E4A8EB4AF4780F481201BD0",
+-      "modified_client_sha256": "FFA840ACE96B1127EB61254BB719E3D53129DABA8F5E3EF5CB9A989CAC889359",
+-      "fixed_detail_button": true,
+-      "unified_status_chips": true,
+-      "unified_detail_panel": true,
+-      "maintenance_mode_visible": true,
+-      "live_profile_changed": false,
+-      "rollback_probe": "PASS"
++      "version": "0.2.0",
++      "build_exit": 0,
++      "artifact_count": 5,
++      "portable_sha256": "6622B6C7066853F33858A4BBAF42035772C8F664C5ABDC5042A36624915A958E",
++      "installer_sha256": "E0CA067904A6A8623FA3B9BAF773A0320FB4C2F4D45AF83D0A2036FD7B91564D",
++      "http_status": 200,
++      "rollback_probe": "PASS",
++      "signature_status": "NotSigned"
+@@ -659 +658 @@
+-    "status": "awaiting_user_validation",
++    "status": "accepted",
+@@ -677 +676 @@
+-    "manual_gate_status": "awaiting_ui_validation",
++    "manual_gate_status": "accepted_by_progression_to_release",
+@@ -682 +681,34 @@
+-    "strategy": "E:\\deepseek_harness\\research\\plugin-management\\operation6-control-center-visual-community-customization\\community-plugin-customization.md"
++    "strategy": "E:\\deepseek_harness\\research\\plugin-management\\operation6-control-center-visual-community-customization\\community-plugin-customization.md",
++    "accepted_at": "2026-08-17T12:12:00.553Z"
++  },
++  "release": {
++    "status": "ready_to_publish",
++    "version": "0.2.0",
++    "tag": "v0.2.0",
++    "started_at": "2026-08-17T12:12:00.553Z",
++    "rollback_point": "2f1b940f562b4d08b279444b84a547ddfe3822aa",
++    "branch": "codex/phase1-ui-complete-phase2-ready",
++    "output_dir": "E:\\deepseek_harness\\desktop\\dist",
++    "record_dir": "E:\\deepseek_harness\\release\\v0.2.0",
++    "verified_at": "2026-08-17T12:15:53.9085629Z",
++    "manifest": "E:\\deepseek_harness\\release\\v0.2.0\\artifact-manifest.json",
++    "verification": "E:\\deepseek_harness\\release\\v0.2.0\\verification.json",
++    "rollback": "E:\\deepseek_harness\\release\\v0.2.0\\rollback.ps1",
++    "rollback_verification": "E:\\deepseek_harness\\release\\v0.2.0\\rollback-verification.json",
++    "portable": {
++      "path": "E:\\deepseek_harness\\desktop\\dist\\DeepSeek-Harness-Desktop-0.2.0-portable.exe",
++      "bytes": 84561810,
++      "sha256": "6622B6C7066853F33858A4BBAF42035772C8F664C5ABDC5042A36624915A958E",
++      "signature": "NotSigned"
++    },
++    "installer": {
++      "path": "E:\\deepseek_harness\\desktop\\dist\\DeepSeek-Harness-Desktop-Setup-0.2.0.exe",
++      "bytes": 84989014,
++      "sha256": "E0CA067904A6A8623FA3B9BAF773A0320FB4C2F4D45AF83D0A2036FD7B91564D",
++      "signature": "NotSigned"
++    },
++    "build_exit": 0,
++    "http_status": 200,
++    "known_limitations": [
++      "unsigned_windows_binaries"
++    ]
+diff --git a/README.md b/README.md
+index 0b12980..f9ef0e9 100644
+--- a/README.md
++++ b/README.md
+@@ -4,0 +5,2 @@
++当前发布：**v0.2.0**（Windows x64，便携版与安装版）。
++
+@@ -12,0 +15,3 @@
++- **`themes/desktop-ui-compat/`** — 跨主题桌面布局兼容层：统一左右侧栏、Composer、桌宠定位与主题切换后的 UI 行为。
++- **`plugins/plugin-control-center/`** — 插件管理中心：展示插件来源、运行状态、敏感能力、更新、装载位置、维护方式与受保护操作入口。
++- **Codex 工具链** — web profile 已验收 `dsh-codex-tools@1.0.1`，通过本机 Codex/ChatGPT 登录态提供图片识别与图片生成入口。
+@@ -31,0 +37,10 @@
++## 社区插件定制
++
++不要直接修改 `~/.dsh/profiles/web/node_modules`。外观适配放入独立兼容插件；核心行为修改使用 Git fork 并通过 `link:` 接入，随后用 Git rebase/merge 同步上游。
++
++详细流程见：`research/plugin-management/operation6-control-center-visual-community-customization/community-plugin-customization.md`。
++
++## 发布验证
++
++发布清单、SHA-256、验证命令和回滚入口保存在 `release/v0.2.0/`。
++
+diff --git a/desktop/package-lock.json b/desktop/package-lock.json
+index ca3ebe2..c6e39f5 100644
+--- a/desktop/package-lock.json
++++ b/desktop/package-lock.json
+@@ -3 +3 @@
+-  "version": "0.1.0",
++  "version": "0.2.0",
+@@ -9 +9 @@
+-      "version": "0.1.0",
++      "version": "0.2.0",
+diff --git a/desktop/package.json b/desktop/package.json
+index 3250830..b43c15c 100644
+--- a/desktop/package.json
++++ b/desktop/package.json
+@@ -4 +4 @@
+-  "version": "0.1.0",
++  "version": "0.2.0",
+@@ -37,2 +37,12 @@
+-        { "target": "portable", "arch": ["x64"] },
+-        { "target": "nsis", "arch": ["x64"] }
++        {
++          "target": "portable",
++          "arch": [
++            "x64"
++          ]
++        },
++        {
++          "target": "nsis",
++          "arch": [
++            "x64"
++          ]
++        }

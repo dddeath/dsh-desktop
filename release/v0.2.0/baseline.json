@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-08-17T12:11:16.8356232Z",
+  "releaseVersion": "0.2.0",
+  "releaseTag": "v0.2.0",
+  "branch": "codex/phase1-ui-complete-phase2-ready",
+  "rollbackPoint": "2f1b940f562b4d08b279444b84a547ddfe3822aa",
+  "originalHashes": {
+    "desktopPackage": "D0777FE360A9A1C68E4B71C2B2DEE5434F07B3EFFF982034958CAE23740FA4DE",
+    "desktopLock": "81F7A6070DEB144F1003AC398BD25B40BCD87921AFCF6063958744E3C3E4B34C",
+    "state": "E9F4E88DFFB623A959C9BDDBCCFC9E92F9DCEBBC29C8F979C8BE40BC97346D9D",
+    "plan": "3B0E66B102738B9DAF9AE77972B15DFABDAEEC551F8CF8A80BE463B703371C67",
+    "readme": "BC9B141DB697EA28A2674BA72DA119D896EB80AAAF949A6DE01C972D61800803"
+  },
+  "existingArtifactHashes": [
+    {
+      "name": "DeepSeek-Harness-Desktop-0.1.0-portable.exe",
+      "bytes": 84562363,
+      "sha256": "EF50633B4CB850739E0335183768FDB87FD32B9B24DE5A9B34595AB432645776"
+    },
+    {
+      "name": "DeepSeek-Harness-Desktop-Setup-0.1.0.exe",
+      "bytes": 84989560,
+      "sha256": "8C00D8D50E1231A30A76EE46A2A8085AD30A399F90D9E528D96FD8DDD9D968A7"
+    }
+  ]
+}

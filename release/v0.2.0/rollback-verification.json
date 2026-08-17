@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-08-17T12:16:17.9968571Z",
+  "result": "PASS",
+  "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File rollback.ps1 -RepoRoot C:\\Users\\19739\\AppData\\Local\\Temp\\dsh-release-rollback-probe-20260817201617 -ReleaseRoot E:\\deepseek_harness\\release\\v0.2.0",
+  "literalOutput": "{\n    \"result\":  \"ROLLBACK PASS\",\n    \"restoredVersion\":  \"0.1.0\",\n    \"restoredFiles\":  [\n                          \"C:\\\\Users\\\\19739\\\\AppData\\\\Local\\\\Temp\\\\dsh-release-rollback-probe-20260817201617\\\\desktop\\\\package.json\",\n                          \"C:\\\\Users\\\\19739\\\\AppData\\\\Local\\\\Temp\\\\dsh-release-rollback-probe-20260817201617\\\\desktop\\\\package-lock.json\",\n                          \"C:\\\\Users\\\\19739\\\\AppData\\\\Local\\\\Temp\\\\dsh-release-rollback-probe-20260817201617\\\\.agent\\\\STATE.json\",\n                          \"C:\\\\Users\\\\19739\\\\AppData\\\\Local\\\\Temp\\\\dsh-release-rollback-probe-20260817201617\\\\.agent\\\\PLAN.json\",\n                          \"C:\\\\Users\\\\19739\\\\AppData\\\\Local\\\\Temp\\\\dsh-release-rollback-probe-20260817201617\\\\README.md\"\n                      ],\n    \"retainedEvidence\":  \"E:\\\\deepseek_harness\\\\release\\\\v0.2.0\",\n    \"liveProfileChanged\":  false\n}",
+  "exitStatus": 0,
+  "probeRoot": "C:\\Users\\19739\\AppData\\Local\\Temp\\dsh-release-rollback-probe-20260817201617",
+  "restoredHashes": {
+    "desktopPackage": "D0777FE360A9A1C68E4B71C2B2DEE5434F07B3EFFF982034958CAE23740FA4DE",
+    "desktopLock": "81F7A6070DEB144F1003AC398BD25B40BCD87921AFCF6063958744E3C3E4B34C",
+    "state": "E9F4E88DFFB623A959C9BDDBCCFC9E92F9DCEBBC29C8F979C8BE40BC97346D9D",
+    "plan": "3B0E66B102738B9DAF9AE77972B15DFABDAEEC551F8CF8A80BE463B703371C67",
+    "readme": "BC9B141DB697EA28A2674BA72DA119D896EB80AAAF949A6DE01C972D61800803"
+  }
+}

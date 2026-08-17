@@ -106,7 +106,7 @@
     {
       "id": "P4",
       "name": "发布与收尾",
-      "status": "ready_to_publish",
+      "status": "in_progress",
       "inputs": [
         "全部通过的阶段验收证据"
       ],
@@ -124,15 +124,7 @@
       "requires_verification": false,
       "started_at": "2026-08-17T12:12:00.553Z",
       "release_version": "0.2.0",
-      "release_tag": "v0.2.0",
-      "version": "0.2.0",
-      "tag": "v0.2.0",
-      "verification": "release/v0.2.0/verification.json",
-      "artifact_manifest": "release/v0.2.0/artifact-manifest.json",
-      "rollback": "release/v0.2.0/rollback.ps1",
-      "known_limitations": [
-        "Windows executables are not Authenticode signed"
-      ]
+      "release_tag": "v0.2.0"
     }
   ]
 }

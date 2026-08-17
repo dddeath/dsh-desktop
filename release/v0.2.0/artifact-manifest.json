@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "version": "0.2.0",
+  "tag": "v0.2.0",
+  "platform": "win32-x64",
+  "generatedAt": "2026-08-17T12:15:53.8923725Z",
+  "artifacts": [
+    {
+      "path": "E:\\deepseek_harness\\desktop\\dist\\DeepSeek-Harness-Desktop-0.2.0-portable.exe",
+      "name": "DeepSeek-Harness-Desktop-0.2.0-portable.exe",
+      "bytes": 84561810,
+      "sha256": "6622B6C7066853F33858A4BBAF42035772C8F664C5ABDC5042A36624915A958E",
+      "modifiedAt": "2026-08-17T12:14:24.0771652Z",
+      "peMagic": "MZ",
+      "fileVersion": "0.2.0",
+      "productVersion": "0.2.0",
+      "signatureStatus": "NotSigned",
+      "signer": null
+    },
+    {
+      "path": "E:\\deepseek_harness\\desktop\\dist\\DeepSeek-Harness-Desktop-Setup-0.2.0.exe",
+      "name": "DeepSeek-Harness-Desktop-Setup-0.2.0.exe",
+      "bytes": 84989014,
+      "sha256": "E0CA067904A6A8623FA3B9BAF773A0320FB4C2F4D45AF83D0A2036FD7B91564D",
+      "modifiedAt": "2026-08-17T12:14:29.2592721Z",
+      "peMagic": "MZ",
+      "fileVersion": "0.2.0",
+      "productVersion": "0.2.0",
+      "signatureStatus": "NotSigned",
+      "signer": null
+    },
+    {
+      "path": "E:\\deepseek_harness\\desktop\\dist\\DeepSeek-Harness-Desktop-Setup-0.2.0.exe.blockmap",
+      "name": "DeepSeek-Harness-Desktop-Setup-0.2.0.exe.blockmap",
+      "bytes": 89798,
+      "sha256": "3CD2C65313AFFF4067B3E0EEC43AECA83F4376B509AFDBB80F3A359AEC44D242",
+      "modifiedAt": "2026-08-17T12:14:34.2853199Z",
+      "peMagic": null,
+      "fileVersion": null,
+      "productVersion": null,
+      "signatureStatus": null,
+      "signer": null
+    },
+    {
+      "path": "E:\\deepseek_harness\\desktop\\dist\\win-unpacked\\DeepSeek Harness Desktop.exe",
+      "name": "DeepSeek Harness Desktop.exe",
+      "bytes": 204705792,
+      "sha256": "7620B29D67DBCD56B7BD1DDD337C8F52659039FCC4C2E50B6AEFAC2972D238CF",
+      "modifiedAt": "2026-08-17T12:12:47.1754141Z",
+      "peMagic": "MZ",
+      "fileVersion": "0.2.0",
+      "productVersion": "0.2.0.0",
+      "signatureStatus": "NotSigned",
+      "signer": null
+    },
+    {
+      "path": "E:\\deepseek_harness\\desktop\\dist\\win-unpacked\\resources\\app.asar",
+      "name": "app.asar",
+      "bytes": 390816,
+      "sha256": "01EDCE1D2A82DF5AB5330CF41EA055B884C16F1058EFD52B739F12C704386810",
+      "modifiedAt": "2026-08-17T12:12:46.5222672Z",
+      "peMagic": null,
+      "fileVersion": null,
+      "productVersion": null,
+      "signatureStatus": null,
+      "signer": null
+    }
+  ]
+}

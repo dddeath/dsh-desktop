@@ -83,7 +83,7 @@
     {
       "id": "P3",
       "name": "阶段 3：插件结构与管理优化",
-      "status": "completed",
+      "status": "in_progress",
       "inputs": [
         "阶段 2 插件实现与现有插件清单"
       ],
@@ -99,40 +99,25 @@
       "rollback_point": "4c7244ed0779804cf81cab5a8c4618f8126550c4",
       "requires_verification": true,
       "started_at": "2026-08-17T01:11:37+08:00",
-      "execution_plan": "research/plugin-management/phase3-execution-plan.md",
-      "completed_at": "2026-08-17T12:12:00.553Z",
-      "completion_evidence": "research/plugin-management/operation5-actions-rollback/evidence/real-profile-drill/final-verification.json"
+      "execution_plan": "research/plugin-management/phase3-execution-plan.md"
     },
     {
       "id": "P4",
       "name": "发布与收尾",
-      "status": "ready_to_publish",
+      "status": "pending",
       "inputs": [
         "全部通过的阶段验收证据"
       ],
       "actions": [
-        "固定桌面版本、Git 提交与发布标签",
-        "构建 Windows x64 便携版和 NSIS 安装版",
-        "记录产物 SHA-256、PE 结构、构建日志和运行健康状态",
-        "生成 README、CHANGELOG、发布说明和可执行回滚"
+        "固定 Git 提交与产物哈希",
+        "推送维护分支并记录恢复方法"
       ],
       "acceptance": [
         "GitHub 分支包含源码、计划与紧凑验收证据",
         "最终状态与下一步均可从 .agent 读取"
       ],
-      "rollback_point": "2f1b940f562b4d08b279444b84a547ddfe3822aa",
-      "requires_verification": false,
-      "started_at": "2026-08-17T12:12:00.553Z",
-      "release_version": "0.2.0",
-      "release_tag": "v0.2.0",
-      "version": "0.2.0",
-      "tag": "v0.2.0",
-      "verification": "release/v0.2.0/verification.json",
-      "artifact_manifest": "release/v0.2.0/artifact-manifest.json",
-      "rollback": "release/v0.2.0/rollback.ps1",
-      "known_limitations": [
-        "Windows executables are not Authenticode signed"
-      ]
+      "rollback_point": "待阶段 3 完成后回填",
+      "requires_verification": false
     }
   ]
 }

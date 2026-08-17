@@ -1,28 +1,29 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-17T12:17:12.333Z",
-  "status": "release_ready_to_publish",
+  "updated_at": "2026-08-17T12:12:00.553Z",
+  "status": "release_in_progress",
   "current_phase": "P4",
-  "latest_result": "v0.2.0 Windows portable and NSIS artifacts passed syntax, PE, ASAR, HTTP, hash, and isolated rollback verification; release metadata is ready for commit, tag, and push.",
-  "next_action": "Commit release metadata, create and push the immutable v0.2.0 tag, then record the published commit in project state.",
+  "latest_result": "Phase 3 and the follow-up control-center UI were accepted by progression; release v0.2.0 preparation has started from the fixed rollback commit.",
+  "next_action": "Build and verify the v0.2.0 Windows portable and installer artifacts, then publish the branch and immutable tag.",
   "blockers": [],
   "state_dir": "E:\\deepseek_harness\\.agent",
   "last_verification": {
-    "kind": "v0.2.0_release_verification",
-    "phase": "P4",
+    "kind": "control_center_visual_and_maintenance_mode_staged",
+    "phase": "post-phase3",
     "passed": true,
-    "manual_gate_status": "accepted_by_progression",
-    "completed_at": "2026-08-17T12:15:53.9085629Z",
-    "evidence": "E:\\deepseek_harness\\release\\v0.2.0\\verification.json",
+    "manual_gate_status": "awaiting_ui_validation",
+    "completed_at": "2026-08-17T11:58:51.529Z",
+    "evidence": "E:\\deepseek_harness\\research\\plugin-management\\operation6-control-center-visual-community-customization\\verification.json",
     "outputs": {
-      "version": "0.2.0",
-      "build_exit": 0,
-      "artifact_count": 5,
-      "portable_sha256": "6622B6C7066853F33858A4BBAF42035772C8F664C5ABDC5042A36624915A958E",
-      "installer_sha256": "E0CA067904A6A8623FA3B9BAF773A0320FB4C2F4D45AF83D0A2036FD7B91564D",
-      "http_status": 200,
-      "rollback_probe": "PASS",
-      "signature_status": "NotSigned"
+      "version": "0.1.1",
+      "original_client_sha256": "386D19B7B44CBDD176C6D3D18245AC6B913F656C7E4A8EB4AF4780F481201BD0",
+      "modified_client_sha256": "FFA840ACE96B1127EB61254BB719E3D53129DABA8F5E3EF5CB9A989CAC889359",
+      "fixed_detail_button": true,
+      "unified_status_chips": true,
+      "unified_detail_panel": true,
+      "maintenance_mode_visible": true,
+      "live_profile_changed": false,
+      "rollback_probe": "PASS"
     }
   },
   "phase2_startup_snapshot": "E:\\deepseek_harness\\.agent\\evidence\\phase2-startup-snapshot",
@@ -682,35 +683,13 @@
     "accepted_at": "2026-08-17T12:12:00.553Z"
   },
   "release": {
-    "status": "ready_to_publish",
+    "status": "in_progress",
     "version": "0.2.0",
     "tag": "v0.2.0",
     "started_at": "2026-08-17T12:12:00.553Z",
     "rollback_point": "2f1b940f562b4d08b279444b84a547ddfe3822aa",
     "branch": "codex/phase1-ui-complete-phase2-ready",
     "output_dir": "E:\\deepseek_harness\\desktop\\dist",
-    "record_dir": "E:\\deepseek_harness\\release\\v0.2.0",
-    "verified_at": "2026-08-17T12:15:53.9085629Z",
-    "manifest": "E:\\deepseek_harness\\release\\v0.2.0\\artifact-manifest.json",
-    "verification": "E:\\deepseek_harness\\release\\v0.2.0\\verification.json",
-    "rollback": "E:\\deepseek_harness\\release\\v0.2.0\\rollback.ps1",
-    "rollback_verification": "E:\\deepseek_harness\\release\\v0.2.0\\rollback-verification.json",
-    "portable": {
-      "path": "E:\\deepseek_harness\\desktop\\dist\\DeepSeek-Harness-Desktop-0.2.0-portable.exe",
-      "bytes": 84561810,
-      "sha256": "6622B6C7066853F33858A4BBAF42035772C8F664C5ABDC5042A36624915A958E",
-      "signature": "NotSigned"
-    },
-    "installer": {
-      "path": "E:\\deepseek_harness\\desktop\\dist\\DeepSeek-Harness-Desktop-Setup-0.2.0.exe",
-      "bytes": 84989014,
-      "sha256": "E0CA067904A6A8623FA3B9BAF773A0320FB4C2F4D45AF83D0A2036FD7B91564D",
-      "signature": "NotSigned"
-    },
-    "build_exit": 0,
-    "http_status": 200,
-    "known_limitations": [
-      "unsigned_windows_binaries"
-    ]
+    "record_dir": "E:\\deepseek_harness\\release\\v0.2.0"
   }
 }

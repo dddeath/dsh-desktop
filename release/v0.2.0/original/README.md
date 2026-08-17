@@ -2,8 +2,6 @@
 
 一套 DeepSeek Harness（`dsh`）桌面端与社区插件方案。
 
-当前发布：**v0.2.0**（Windows x64，便携版与安装版）。
-
 ## 内容
 
 - **`desktop/`** — Electron 桌面壳：包装官方 `dsh web`，独立窗口、单实例、自动附加/拉起服务、`Harness → Restart Harness` 菜单、已打包为 Windows exe（`npm run pack`）。
@@ -12,9 +10,6 @@
   2. 右栏空态文案对比度增强
   3. 对话/轨迹/上下文三个视图 tab 增加符合主题的边框
   4. 右侧边栏改为契合主题的长春花蓝调
-- **`themes/desktop-ui-compat/`** — 跨主题桌面布局兼容层：统一左右侧栏、Composer、桌宠定位与主题切换后的 UI 行为。
-- **`plugins/plugin-control-center/`** — 插件管理中心：展示插件来源、运行状态、敏感能力、更新、装载位置、维护方式与受保护操作入口。
-- **Codex 工具链** — web profile 已验收 `dsh-codex-tools@1.0.1`，通过本机 Codex/ChatGPT 登录态提供图片识别与图片生成入口。
 - **`scripts/`** — 安装插件、重启、生成图标等运维脚本。
 - **`plugin-recommendations.md`** — 社区插件推荐清单（按推荐程度分级）。
 - **`research/plugin-report.md`** — 766 个社区插件全量排名（按 GitHub 星标 + npm 下载量）。
@@ -33,16 +28,6 @@
 
 - Node.js ≥ 20，全局安装 `@deepseek-ai/dsh`（`npm i -g @deepseek-ai/dsh`）
 - `pnpm`（`dsh plugin` 安装插件依赖）
-
-## 社区插件定制
-
-不要直接修改 `~/.dsh/profiles/web/node_modules`。外观适配放入独立兼容插件；核心行为修改使用 Git fork 并通过 `link:` 接入，随后用 Git rebase/merge 同步上游。
-
-详细流程见：`research/plugin-management/operation6-control-center-visual-community-customization/community-plugin-customization.md`。
-
-## 发布验证
-
-发布清单、SHA-256、验证命令和回滚入口保存在 `release/v0.2.0/`。
 
 ## 许可
 
