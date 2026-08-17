@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_phase": "P3",
+  "current_phase": "P5",
   "phases": [
     {
       "id": "P1",
@@ -137,6 +137,33 @@
       "completion_commit": "e339c1bc0cce00a1a1536a1e36cdf3b32f4db2dd",
       "completion_tag": "v0.2.0",
       "completion_evidence": "release/v0.2.0/publication.json"
+    },
+    {
+      "id": "P5",
+      "name": "Authenticode 签名与公开下载附件",
+      "status": "awaiting_input",
+      "inputs": [
+        "v0.2.0 已推送标签",
+        "受信任 Authenticode PFX/P12 证书",
+        "GitHub CLI 登录态"
+      ],
+      "actions": [
+        "从 v0.2.0 标签创建隔离工作树并由 electron-builder 在构建期签名",
+        "使用 Authenticode 默认策略和 SignTool 验证应用、便携版与安装版",
+        "保存未签名原件并生成签名验证记录和 SHA256SUMS.txt",
+        "先创建草稿 Release，下载附件逐字节核验后再公开发布"
+      ],
+      "acceptance": [
+        "签名状态为 Valid 且 SignTool /pa /all 退出状态为 0",
+        "公开附件下载哈希与本地签名产物一致",
+        "证书私钥和密码不进入仓库、日志或发布说明",
+        "本地恢复与 GitHub Release 删除入口可执行"
+      ],
+      "requires_verification": true,
+      "blocker": "trusted_authenticode_certificate_missing",
+      "signing_script": "release/v0.2.0/signing/sign-and-publish.ps1",
+      "rollback": "release/v0.2.0/signing/rollback-authenticode-release.ps1",
+      "prepared_at": "2026-08-17T12:34:48.884Z"
     }
   ]
 }

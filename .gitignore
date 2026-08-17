@@ -3,6 +3,12 @@ desktop/node_modules/
 desktop/dist/
 desktop/dist-status/
 
+# signing credentials / temporary release worktrees
+*.pfx
+*.p12
+release/**/private/
+release/**/.work/
+
 # research artifacts (cloned third-party repos + raw data)
 research/awesome-dsh-plugin/
 research/awesome-deepseek-harness/

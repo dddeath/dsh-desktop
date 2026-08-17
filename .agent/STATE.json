@@ -1,11 +1,13 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-17T12:18:42.371Z",
-  "status": "completed",
-  "current_phase": "P4",
-  "latest_result": "Release and wrap-up completed: v0.2.0 source commit and annotated tag are on origin, Windows artifacts and SHA-256 records are verified locally, and rollback passed in isolation.",
-  "next_action": "Optional follow-up only: provide an Authenticode certificate and upload the two local executables to a GitHub Release if public binary distribution is desired.",
-  "blockers": [],
+  "updated_at": "2026-08-17T12:34:48.884Z",
+  "status": "awaiting_input",
+  "current_phase": "P5",
+  "latest_result": "Prepared and statically verified a fail-closed Authenticode rebuild, verification, GitHub Release upload, download verification, and rollback workflow. No trusted code-signing certificate is installed or configured on this machine.",
+  "next_action": "Provide the absolute path of a publicly trusted Authenticode .pfx/.p12 certificate and inject its password through DSH_CODESIGN_PASSWORD; then run the signed rebuild and public release workflow.",
+  "blockers": [
+    "trusted_authenticode_certificate_missing"
+  ],
   "state_dir": "E:\\deepseek_harness\\.agent",
   "last_verification": {
     "kind": "v0.2.0_publication",
@@ -719,6 +721,19 @@
     "tag_pushed": true,
     "github_release_uploaded": false,
     "artifacts_remain_local": true,
-    "publication": "E:\\deepseek_harness\\release\\v0.2.0\\publication.json"
+    "publication": "E:\\deepseek_harness\\release\\v0.2.0\\publication.json",
+    "authenticode": {
+      "status": "awaiting_trusted_certificate",
+      "code_signing_certificate_found": false,
+      "github_cli_authenticated": true,
+      "repository_public": true,
+      "immutable_releases": false,
+      "github_release_exists": false,
+      "signing_script": "E:\\deepseek_harness\\release\\v0.2.0\\signing\\sign-and-publish.ps1",
+      "rollback": "E:\\deepseek_harness\\release\\v0.2.0\\signing\\rollback-authenticode-release.ps1",
+      "password_environment_variable": "DSH_CODESIGN_PASSWORD",
+      "secrets_recorded": false,
+      "prepared_at": "2026-08-17T12:34:48.884Z"
+    }
   }
 }

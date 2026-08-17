@@ -1,0 +1,88 @@
+﻿{
+    "schemaVersion":  1,
+    "checkedAt":  "2026-08-17T12:37:02.7626668Z",
+    "result":  "AWAITING_TRUSTED_CERTIFICATE",
+    "scriptParse":  [
+                        {
+                            "path":  "E:\\deepseek_harness\\release\\v0.2.0\\signing\\sign-and-publish.ps1",
+                            "passed":  true,
+                            "errors":  [
+
+                                       ]
+                        },
+                        {
+                            "path":  "E:\\deepseek_harness\\release\\v0.2.0\\signing\\rollback-authenticode-release.ps1",
+                            "passed":  true,
+                            "errors":  [
+
+                                       ]
+                        },
+                        {
+                            "path":  "E:\\deepseek_harness\\release\\v0.2.0\\signing\\verify-preflight.ps1",
+                            "passed":  true,
+                            "errors":  [
+
+                                       ]
+                        }
+                    ],
+    "credentialFailureGate":  {
+                                  "exitStatus":  1,
+                                  "passed":  true,
+                                  "message":  "missing process password stopped before build, signing, or upload",
+                                  "output":  [
+                                                 "Set the certificate password in the process environment variable DSH_CODESIGN_PASSWORD before running this script.",
+                                                 "At E:\\deepseek_harness\\release\\v0.2.0\\signing\\sign-and-publish.ps1:103 char:3",
+                                                 "+   throw \"Set the certificate password in the process environment vari ...",
+                                                 "+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+                                                 "    + CategoryInfo          : OperationStopped: (Set the certifi...ng this script.:String) [], RuntimeException",
+                                                 "    + FullyQualifiedErrorId : Set the certificate password in the process environment variable DSH_CODESIGN_PASSWORD b ",
+                                                 "   efore running this script.",
+                                                 " "
+                                             ]
+                              },
+    "certificateDiscovery":  {
+                                 "codeSigningCertificates":  0,
+                                 "configuredEnvironment":  [
+                                                               {
+                                                                   "name":  "WIN_CSC_LINK",
+                                                                   "present":  false
+                                                               },
+                                                               {
+                                                                   "name":  "WIN_CSC_KEY_PASSWORD",
+                                                                   "present":  false
+                                                               },
+                                                               {
+                                                                   "name":  "CSC_LINK",
+                                                                   "present":  false
+                                                               },
+                                                               {
+                                                                   "name":  "CSC_KEY_PASSWORD",
+                                                                   "present":  false
+                                                               }
+                                                           ]
+                             },
+    "github":  {
+                   "repository":  "dddeath/dsh-desktop",
+                   "visibility":  "public",
+                   "immutableReleases":  false,
+                   "tag":  "v0.2.0",
+                   "releaseExists":  false,
+                   "authenticated":  true
+               },
+    "artifacts":  [
+                      {
+                          "path":  "E:\\deepseek_harness\\desktop\\dist\\DeepSeek-Harness-Desktop-0.2.0-portable.exe",
+                          "bytes":  84561810,
+                          "sha256":  "6622B6C7066853F33858A4BBAF42035772C8F664C5ABDC5042A36624915A958E",
+                          "signature":  "NotSigned"
+                      },
+                      {
+                          "path":  "E:\\deepseek_harness\\desktop\\dist\\DeepSeek-Harness-Desktop-Setup-0.2.0.exe",
+                          "bytes":  84989014,
+                          "sha256":  "E0CA067904A6A8623FA3B9BAF773A0320FB4C2F4D45AF83D0A2036FD7B91564D",
+                          "signature":  "NotSigned"
+                      }
+                  ],
+    "nextAction":  "inject a trusted PFX/P12 path and process-only password, then execute sign-and-publish.ps1",
+    "secretsRecorded":  false
+}
