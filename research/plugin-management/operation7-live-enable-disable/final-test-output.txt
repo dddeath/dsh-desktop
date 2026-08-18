@@ -1,0 +1,23 @@
+COMMAND: node --check lib/index.js && node --check lib/client.js && node --check lib/live-actions.js
+SYNTAX_EXIT=0,0,0
+COMMAND: npm.cmd test --prefix E:\deepseek_harness\plugins\plugin-control-center
+
+> dsh-plugin-control-center@0.2.0 test
+> node --test test/*.test.js
+
+✔ confirmed disable writes the profile and cannot be replayed (14.5515ms)
+✔ profile drift blocks execution without changing bundle state (8.712ms)
+✔ disable remembers bundle position across service restart and enable restores it (22.0399ms)
+✔ expired plans are rejected (8.1758ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 126.1592
+TEST_EXIT=0
+COMMAND: GET live snapshot and served client assertions
+{"snapshotHttp":200,"actionMode":"live-enable-disable","plugins":19,"servedRealLabels":true,"servedDesktopRestart":true,"servedMarketRestart":false}
+LIVE_ASSERT_EXIT=0

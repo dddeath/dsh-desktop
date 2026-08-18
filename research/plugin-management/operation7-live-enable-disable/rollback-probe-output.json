@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "target": "E:\\deepseek_harness\\research\\plugin-management\\operation7-live-enable-disable\\rollback-probe\\plugin-control-center",
+  "restoredVersion": "0.1.1",
+  "hashes": [
+    {
+      "relative": "lib\\client.js",
+      "expectedSha256": "FFA840ACE96B1127EB61254BB719E3D53129DABA8F5E3EF5CB9A989CAC889359",
+      "actualSha256": "FFA840ACE96B1127EB61254BB719E3D53129DABA8F5E3EF5CB9A989CAC889359"
+    },
+    {
+      "relative": "lib\\index.js",
+      "expectedSha256": "0549732026485B3B474CEF818F4479528F236A5562D980162B238CF3A211DD21",
+      "actualSha256": "0549732026485B3B474CEF818F4479528F236A5562D980162B238CF3A211DD21"
+    },
+    {
+      "relative": "lib\\profile-actions.js",
+      "expectedSha256": "208F484CFAD4A0DA02816029809C9155F1C2B50CD7C1D1BBC0E979D47ABB3585",
+      "actualSha256": "208F484CFAD4A0DA02816029809C9155F1C2B50CD7C1D1BBC0E979D47ABB3585"
+    },
+    {
+      "relative": "package.json",
+      "expectedSha256": "75D99E60F6782084266CD4A0FF2A79568BD1F68F4355D6B875052C4C58C92B62",
+      "actualSha256": "75D99E60F6782084266CD4A0FF2A79568BD1F68F4355D6B875052C4C58C92B62"
+    },
+    {
+      "relative": "README.md",
+      "expectedSha256": "A855EB676EA85F0EC5B5F3EED89152A194E7271CB7C3D0F149ED2319619EBDFE",
+      "actualSha256": "A855EB676EA85F0EC5B5F3EED89152A194E7271CB7C3D0F149ED2319619EBDFE"
+    }
+  ],
+  "nextStep": "在桌面端使用 Ctrl+Shift+R 或顶部的重启 Harness 按钮加载回滚版本"
+}

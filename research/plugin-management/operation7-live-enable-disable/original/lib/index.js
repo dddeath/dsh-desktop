@@ -3,8 +3,6 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { createLiveActionService, LIVE_ACTIONS } from "./live-actions.js";
-
 export const inject = ["webServer"];
 
 const BASE = "/__dsh-plugin-control-center";
@@ -86,7 +84,7 @@ function snapshot() {
       ...policyFor(name),
     })),
     protectedPackages: Array.from(PROTECTED, ([name, reason]) => ({ name, reason })),
-    actionMode: "live-enable-disable",
+    actionMode: "preview-only",
   };
 }
 
@@ -152,11 +150,6 @@ function readJsonBody(req) {
 }
 
 export function apply(ctx) {
-  const liveActions = createLiveActionService({
-    profileRoot: profileRoot(),
-    backupRoot: snapshotsRoot(),
-    stateFile: path.join(os.homedir(), ".dsh", "control-center", "state.json"),
-  });
   const offSnapshot = ctx.webServer.register({
     kind: "exact",
     path: `${BASE}/snapshot`,
@@ -184,12 +177,6 @@ export function apply(ctx) {
         if (plugin.protected) {
           return sendJson(res, 409, { ok: false, error: "protected_package", detail: plugin.protectedReason });
         }
-        if (LIVE_ACTIONS.includes(action)) {
-          return sendJson(res, 200, {
-            ok: true,
-            value: liveActions.createPlan({ action, packageName, bundleIndex: plugin.bundleIndex }),
-          });
-        }
         const backup = createSafetySnapshot(action, packageName);
         sendJson(res, 200, {
           ok: true,
@@ -212,36 +199,7 @@ export function apply(ctx) {
     },
   });
 
-  const offExecute = ctx.webServer.register({
-    kind: "exact",
-    path: `${BASE}/execute`,
-    async handler(req, res) {
-      if (req.method !== "POST") return sendJson(res, 405, { ok: false, error: "method_not_allowed" });
-      try {
-        const body = await readJsonBody(req);
-        const action = String(body.action || "");
-        const packageName = String(body.name || "");
-        const planId = String(body.planId || "");
-        if (!LIVE_ACTIONS.includes(action) || !packageName || !planId) {
-          return sendJson(res, 400, { ok: false, error: "invalid_execute_request" });
-        }
-        const current = snapshot();
-        const plugin = current.plugins.find((item) => item.name === packageName);
-        if (!plugin) return sendJson(res, 404, { ok: false, error: "package_not_found" });
-        if (plugin.protected) {
-          return sendJson(res, 409, { ok: false, error: "protected_package", detail: plugin.protectedReason });
-        }
-        sendJson(res, 200, { ok: true, value: liveActions.executePlan({ planId, action, packageName }) });
-      } catch (error) {
-        const detail = error instanceof Error ? error.message : String(error);
-        const conflict = /drift|missing|expired|already used|does not match/.test(detail);
-        sendJson(res, conflict ? 409 : 500, { ok: false, error: "execute_failed", detail });
-      }
-    },
-  });
-
   return () => {
-    offExecute();
     offPlan();
     offSnapshot();
   };

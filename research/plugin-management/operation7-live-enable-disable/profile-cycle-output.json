@@ -1,0 +1,30 @@
+{
+  "target": "dsh-notification",
+  "baseline": {
+    "actionMode": "live-enable-disable",
+    "inBundle": true,
+    "bundleIndex": 16,
+    "profileSha256": "708F4057A27DB4FA73A9D44492BC2AD63DB5FFE6DB27DCFAE1F6D85612233913"
+  },
+  "plan": {
+    "executable": true,
+    "execute": false,
+    "profileUnchanged": true,
+    "backupPath": "C:\\Users\\19739\\.dsh\\control-center\\snapshots\\2026-08-18T18-12-06-970Z-stage-disable-dsh-notification",
+    "manifestSha256": "98904106322E66E628BDB96679F3475CFBAB9B846BD78D62B1756D2639EBD110"
+  },
+  "disabled": {
+    "execute": true,
+    "profileChanged": true,
+    "inBundle": false,
+    "packageSha256": "B18E66860B33B1C5B2106728D6E0F2CCB5E444FC5AECFF262B78E2D9A240A46C"
+  },
+  "restored": {
+    "execute": true,
+    "profileChanged": true,
+    "inBundle": true,
+    "bundleIndex": 16,
+    "packageSha256": "708F4057A27DB4FA73A9D44492BC2AD63DB5FFE6DB27DCFAE1F6D85612233913",
+    "exactBaselineHash": true
+  }
+}

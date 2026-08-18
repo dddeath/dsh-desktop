@@ -30,7 +30,6 @@ window.__ModuleLoader__.load({
 .dcc-button:hover:not(:disabled) { background: color-mix(in srgb, currentColor 10%, transparent); }
 .dcc-button:disabled { opacity: .48; cursor: not-allowed; }
 .dcc-primary { border-color: color-mix(in srgb, var(--dsh-accent, currentColor) 58%, transparent); }
-.dcc-danger { color: var(--dsh-danger, #b42318); border-color: color-mix(in srgb, var(--dsh-danger, #b42318) 52%, transparent); }
 .dcc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .dcc-card { padding: 14px; display: grid; gap: 11px; min-width: 0; align-content: start; }
 .dcc-card-head { display: grid; grid-template-columns: minmax(0, 1fr) 68px; align-items: start; gap: 12px; }
@@ -97,10 +96,8 @@ window.__ModuleLoader__.load({
       const [confirmText, setConfirmText] = useState("");
       const [planResult, setPlanResult] = useState(null);
       const [planning, setPlanning] = useState(false);
-      const [executing, setExecuting] = useState(false);
-      const [operationStatus, setOperationStatus] = useState("");
 
-      const reload = async (retry = 0) => {
+      const reload = async () => {
         setLoading(true);
         setError("");
         try {
@@ -125,9 +122,6 @@ window.__ModuleLoader__.load({
           setData({ control, installed, runtime, plugins, checkedAt: new Date().toISOString() });
         } catch (loadError) {
           setError(loadError.message || String(loadError));
-          if (retry < 12) {
-            setTimeout(() => reload(retry + 1), 1500);
-          }
         } finally {
           setLoading(false);
         }
@@ -150,7 +144,6 @@ window.__ModuleLoader__.load({
         setAction({ plugin, kind });
         setConfirmText("");
         setPlanResult(null);
-        setOperationStatus("");
       };
 
       const submitPlan = async () => {
@@ -164,37 +157,10 @@ window.__ModuleLoader__.load({
             body: JSON.stringify({ action: action.kind, name: action.plugin.name }),
           });
           setPlanResult(value);
-          setOperationStatus(value.executable ? "安全备份已完成；等待最终确认。" : "预演已完成；未写入配置。" );
         } catch (planError) {
           setPlanResult({ error: planError.message || String(planError) });
         } finally {
           setPlanning(false);
-        }
-      };
-
-      const submitExecute = async () => {
-        if (!action || !planResult?.planId) return;
-        setExecuting(true);
-        setOperationStatus("正在核对配置哈希并写入启停状态…");
-        try {
-          const value = await fetchJson(`${BASE}/execute`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ planId: planResult.planId, action: action.kind, name: action.plugin.name }),
-          });
-          setPlanResult(value);
-          if (!value.profileChanged) {
-            setOperationStatus("配置原本已是目标状态，正在重新核验。" );
-            setExecuting(false);
-            await reload();
-            return;
-          }
-          setOperationStatus("配置已写入，正在交由桌面托管流程安全重启…");
-          window.location.assign("dsh-desktop://restart");
-        } catch (executeError) {
-          setPlanResult({ error: executeError.message || String(executeError) });
-          setOperationStatus("执行已中止，配置未通过本次确认写入。请关闭后重新生成计划。" );
-          setExecuting(false);
         }
       };
 
@@ -210,16 +176,16 @@ window.__ModuleLoader__.load({
           h("div", { className: "dcc-heading" },
             h("div", null,
               h("h2", null, "插件管理中心"),
-              h("p", { className: "dcc-muted" }, "聚合运行状态、来源、版本与风险；停用/启用经二次确认后真实生效。")
+              h("p", { className: "dcc-muted" }, "聚合运行状态、来源、版本与风险；本阶段操作只生成备份和执行计划。")
             ),
-            h("button", { className: "dcc-button dcc-primary", type: "button", disabled: loading, onClick: () => reload(), "data-control-refresh": "true" }, loading ? "核验中…" : "运行核验")
+            h("button", { className: "dcc-button dcc-primary", type: "button", disabled: loading, onClick: reload, "data-control-refresh": "true" }, loading ? "核验中…" : "运行核验")
           ),
           h("div", { className: "dcc-summary", "data-control-summary": "true" },
             [[summary.running, "运行中"], [summary.pending, "待重启"], [summary.updates, "可更新"], [summary.total, "已纳管"]].map(([value, label]) =>
               h("div", { className: "dcc-metric", key: label }, h("b", null, value), h("span", null, label))
             )
           ),
-          data ? h("p", { className: "dcc-muted" }, `配置：${data.control.profile} · 最后核验：${new Date(data.checkedAt).toLocaleString()} · 模式：停启可执行，更新/卸载/恢复仅预演`) : null
+          data ? h("p", { className: "dcc-muted" }, `配置：${data.control.profile} · 最后核验：${new Date(data.checkedAt).toLocaleString()} · 模式：只预演`) : null
         ),
         h("div", { className: "dcc-toolbar" },
           h("input", { className: "dcc-field", value: query, onChange: (event) => setQuery(event.target.value), placeholder: "搜索插件、能力或建议", "aria-label": "搜索插件" }),
@@ -260,7 +226,7 @@ window.__ModuleLoader__.load({
               plugin.protected ? h("div", { className: "dcc-detail-row" }, h("span", null, "保护原因"), h("span", null, plugin.protectedReason)) : null
             ) : null,
             h("div", { className: "dcc-actions" },
-              h("button", { className: "dcc-button", type: "button", disabled: plugin.protected, title: plugin.protectedReason || "", onClick: () => openAction(plugin, plugin.inBundle ? "stage-disable" : "stage-enable") }, plugin.inBundle ? "停用" : "启用"),
+              h("button", { className: "dcc-button", type: "button", disabled: plugin.protected, title: plugin.protectedReason || "", onClick: () => openAction(plugin, plugin.status === "running" ? "stage-disable" : "stage-enable") }, plugin.status === "running" ? "计划停用" : "计划启用"),
               h("button", { className: "dcc-button", type: "button", disabled: plugin.protected || !plugin.updateAvailable, title: plugin.protectedReason || (!plugin.updateAvailable ? "当前无可用更新" : ""), onClick: () => openAction(plugin, "update") }, "计划更新"),
               h("button", { className: "dcc-button", type: "button", disabled: plugin.protected, title: plugin.protectedReason || "", onClick: () => openAction(plugin, "remove") }, "卸载预演"),
               h("button", { className: "dcc-button", type: "button", disabled: plugin.protected, title: plugin.protectedReason || "", onClick: () => openAction(plugin, "restore") }, "恢复预演")
@@ -268,16 +234,9 @@ window.__ModuleLoader__.load({
           );
         })),
         action ? h("aside", { className: "dcc-action", "data-action-dialog": "true" },
-          h("div", { className: "dcc-heading" }, h("div", null,
-            h("h3", null, `${["stage-enable", "stage-disable"].includes(action.kind) ? "确认操作" : "操作预演"}：${action.plugin.name}`),
-            h("p", { className: "dcc-muted" }, ["stage-enable", "stage-disable"].includes(action.kind)
-              ? `动作：${action.kind === "stage-disable" ? "停用" : "启用"}。先生成安全备份与一次性计划，最终确认后写入 profile 并安全重启。`
-              : `动作：${action.kind}。只保存配置快照与预演计划，不写入 profile。`)
-          ), h("button", { className: "dcc-button", type: "button", disabled: executing, onClick: () => setAction(null) }, "关闭")),
+          h("div", { className: "dcc-heading" }, h("div", null, h("h3", null, `操作预演：${action.plugin.name}`), h("p", { className: "dcc-muted" }, `动作：${action.kind}。将先保存配置快照，不会修改 profile，也不会自动重启。`)), h("button", { className: "dcc-button", type: "button", onClick: () => setAction(null) }, "关闭")),
           ["update", "remove", "restore"].includes(action.kind) ? h("label", null, h("span", { className: "dcc-muted" }, `输入插件名 ${action.plugin.name} 以确认`), h("input", { className: "dcc-field", value: confirmText, onChange: (event) => setConfirmText(event.target.value), "aria-label": "输入插件名确认" })) : null,
-          h("button", { className: "dcc-button dcc-primary", type: "button", disabled: planning || executing || (["update", "remove", "restore"].includes(action.kind) && confirmText !== action.plugin.name), onClick: submitPlan }, planning ? "生成中…" : (["stage-enable", "stage-disable"].includes(action.kind) ? "创建安全备份并检查" : "生成备份与预演")),
-          planResult?.executable ? h("button", { className: "dcc-button dcc-danger", type: "button", disabled: executing, onClick: submitExecute, "data-action-execute": "true" }, executing ? "执行中…" : `确认${action.kind === "stage-disable" ? "停用" : "启用"}并重启`) : null,
-          operationStatus ? h("p", { className: "dcc-muted", role: "status" }, operationStatus) : null,
+          h("button", { className: "dcc-button dcc-primary", type: "button", disabled: planning || (["update", "remove", "restore"].includes(action.kind) && confirmText !== action.plugin.name), onClick: submitPlan }, planning ? "生成中…" : "生成备份与计划"),
           planResult ? h("pre", { "data-action-preview": "true" }, planResult.error ? `错误：${planResult.error}` : `备份：${planResult.backup.path}\n清单 SHA-256：${planResult.backup.manifestSha256}\nprofileChanged：${planResult.profileChanged}\nexecute：${planResult.execute}\n下一步：${planResult.nextStep}`) : null
         ) : null
       );

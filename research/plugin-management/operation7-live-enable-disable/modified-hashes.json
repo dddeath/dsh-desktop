@@ -1,0 +1,37 @@
+[
+  {
+    "relative": "lib\\index.js",
+    "sha256": "D631E5FAC50D89BF800726C4AE85798572FABC4006A2F6460473F37C1CA46F14",
+    "bytes": 10015
+  },
+  {
+    "relative": "lib\\client.js",
+    "sha256": "4A178A166359BB810BEE9435760E42A9604D9740E56F4FB5637E9FDAE865C6FC",
+    "bytes": 22249
+  },
+  {
+    "relative": "lib\\profile-actions.js",
+    "sha256": "208F484CFAD4A0DA02816029809C9155F1C2B50CD7C1D1BBC0E979D47ABB3585",
+    "bytes": 7912
+  },
+  {
+    "relative": "lib\\live-actions.js",
+    "sha256": "39AA4C8CE1A9191C4315AFA48A062D1E22497290925305F6100AE17F33E6A16D",
+    "bytes": 4757
+  },
+  {
+    "relative": "test\\live-actions.test.js",
+    "sha256": "3C7DD252548C34E607834DEDCB18EB6D044DC77968C936E989D43D374DA065C1",
+    "bytes": 4771
+  },
+  {
+    "relative": "package.json",
+    "sha256": "60524C8B085378DC0B0A80251C5BA1F7E477792A6B747F5D4640905B1704062F",
+    "bytes": 831
+  },
+  {
+    "relative": "README.md",
+    "sha256": "F770F2C7C90CF68D2FA4A42778705672D0207E2D35D45FE5876B8EAC7FED995D",
+    "bytes": 832
+  }
+]

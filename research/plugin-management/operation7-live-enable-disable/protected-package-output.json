@@ -1,0 +1,1 @@
+{"command":"POST /plan stage-disable dsh-plugin-control-center","status":409,"body":"{\"ok\":false,\"error\":\"protected_package\",\"detail\":\"管理与恢复入口自身\"}","profileHashBefore":"708F4057A27DB4FA73A9D44492BC2AD63DB5FFE6DB27DCFAE1F6D85612233913","profileHashAfter":"708F4057A27DB4FA73A9D44492BC2AD63DB5FFE6DB27DCFAE1F6D85612233913","unchanged":true}

@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-control-center",
-  "version": "0.2.0",
+  "version": "0.1.1",
   "description": "Theme-neutral installed-plugin control center for DeepSeek Harness.",
   "private": true,
   "type": "module",
@@ -8,12 +8,8 @@
   "exports": {
     ".": "./lib/index.js",
     "./client": "./lib/client.js",
-    "./live-actions": "./lib/live-actions.js",
     "./profile-actions": "./lib/profile-actions.js",
     "./package.json": "./package.json"
-  },
-  "scripts": {
-    "test": "node --test test/*.test.js"
   },
   "dsh": {
     "bundle": {
